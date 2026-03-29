@@ -11,6 +11,9 @@ importers:
       '@ai-sdk/anthropic':
         specifier: ^3.0.64
         version: 3.0.64(zod@3.25.76)
+      '@ai-sdk/gateway':
+        specifier: ^3.0.83
+        version: 3.0.83(zod@3.25.76)
       '@ai-sdk/google':
         specifier: ^3.0.53
         version: 3.0.53(zod@3.25.76)
