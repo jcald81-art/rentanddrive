@@ -313,6 +313,17 @@ async function createAlert(
   description: string,
   data: Record<string, unknown>
 ) {
+  // Get vehicle info for alert message
+  const { data: vehicle } = await supabase
+    .from('vehicles')
+    .select('make, model, year, license_plate')
+    .eq('id', device.vehicle_id)
+    .single()
+
+  const vehicleName = vehicle 
+    ? `${vehicle.year} ${vehicle.make} ${vehicle.model} (${vehicle.license_plate || 'No plate'})`
+    : `Vehicle ID: ${device.vehicle_id}`
+
   // Insert alert
   const { data: alert } = await supabase
     .from('bouncie_alerts')
@@ -328,8 +339,12 @@ async function createAlert(
     .select()
     .single()
 
-  // For critical alerts, trigger the fleet monitoring agent
+  // For critical alerts, send SMS to owner and trigger fleet monitor
   if (severity === 'critical' && alert) {
+    // Send SMS alert to joe@rentanddrive.net owner phone
+    await sendCriticalSmsAlert(vehicleName, title, description, alertType)
+
+    // Trigger fleet monitoring agent
     try {
       await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/agents/fleet-monitor`, {
         method: 'POST',
@@ -346,7 +361,51 @@ async function createAlert(
     agent_name: 'bouncie_webhook',
     action_type: `alert_${alertType}`,
     input_data: data,
-    output_data: { alert_id: alert?.id, severity, title },
+    output_data: { alert_id: alert?.id, severity, title, sms_sent: severity === 'critical' },
     status: 'completed',
   })
+}
+
+// Send critical SMS alert to fleet owner
+async function sendCriticalSmsAlert(
+  vehicleName: string,
+  title: string,
+  description: string,
+  alertType: string
+) {
+  const ownerPhone = process.env.FLEET_OWNER_PHONE // joe@rentanddrive.net's phone
+  
+  if (!ownerPhone || !process.env.TWILIO_ACCOUNT_SID) {
+    console.log('[v0] SMS alert skipped - no phone or Twilio configured')
+    return
+  }
+
+  const message = `[R&D ALERT] ${title}\n${vehicleName}\n${description}`
+
+  try {
+    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`
+    
+    const response = await fetch(twilioUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Basic ' + Buffer.from(
+          `${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`
+        ).toString('base64'),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        To: ownerPhone,
+        From: process.env.TWILIO_PHONE_NUMBER!,
+        Body: message,
+      }),
+    })
+
+    if (!response.ok) {
+      console.error('[v0] SMS alert failed:', await response.text())
+    } else {
+      console.log(`[v0] Critical SMS alert sent for ${alertType}`)
+    }
+  } catch (error) {
+    console.error('[v0] SMS alert error:', error)
+  }
 }
