@@ -14,9 +14,15 @@ import {
   ArrowRight,
   Smartphone,
   Search,
-  CalendarDays
+  CalendarDays,
+  Zap,
+  Mountain,
+  Sparkles,
+  Download
 } from "lucide-react"
 import { HeroSearchBar } from "@/components/hero-search-bar"
+import { FeaturedVehicles } from "@/components/featured-vehicles"
+import { CustomerReviewsCarousel } from "@/components/customer-reviews-carousel"
 
 export default function HomePage() {
   return (
@@ -98,52 +104,81 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Value Props */}
+      {/* Why Rent and Drive */}
       <section className="border-b py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-12 max-w-2xl text-center">
             <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
-              Why book with Rent & Drive?
+              Why Rent & Drive?
             </h2>
             <p className="text-muted-foreground">
-              We connect you directly with vehicle owners, cutting out the middleman 
-              and passing the savings to you.
+              Your local Reno/Tahoe vehicle rental specialists
             </p>
           </div>
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <Card className="border-0 bg-muted/50">
               <CardContent className="pt-6">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                  <DollarSign className="h-6 w-6 text-primary" />
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#CC0000]/10">
+                  <DollarSign className="h-6 w-6 text-[#CC0000]" />
                 </div>
                 <h3 className="mb-2 text-lg font-semibold">Save 10% vs Turo</h3>
                 <p className="text-sm text-muted-foreground">
-                  Lower platform fees mean better rates for renters and higher earnings 
-                  for hosts. Everyone wins.
+                  Lower platform fees mean better rates for you and higher earnings for hosts.
                 </p>
               </CardContent>
             </Card>
             <Card className="border-0 bg-muted/50">
               <CardContent className="pt-6">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                  <MapPin className="h-6 w-6 text-primary" />
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#CC0000]/10">
+                  <Mountain className="h-6 w-6 text-[#CC0000]" />
                 </div>
-                <h3 className="mb-2 text-lg font-semibold">Local Selection</h3>
+                <h3 className="mb-2 text-lg font-semibold">AWD Fleet for Tahoe</h3>
                 <p className="text-sm text-muted-foreground">
-                  Cars, SUVs, trucks, ATVs, and RVs from Reno locals. Perfect for 
-                  ski trips, Lake Tahoe adventures, or everyday use.
+                  We specialize in all-wheel drive vehicles perfect for Sierra winter adventures.
                 </p>
               </CardContent>
             </Card>
             <Card className="border-0 bg-muted/50">
               <CardContent className="pt-6">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                  <Smartphone className="h-6 w-6 text-primary" />
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#CC0000]/10">
+                  <Sparkles className="h-6 w-6 text-[#CC0000]" />
                 </div>
-                <h3 className="mb-2 text-lg font-semibold">Lyft Pickup Available</h3>
+                <h3 className="mb-2 text-lg font-semibold">Free Car Wash Included</h3>
                 <p className="text-sm text-muted-foreground">
-                  Add Lyft pickup/dropoff to your booking. We will get you to and from 
-                  the vehicle location hassle-free.
+                  Every rental includes a complimentary Sierra Express car wash - return it clean!
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-0 bg-muted/50">
+              <CardContent className="pt-6">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#CC0000]/10">
+                  <Smartphone className="h-6 w-6 text-[#CC0000]" />
+                </div>
+                <h3 className="mb-2 text-lg font-semibold">Contactless Pickup</h3>
+                <p className="text-sm text-muted-foreground">
+                  Igloo lockbox pickup - no waiting, no key handoff. Get the code and go.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-0 bg-muted/50">
+              <CardContent className="pt-6">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#CC0000]/10">
+                  <Shield className="h-6 w-6 text-[#CC0000]" />
+                </div>
+                <h3 className="mb-2 text-lg font-semibold">VIN Verified Vehicles</h3>
+                <p className="text-sm text-muted-foreground">
+                  Every vehicle passes our verification process. Clean titles, no hidden issues.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-0 bg-muted/50">
+              <CardContent className="pt-6">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#CC0000]/10">
+                  <Clock className="h-6 w-6 text-[#CC0000]" />
+                </div>
+                <h3 className="mb-2 text-lg font-semibold">24/7 Local Support</h3>
+                <p className="text-sm text-muted-foreground">
+                  Reno-based team available around the clock. Real humans, real fast response.
                 </p>
               </CardContent>
             </Card>
@@ -151,8 +186,41 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Vehicle Categories */}
+      {/* Featured Vehicles */}
       <section className="py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="mb-12 flex items-end justify-between">
+            <div>
+              <Badge className="mb-4 bg-[#CC0000]/10 text-[#CC0000] border-[#CC0000]/20">
+                <Sparkles className="mr-1 h-3 w-3" />
+                Top Rated
+              </Badge>
+              <h2 className="mb-2 text-3xl font-bold tracking-tight md:text-4xl">
+                Featured Vehicles
+              </h2>
+              <p className="text-muted-foreground">
+                Our highest-rated vehicles ready for your next adventure
+              </p>
+            </div>
+            <Button variant="ghost" asChild className="hidden md:inline-flex">
+              <Link href="/vehicles">
+                View All
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+          <FeaturedVehicles />
+          <Button variant="ghost" asChild className="mt-6 w-full md:hidden">
+            <Link href="/vehicles">
+              View All Vehicles
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      </section>
+
+      {/* Vehicle Categories */}
+      <section className="border-t py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="mb-12 flex items-end justify-between">
             <div>
@@ -283,58 +351,47 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Social Proof */}
+      {/* Customer Reviews Carousel */}
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="mx-auto mb-12 max-w-2xl text-center">
             <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
-              Trusted by locals
+              What Our Customers Say
             </h2>
             <p className="text-muted-foreground">
-              Join hundreds of renters and hosts in the Reno area
+              Real reviews from renters and hosts in the Reno/Tahoe area
             </p>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              {
-                name: "Sarah M.",
-                role: "Renter",
-                rating: 5,
-                text: "Saved $80 compared to Turo on my ski weekend rental. The Subaru had snow tires and was perfect for Tahoe."
-              },
-              {
-                name: "Mike T.",
-                role: "Host",
-                rating: 5,
-                text: "My truck earns me $800/month when I am not using it. The platform is super easy and payouts are fast."
-              },
-              {
-                name: "Jessica L.",
-                role: "Renter",
-                rating: 5,
-                text: "The Lyft pickup feature is a game changer. Got picked up at the airport and dropped at the car. So convenient!"
-              }
-            ].map((review, i) => (
-              <Card key={i}>
-                <CardContent className="pt-6">
-                  <div className="mb-3 flex">
-                    {Array.from({ length: review.rating }).map((_, j) => (
-                      <Star key={j} className="h-4 w-4 fill-primary text-primary" />
-                    ))}
-                  </div>
-                  <p className="mb-4 text-sm text-muted-foreground">{`"${review.text}"`}</p>
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted font-medium">
-                      {review.name.charAt(0)}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">{review.name}</p>
-                      <p className="text-xs text-muted-foreground">{review.role}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          <CustomerReviewsCarousel />
+        </div>
+      </section>
+
+      {/* Download App CTA */}
+      <section className="py-16 md:py-24 bg-gradient-to-r from-[#CC0000] to-[#990000]">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center text-center text-white">
+            <Download className="h-12 w-12 mb-4" />
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">
+              Coming Soon: Mobile App
+            </h2>
+            <p className="text-white/80 max-w-md mb-6">
+              Book vehicles, unlock with your phone, and manage trips on the go. 
+              Get notified when we launch.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button variant="secondary" size="lg" disabled>
+                <svg viewBox="0 0 24 24" className="mr-2 h-5 w-5" fill="currentColor">
+                  <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                </svg>
+                App Store
+              </Button>
+              <Button variant="secondary" size="lg" disabled>
+                <svg viewBox="0 0 24 24" className="mr-2 h-5 w-5" fill="currentColor">
+                  <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1 1 0 010 1.73l-2.808 1.626L15.206 12l2.492-2.491zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/>
+                </svg>
+                Google Play
+              </Button>
+            </div>
           </div>
         </div>
       </section>
