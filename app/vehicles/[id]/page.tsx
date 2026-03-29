@@ -35,23 +35,90 @@ async function getVehicle(id: string): Promise<Vehicle | null> {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params
   const vehicle = await getVehicle(id)
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rentanddrive.net'
 
   if (!vehicle) {
     return { title: 'Vehicle Not Found | Rent and Drive' }
   }
 
+  const title = `${vehicle.year} ${vehicle.make} ${vehicle.model} Rental in ${vehicle.location_city || 'Reno'} Nevada`
+  const description = `Rent this ${vehicle.year} ${vehicle.make} ${vehicle.model} in ${vehicle.location_city || 'Reno'}, Nevada. ${vehicle.is_awd ? 'AWD perfect for Tahoe. ' : ''}${vehicle.seats} seats. $${vehicle.daily_rate}/day. Book direct and save 10% vs Turo.`
+
   return {
-    title: `${vehicle.year} ${vehicle.make} ${vehicle.model} | Rent and Drive`,
-    description: `Rent this ${vehicle.year} ${vehicle.make} ${vehicle.model} in ${vehicle.location_city}. $${vehicle.daily_rate}/day. Save 10% vs Turo.`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${baseUrl}/vehicles/${id}`,
+      siteName: 'Rent and Drive',
+      images: vehicle.thumbnail_url ? [{
+        url: vehicle.thumbnail_url,
+        width: 1200,
+        height: 630,
+        alt: `${vehicle.year} ${vehicle.make} ${vehicle.model}`,
+      }] : undefined,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: vehicle.thumbnail_url ? [vehicle.thumbnail_url] : undefined,
+    },
+    alternates: {
+      canonical: `${baseUrl}/vehicles/${id}`,
+    },
   }
 }
 
 export default async function VehicleDetailPage({ params }: PageProps) {
   const { id } = await params
   const vehicle = await getVehicle(id)
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rentanddrive.net'
 
   if (!vehicle) {
     notFound()
+  }
+
+  // JSON-LD Structured Data for Vehicle Listing
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: `${vehicle.year} ${vehicle.make} ${vehicle.model}`,
+    description: vehicle.description || `Rent this ${vehicle.year} ${vehicle.make} ${vehicle.model} in ${vehicle.location_city}, Nevada.`,
+    image: vehicle.images?.[0] || vehicle.thumbnail_url,
+    brand: {
+      '@type': 'Brand',
+      name: vehicle.make,
+    },
+    model: vehicle.model,
+    vehicleModelDate: vehicle.year?.toString(),
+    offers: {
+      '@type': 'Offer',
+      url: `${baseUrl}/vehicles/${id}`,
+      priceCurrency: 'USD',
+      price: vehicle.daily_rate,
+      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      availability: 'https://schema.org/InStock',
+      seller: {
+        '@type': 'Organization',
+        name: 'Rent and Drive LLC',
+        url: baseUrl,
+      },
+    },
+    aggregateRating: vehicle.rating ? {
+      '@type': 'AggregateRating',
+      ratingValue: vehicle.rating,
+      reviewCount: vehicle.review_count || 1,
+      bestRating: 5,
+      worstRating: 1,
+    } : undefined,
+    additionalProperty: [
+      { '@type': 'PropertyValue', name: 'Seats', value: vehicle.seats },
+      { '@type': 'PropertyValue', name: 'AWD', value: vehicle.is_awd ? 'Yes' : 'No' },
+      { '@type': 'PropertyValue', name: 'Location', value: `${vehicle.location_city}, ${vehicle.location_state}` },
+    ],
   }
 
   const features = [
@@ -62,9 +129,16 @@ export default async function VehicleDetailPage({ params }: PageProps) {
   ]
 
   return (
-    <main className="min-h-screen bg-background">
-      {/* Value Prop Banner */}
-      <div className="bg-primary px-4 py-3 text-center">
+    <>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      
+      <main className="min-h-screen bg-background">
+        {/* Value Prop Banner */}
+        <div className="bg-primary px-4 py-3 text-center">
         <p className="text-sm font-medium text-primary-foreground">
           Save 10% vs Turo — book direct here for the best price
         </p>
@@ -223,8 +297,9 @@ export default async function VehicleDetailPage({ params }: PageProps) {
               />
             </div>
           </div>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   )
 }

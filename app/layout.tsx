@@ -1,33 +1,102 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import Script from 'next/script'
 import { RDConcierge } from '@/components/rd-concierge'
+import { ErrorBoundary } from '@/components/error-boundary'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rentanddrive.net'
+
 export const metadata: Metadata = {
-  title: 'Rent and Drive | Peer-to-Peer Car Rental',
-  description: 'Book direct and save 10% vs Turo. Rent vehicles from local owners in Reno, Nevada and beyond.',
-  generator: 'Rent and Drive LLC',
-  icons: {
-    icon: [
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: 'Rent and Drive | Premium AWD Car Rental Reno Lake Tahoe Nevada',
+    template: '%s | Rent and Drive',
+  },
+  description: 'Book direct and save 10% vs Turo. Premium AWD car rental in Reno and Lake Tahoe, Nevada. Subarus, trucks, SUVs with snow tires. Contactless pickup, VIN verified vehicles, 24/7 local support.',
+  keywords: [
+    'car rental Reno',
+    'car rental Lake Tahoe',
+    'AWD rental Nevada',
+    'Subaru rental Tahoe',
+    'ski trip car rental',
+    'peer to peer car rental',
+    'Turo alternative',
+    'truck rental Reno',
+    'SUV rental Nevada',
+  ],
+  authors: [{ name: 'Rent and Drive LLC' }],
+  creator: 'Rent and Drive LLC',
+  publisher: 'Rent and Drive LLC',
+  generator: 'Next.js',
+  applicationName: 'Rent and Drive',
+  referrer: 'origin-when-cross-origin',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: baseUrl,
+    siteName: 'Rent and Drive',
+    title: 'Rent and Drive | Premium AWD Car Rental Reno Lake Tahoe Nevada',
+    description: 'Book direct and save 10% vs Turo. Premium AWD car rental in Reno and Lake Tahoe. Contactless pickup, VIN verified vehicles.',
+    images: [
       {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Rent and Drive - Premium Car Rental in Reno and Lake Tahoe',
       },
     ],
-    apple: '/apple-icon.png',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Rent and Drive | Premium AWD Car Rental Reno Lake Tahoe Nevada',
+    description: 'Book direct and save 10% vs Turo. Premium AWD car rental in Reno and Lake Tahoe.',
+    images: ['/og-image.jpg'],
+    creator: '@rentanddrive',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  icons: {
+    icon: [
+      { url: '/icons/icon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  manifest: '/manifest.json',
+  alternates: {
+    canonical: baseUrl,
+  },
+  category: 'transportation',
+}
+
+export const viewport: Viewport = {
+  themeColor: '#CC0000',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  colorScheme: 'light dark',
 }
 
 export default function RootLayout({
@@ -37,10 +106,54 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* PWA Meta Tags */}
+        <meta name="application-name" content="Rent and Drive" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="R&D" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="msapplication-TileColor" content="#CC0000" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        
+        {/* Preconnect to external domains */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* Cloudflare Web Analytics */}
+        {process.env.CF_ANALYTICS_TOKEN && (
+          <Script
+            defer
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon={`{"token": "${process.env.CF_ANALYTICS_TOKEN}"}`}
+            strategy="afterInteractive"
+          />
+        )}
+      </head>
       <body className="font-sans antialiased">
-        {children}
+        <ErrorBoundary>
+          {children}
+        </ErrorBoundary>
         <RDConcierge />
         <Analytics />
+        
+        {/* Service Worker Registration */}
+        <Script id="sw-register" strategy="afterInteractive">
+          {`
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(
+                  function(registration) {
+                    console.log('SW registered: ', registration.scope);
+                  },
+                  function(err) {
+                    console.log('SW registration failed: ', err);
+                  }
+                );
+              });
+            }
+          `}
+        </Script>
       </body>
     </html>
   )
