@@ -10,21 +10,32 @@ interface VehicleWithDevice {
   year: number
   license_plate: string
   status: string
-  lastLocation: {
+  device?: {
+    last_lat: number
+    last_lng: number
+    last_speed_mph: number
+    last_seen_at: string
+  } | null
+  lastLocation?: {
     lat: number
     lng: number
     speed: number
     updatedAt: string
+  } | null
+  activeBooking?: {
+    end_date: string
+    renter?: { full_name: string }
   } | null
   alerts: { severity: string }[]
 }
 
 interface FleetMapProps {
   vehicles: VehicleWithDevice[]
-  onVehicleSelect: (vehicle: VehicleWithDevice) => void
+  selectedVehicle?: string | null
+  onVehicleSelect: (id: string | null) => void
 }
 
-export function FleetMap({ vehicles, onVehicleSelect }: FleetMapProps) {
+export default function FleetMap({ vehicles, selectedVehicle, onVehicleSelect }: FleetMapProps) {
   const [mapLoaded, setMapLoaded] = useState(false)
   const [L, setL] = useState<typeof import('leaflet') | null>(null)
 
@@ -50,13 +61,14 @@ export function FleetMap({ vehicles, onVehicleSelect }: FleetMapProps) {
     )
   }
 
-  const vehiclesWithLocation = vehicles.filter(v => v.lastLocation)
+  const vehiclesWithLocation = vehicles.filter(v => v.lastLocation || v.device?.last_lat)
 
   return (
     <div className="h-[500px] relative">
       <MapComponent 
         vehicles={vehiclesWithLocation}
         center={RENO_CENTER}
+        selectedVehicle={selectedVehicle}
         onVehicleSelect={onVehicleSelect}
       />
       <div className="absolute bottom-4 left-4 z-[1000] bg-background/90 backdrop-blur p-3 rounded-lg shadow-lg">
@@ -81,11 +93,13 @@ export function FleetMap({ vehicles, onVehicleSelect }: FleetMapProps) {
 function MapComponent({ 
   vehicles, 
   center,
+  selectedVehicle,
   onVehicleSelect 
 }: { 
   vehicles: VehicleWithDevice[]
   center: [number, number]
-  onVehicleSelect: (vehicle: VehicleWithDevice) => void
+  selectedVehicle?: string | null
+  onVehicleSelect: (id: string | null) => void
 }) {
   const [mounted, setMounted] = useState(false)
 
@@ -138,32 +152,41 @@ function MapComponent({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {vehicles.map(vehicle => vehicle.lastLocation && (
-        <Marker
-          key={vehicle.id}
-          position={[vehicle.lastLocation.lat, vehicle.lastLocation.lng]}
-          icon={getIcon(vehicle.status, vehicle.alerts.length > 0)}
-          eventHandlers={{
-            click: () => onVehicleSelect(vehicle),
-          }}
-        >
-          <Popup>
-            <div className="text-sm">
-              <p className="font-semibold">{vehicle.year} {vehicle.make} {vehicle.model}</p>
-              <p className="text-muted-foreground">{vehicle.license_plate}</p>
-              {vehicle.lastLocation && (
-                <p className="mt-1">Speed: {vehicle.lastLocation.speed} mph</p>
-              )}
-              <button 
-                onClick={() => onVehicleSelect(vehicle)}
-                className="mt-2 text-primary underline text-xs"
-              >
-                View Details
-              </button>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+      {vehicles.map(vehicle => {
+        const lat = vehicle.lastLocation?.lat || vehicle.device?.last_lat
+        const lng = vehicle.lastLocation?.lng || vehicle.device?.last_lng
+        const speed = vehicle.lastLocation?.speed || vehicle.device?.last_speed_mph || 0
+        if (!lat || !lng) return null
+        return (
+          <Marker
+            key={vehicle.id}
+            position={[lat, lng]}
+            icon={getIcon(vehicle.status, vehicle.alerts.length > 0)}
+            eventHandlers={{
+              click: () => onVehicleSelect(vehicle.id),
+            }}
+          >
+            <Popup>
+              <div className="text-sm">
+                <p className="font-semibold">{vehicle.year} {vehicle.make} {vehicle.model}</p>
+                <p className="text-muted-foreground">{vehicle.license_plate}</p>
+                <p className="mt-1">Speed: {speed} mph</p>
+                {vehicle.activeBooking && (
+                  <p className="mt-1 text-blue-600">
+                    Renter: {vehicle.activeBooking.renter?.full_name || 'Unknown'}
+                  </p>
+                )}
+                <button 
+                  onClick={() => onVehicleSelect(vehicle.id)}
+                  className="mt-2 text-primary underline text-xs"
+                >
+                  View Details
+                </button>
+              </div>
+            </Popup>
+          </Marker>
+        )
+      })}
     </MapContainer>
   )
 }
