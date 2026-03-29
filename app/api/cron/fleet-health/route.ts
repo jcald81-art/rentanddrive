@@ -26,6 +26,9 @@ export async function GET(request: NextRequest) {
       maintenance_due: 0,
       inactive_vehicles: 0,
       notifications_sent: 0,
+      bouncie_low_battery: 0,
+      bouncie_silent_devices: 0,
+      bouncie_high_usage_trips: 0,
     }
 
     // Check insurance expiry (within 30 days)
@@ -135,6 +138,95 @@ export async function GET(request: NextRequest) {
         alerts.notifications_sent++
       }
     }
+
+    // ============ BOUNCIE GPS TRACKING CHECKS ============
+
+    // Check for Bouncie devices with low battery (under 12V)
+    const { data: lowBatteryDevices } = await supabase
+      .from('bouncie_devices')
+      .select('id, vehicle_id, battery_voltage, nickname')
+      .lt('battery_voltage', 12)
+      .eq('is_active', true)
+
+    for (const device of lowBatteryDevices || []) {
+      // Check if we already alerted in last 24 hours
+      const { count } = await supabase
+        .from('bouncie_alerts')
+        .select('id', { count: 'exact' })
+        .eq('device_id', device.id)
+        .eq('alert_type', 'low_battery')
+        .gte('created_at', new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString())
+
+      if (!count || count === 0) {
+        await supabase.from('bouncie_alerts').insert({
+          device_id: device.id,
+          vehicle_id: device.vehicle_id,
+          alert_type: 'low_battery',
+          severity: device.battery_voltage < 11 ? 'critical' : 'warning',
+          title: 'Low Battery - Proactive Alert',
+          description: `Battery at ${device.battery_voltage}V. Schedule maintenance before it fails.`,
+          data: { voltage: device.battery_voltage, detected_by: 'daily_health_check' },
+        })
+        alerts.bouncie_low_battery++
+      }
+    }
+
+    // Check for Bouncie devices that haven't reported in 48+ hours
+    const { data: silentDevices } = await supabase
+      .from('bouncie_devices')
+      .select('id, vehicle_id, last_seen_at, nickname')
+      .lt('last_seen_at', new Date(now.getTime() - 48 * 60 * 60 * 1000).toISOString())
+      .eq('is_active', true)
+
+    for (const device of silentDevices || []) {
+      const { count } = await supabase
+        .from('bouncie_alerts')
+        .select('id', { count: 'exact' })
+        .eq('device_id', device.id)
+        .eq('alert_type', 'device_silent')
+        .gte('created_at', new Date(now.getTime() - 48 * 60 * 60 * 1000).toISOString())
+
+      if (!count || count === 0) {
+        await supabase.from('bouncie_alerts').insert({
+          device_id: device.id,
+          vehicle_id: device.vehicle_id,
+          alert_type: 'device_silent',
+          severity: 'warning',
+          title: 'GPS Tracker Not Reporting',
+          description: `Device hasn't sent data in 48+ hours. Last seen: ${device.last_seen_at}`,
+          data: { last_seen_at: device.last_seen_at, detected_by: 'daily_health_check' },
+        })
+        alerts.bouncie_silent_devices++
+      }
+    }
+
+    // Check for high mileage/harsh driving trips in last 24 hours
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+    const { data: highUsageTrips } = await supabase
+      .from('bouncie_trips')
+      .select('id, vehicle_id, distance_miles, max_speed_mph, hard_brakes, hard_accelerations, booking_id')
+      .gte('created_at', yesterday.toISOString())
+      .or('distance_miles.gt.200,max_speed_mph.gt.100,hard_brakes.gt.10')
+
+    for (const trip of highUsageTrips || []) {
+      const reasons: string[] = []
+      if (trip.distance_miles > 200) reasons.push(`${trip.distance_miles} miles`)
+      if (trip.max_speed_mph > 100) reasons.push(`${trip.max_speed_mph} mph max`)
+      if (trip.hard_brakes > 10) reasons.push(`${trip.hard_brakes} hard brakes`)
+
+      await supabase.from('bouncie_alerts').insert({
+        device_id: null,
+        vehicle_id: trip.vehicle_id,
+        alert_type: 'excessive_use',
+        severity: 'info',
+        title: 'High Usage Trip Detected',
+        description: `Trip flagged: ${reasons.join(', ')}`,
+        data: { trip_id: trip.id, ...trip },
+      })
+      alerts.bouncie_high_usage_trips++
+    }
+
+    // ============ END BOUNCIE CHECKS ============
 
     // Deactivate vehicles with expired insurance/registration
     const { data: expired } = await supabase
