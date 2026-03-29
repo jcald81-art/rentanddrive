@@ -74,15 +74,19 @@ CREATE TABLE IF NOT EXISTS public.bouncie_alerts (
 -- Store geofences for vehicles
 CREATE TABLE IF NOT EXISTS public.bouncie_geofences (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  booking_id UUID REFERENCES public.bookings(id) ON DELETE CASCADE, -- Linked to booking for auto-management
   vehicle_id UUID REFERENCES public.vehicles(id) ON DELETE CASCADE, -- NULL means applies to all
+  device_id UUID REFERENCES public.bouncie_devices(id) ON DELETE CASCADE,
+  bouncie_geozone_id TEXT, -- ID from Bouncie API
   name TEXT NOT NULL,
-  geofence_type TEXT NOT NULL CHECK (geofence_type IN ('allowed_area', 'restricted_area', 'pickup_location', 'dropoff_location')),
+  geofence_type TEXT NOT NULL DEFAULT 'allowed_area' CHECK (geofence_type IN ('allowed_area', 'restricted_area', 'pickup_location', 'dropoff_location', 'booking_boundary')),
   center_lat DECIMAL(10,7) NOT NULL,
   center_lng DECIMAL(10,7) NOT NULL,
   radius_miles DECIMAL(6,2) NOT NULL,
   is_active BOOLEAN DEFAULT true,
   notify_on_enter BOOLEAN DEFAULT true,
   notify_on_exit BOOLEAN DEFAULT true,
+  deleted_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

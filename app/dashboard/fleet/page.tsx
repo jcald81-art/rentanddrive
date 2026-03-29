@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,22 @@ import {
   Clock,
   Navigation,
 } from 'lucide-react'
+
+// Dynamically import FleetMap to avoid SSR issues with Leaflet
+const FleetMap = dynamic(
+  () => import('@/components/fleet/fleet-map').then((mod) => mod.FleetMap),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="h-[500px] bg-muted rounded-lg flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading map...</p>
+        </div>
+      </div>
+    )
+  }
+)
 
 interface VehicleWithDevice {
   id: string
@@ -192,27 +209,11 @@ export default function FleetDashboardPage() {
               <CardDescription>Real-time vehicle locations (Reno/Tahoe area)</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="aspect-video bg-muted rounded-lg flex items-center justify-center relative overflow-hidden">
-                {/* Placeholder for Leaflet map - would need leaflet installed */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-green-100" />
-                <div className="relative z-10 text-center">
-                  <MapPin className="h-12 w-12 mx-auto mb-4 text-primary" />
-                  <p className="text-lg font-medium">Interactive Map</p>
-                  <p className="text-sm text-muted-foreground">
-                    {fleetData?.vehicles.filter(v => v.lastLocation).length || 0} vehicles with GPS location
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-2 justify-center">
-                    {fleetData?.vehicles.slice(0, 5).map(vehicle => (
-                      <Badge key={vehicle.id} variant="outline" className="text-xs">
-                        {vehicle.year} {vehicle.make} {vehicle.model}
-                        {vehicle.lastLocation && ` - ${vehicle.lastLocation.speed} mph`}
-                      </Badge>
-                    ))}
-                    {(fleetData?.vehicles.length || 0) > 5 && (
-                      <Badge variant="secondary">+{(fleetData?.vehicles.length || 0) - 5} more</Badge>
-                    )}
-                  </div>
-                </div>
+              <div className="aspect-video rounded-lg overflow-hidden">
+                <FleetMap 
+                  vehicles={fleetData?.vehicles || []} 
+                  onVehicleSelect={setSelectedVehicle}
+                />
               </div>
             </CardContent>
           </Card>
