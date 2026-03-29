@@ -16,8 +16,31 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  Activity
+  Activity,
+  Cpu,
+  Zap,
+  Power,
+  PowerOff,
 } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
+
+interface ModelStatus {
+  id: string
+  model_name: string
+  provider: string
+  model_id: string
+  is_available: boolean
+  is_manually_disabled: boolean
+  last_checked: string | null
+  last_success: string | null
+  avg_response_ms: number
+  error_count: number
+  consecutive_failures: number
+  total_requests: number
+  total_tokens_used: number
+  total_cost_cents: number
+  cost_today_cents: number
+}
 
 interface AgentLog {
   id: string
@@ -46,6 +69,7 @@ interface AgentStats {
 export default function AgentsDashboard() {
   const [logs, setLogs] = useState<AgentLog[]>([])
   const [stats, setStats] = useState<AgentStats[]>([])
+  const [models, setModels] = useState<ModelStatus[]>([])
   const [loading, setLoading] = useState(true)
   const [runningAgent, setRunningAgent] = useState<string | null>(null)
 
@@ -90,6 +114,7 @@ export default function AgentsDashboard() {
 
   useEffect(() => {
     fetchLogs()
+    fetchModels()
   }, [])
 
   async function fetchLogs() {
@@ -105,6 +130,31 @@ export default function AgentsDashboard() {
       console.error('Failed to fetch logs:', error)
     }
     setLoading(false)
+  }
+
+  async function fetchModels() {
+    try {
+      const response = await fetch('/api/admin/model-status')
+      if (response.ok) {
+        const data = await response.json()
+        setModels(data.models || [])
+      }
+    } catch (error) {
+      console.error('Failed to fetch model status:', error)
+    }
+  }
+
+  async function toggleModel(modelName: string, disabled: boolean) {
+    try {
+      await fetch('/api/admin/model-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model_name: modelName, disabled }),
+      })
+      fetchModels()
+    } catch (error) {
+      console.error('Failed to toggle model:', error)
+    }
   }
 
   function calculateStats(logs: AgentLog[]) {
@@ -223,6 +273,7 @@ export default function AgentsDashboard() {
       <Tabs defaultValue="agents" className="space-y-4">
         <TabsList>
           <TabsTrigger value="agents">Agents</TabsTrigger>
+          <TabsTrigger value="models">AI Models</TabsTrigger>
           <TabsTrigger value="logs">Activity Logs</TabsTrigger>
         </TabsList>
 
@@ -279,6 +330,98 @@ export default function AgentsDashboard() {
               </Card>
             ))}
           </div>
+        </TabsContent>
+
+        <TabsContent value="models" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Cpu className="h-5 w-5" />
+                    AI Model Router Status
+                  </CardTitle>
+                  <CardDescription>
+                    8 models configured for intelligent task routing with automatic failover
+                  </CardDescription>
+                </div>
+                <Button variant="outline" size="sm" onClick={fetchModels}>
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Refresh
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {models.map((model) => {
+                  const isOnline = model.is_available && !model.is_manually_disabled
+                  const costToday = (model.cost_today_cents / 100).toFixed(2)
+                  
+                  return (
+                    <div 
+                      key={model.id}
+                      className={`p-4 border rounded-lg ${
+                        isOnline ? 'border-green-200 bg-green-50/50' : 'border-red-200 bg-red-50/50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          {isOnline ? (
+                            <Power className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <PowerOff className="h-4 w-4 text-red-600" />
+                          )}
+                          <span className="font-semibold capitalize">{model.model_name}</span>
+                        </div>
+                        <Switch
+                          checked={!model.is_manually_disabled}
+                          onCheckedChange={(checked) => toggleModel(model.model_name, !checked)}
+                        />
+                      </div>
+                      
+                      <p className="text-xs text-muted-foreground mb-3">{model.provider}</p>
+                      
+                      <div className="space-y-1 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Response</span>
+                          <span className="flex items-center gap-1">
+                            <Zap className="h-3 w-3" />
+                            {model.avg_response_ms}ms
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Today</span>
+                          <span>${costToday}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Total</span>
+                          <span>{model.total_requests.toLocaleString()} calls</span>
+                        </div>
+                        {model.consecutive_failures > 0 && (
+                          <div className="flex justify-between text-red-600">
+                            <span>Failures</span>
+                            <span>{model.consecutive_failures} consecutive</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {model.last_checked && (
+                        <p className="text-xs text-muted-foreground mt-3">
+                          Checked: {new Date(model.last_checked).toLocaleTimeString()}
+                        </p>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+              
+              {models.length === 0 && (
+                <p className="text-center text-muted-foreground py-8">
+                  No model status data available. Run the health check cron job first.
+                </p>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="logs" className="space-y-4">
