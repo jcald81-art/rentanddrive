@@ -1,5 +1,7 @@
 import Link from "next/link"
+import Script from "next/script"
 import { Button } from "@/components/ui/button"
+import { getOrganizationSchema, getWebsiteSchema, getLocalBusinessSchema } from '@/lib/structured-data'
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { 
@@ -27,7 +29,24 @@ import { Logo } from "@/components/logo"
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      {/* Structured Data for SEO */}
+      <Script
+        id="organization-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getOrganizationSchema()) }}
+      />
+      <Script
+        id="website-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getWebsiteSchema()) }}
+      />
+      <Script
+        id="local-business-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(getLocalBusinessSchema()) }}
+      />
+      <div className="min-h-screen bg-background">
       {/* Navigation */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -677,5 +696,6 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
+    </>
   )
 }

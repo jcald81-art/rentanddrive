@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation'
+import Script from 'next/script'
 import { createClient } from '@/lib/supabase/server'
+import { getVehicleSchema, getBreadcrumbSchema } from '@/lib/structured-data'
 import { PhotoGallery } from '@/components/vehicles/photo-gallery'
 import { PricingCalculator } from '@/components/vehicles/pricing-calculator'
 import { HostCard } from '@/components/vehicles/host-card'

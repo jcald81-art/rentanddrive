@@ -7,7 +7,14 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
+        allow: [
+          '/',
+          '/vehicles',
+          '/vehicles/*',
+          '/rewards',
+          '/hostslab/lobby',
+          '/hostslab/academy',
+        ],
         disallow: [
           '/api/',
           '/dashboard/',
@@ -15,9 +22,18 @@ export default function robots(): MetadataRoute.Robots {
           '/profile/',
           '/notifications/',
           '/wishlist/',
+          '/hostslab/vault',
+          '/hostslab/filing-cabinet',
+          '/hostslab/lab-controls',
         ],
+      },
+      {
+        userAgent: 'Googlebot',
+        allow: '/',
+        disallow: ['/api/', '/dashboard/'],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
   }
 }
