@@ -176,36 +176,36 @@ export default function HomePage() {
                 name: "Cars", 
                 count: 45, 
                 href: "/vehicles?category=car",
-                image: "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=400&auto=format&fit=crop",
-                alt: "Tesla Model Y electric car"
+                image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&auto=format&fit=crop&q=80",
+                alt: "Sports car on road"
               },
               { 
                 name: "SUVs", 
                 count: 32, 
                 href: "/vehicles?category=suv",
-                image: "https://images.unsplash.com/photo-1626443252351-4f3a387d6d68?w=400&auto=format&fit=crop&q=80",
-                alt: "Subaru Outback Wilderness SUV"
+                image: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=400&auto=format&fit=crop&q=80",
+                alt: "Jeep Wrangler SUV"
               },
               { 
                 name: "Trucks", 
                 count: 18, 
                 href: "/vehicles?category=truck",
-                image: "https://images.unsplash.com/photo-1590739225287-bd31519780c3?w=400&auto=format&fit=crop",
-                alt: "Ford F-150 Raptor truck"
+                image: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&auto=format&fit=crop&q=80",
+                alt: "Pickup truck"
               },
               { 
                 name: "RVs", 
                 count: 8, 
                 href: "/vehicles?category=rv",
-                image: "https://images.unsplash.com/photo-1561361513-2d000a50f0dc?w=400&auto=format&fit=crop",
-                alt: "Winnebago camper van"
+                image: "https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?w=400&auto=format&fit=crop&q=80",
+                alt: "Camper van in nature"
               },
               { 
                 name: "ATVs", 
                 count: 12, 
                 href: "/vehicles?category=atv",
-                image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&auto=format&fit=crop",
-                alt: "Polaris RZR side-by-side"
+                image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=400&auto=format&fit=crop&q=80",
+                alt: "Off-road vehicle"
               },
             ].map((category) => (
               <Link
