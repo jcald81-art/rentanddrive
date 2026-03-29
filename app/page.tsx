@@ -183,7 +183,7 @@ export default function HomePage() {
                 name: "SUVs", 
                 count: 32, 
                 href: "/vehicles?category=suv",
-                image: "https://images.unsplash.com/photo-1619976215249-0da7b33b6b9d?w=400&auto=format&fit=crop",
+                image: "https://images.unsplash.com/photo-1626443252351-4f3a387d6d68?w=400&auto=format&fit=crop&q=80",
                 alt: "Subaru Outback Wilderness SUV"
               },
               { 
