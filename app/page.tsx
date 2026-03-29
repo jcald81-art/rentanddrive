@@ -174,6 +174,28 @@ export default function HomePage() {
                 </p>
               </CardContent>
             </Card>
+            <Card className="border-0 bg-muted/50">
+              <CardContent className="pt-6">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#CC0000]/10">
+                  <Zap className="h-6 w-6 text-[#CC0000]" />
+                </div>
+                <h3 className="mb-2 text-lg font-semibold">Eagle GPS Monitoring</h3>
+                <p className="text-sm text-muted-foreground">
+                  Every vehicle tracked with Bouncie GPS. Geofencing, trip logs, and instant alerts.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-0 bg-muted/50">
+              <CardContent className="pt-6">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#CC0000]/10">
+                  <Sparkles className="h-6 w-6 text-[#CC0000]" />
+                </div>
+                <h3 className="mb-2 text-lg font-semibold">AI-Powered Platform</h3>
+                <p className="text-sm text-muted-foreground">
+                  Smart pricing, automated communications, and intelligent fleet management.
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
@@ -432,38 +454,49 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Host CTA */}
-      <section className="border-t py-16 md:py-24">
+      {/* HostsLab CTA */}
+      <section className="border-t py-16 md:py-24 bg-gradient-to-br from-slate-900 to-slate-800">
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-8 md:grid-cols-2">
-            <div>
-              <Badge variant="outline" className="mb-4">For Vehicle Owners</Badge>
+            <div className="text-white">
+              <Badge className="mb-4 bg-[#CC0000]/20 text-[#CC0000] border-[#CC0000]/30">For Vehicle Owners</Badge>
               <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
-                Turn your car into a money maker
+                Open Your Lab
               </h2>
-              <p className="mb-6 text-muted-foreground">
-                List your vehicle on Rent & Drive and earn money when you are not using it. 
-                We handle insurance, payments, and 24/7 support.
+              <p className="mb-2 text-2xl font-semibold text-[#CC0000]">
+                Welcome to HostsLab
+              </p>
+              <p className="mb-6 text-slate-300">
+                Your AI-powered command center for fleet management. Eagle GPS tracking, 
+                Dollar pricing AI, Shield reputation management, and real-time analytics.
               </p>
               <ul className="mb-6 space-y-3">
                 {[
-                  "Earn up to $1,000/month per vehicle",
-                  "$1M liability insurance included",
-                  "You set the price and availability",
-                  "Get paid within 3 days of each trip"
+                  "AI-optimized dynamic pricing (Dollar Agent)",
+                  "Real-time GPS fleet tracking (Eagle System)",
+                  "Automated guest communications (SecureLink)",
+                  "Gamified hosting with XP and levels",
+                  "Morning briefs and market intelligence"
                 ].map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
+                  <li key={item} className="flex items-center gap-2 text-sm text-slate-300">
+                    <CheckCircle2 className="h-4 w-4 text-[#CC0000]" />
                     {item}
                   </li>
                 ))}
               </ul>
-              <Button asChild>
-                <Link href="/signup?role=host">
-                  Start Hosting
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+              <div className="flex gap-3">
+                <Button asChild className="bg-[#CC0000] hover:bg-[#AA0000]">
+                  <Link href="/hostslab/lobby">
+                    Enter HostsLab
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button variant="outline" asChild className="border-slate-600 text-white hover:bg-slate-700">
+                  <Link href="/signup?role=host">
+                    Become a Host
+                  </Link>
+                </Button>
+              </div>
             </div>
             <div className="flex items-center justify-center">
               <div className="relative">
@@ -505,6 +538,90 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Renter's Road CTA */}
+      <section className="py-16 md:py-24 bg-gradient-to-br from-blue-900 to-indigo-900">
+        <div className="container mx-auto px-4">
+          <div className="grid items-center gap-8 md:grid-cols-2">
+            <div className="order-2 md:order-1 flex items-center justify-center">
+              <div className="relative">
+                <div className="absolute -inset-4 rounded-2xl bg-blue-500/10" />
+                <Card className="relative bg-slate-800 border-slate-700">
+                  <CardContent className="p-6 text-white">
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/20">
+                        <Star className="h-5 w-5 text-blue-400" />
+                      </div>
+                      <div>
+                        <p className="font-semibold">Your Renter Score</p>
+                        <p className="text-sm text-slate-400">Earn badges, unlock perks</p>
+                      </div>
+                    </div>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-300">Safe Driver Badge</span>
+                        <Badge className="bg-green-500/20 text-green-400">Earned</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-300">Road Warrior (10 trips)</span>
+                        <Badge className="bg-blue-500/20 text-blue-400">7/10</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-300">Photo Contest Winner</span>
+                        <Badge variant="outline" className="text-slate-500">Locked</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-300">5-Star Renter</span>
+                        <Badge className="bg-yellow-500/20 text-yellow-400">4.9</Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+            <div className="order-1 md:order-2 text-white">
+              <Badge className="mb-4 bg-blue-500/20 text-blue-400 border-blue-500/30">For Renters</Badge>
+              <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
+                Find Your Ride
+              </h2>
+              <p className="mb-2 text-2xl font-semibold text-blue-400">
+                Join the Renter&apos;s Road
+              </p>
+              <p className="mb-6 text-slate-300">
+                Earn badges for safe driving, win photo contests, climb the leaderboard, 
+                and unlock exclusive discounts. Your journey starts here.
+              </p>
+              <ul className="mb-6 space-y-3">
+                {[
+                  "Driving score based on real trip data",
+                  "Earn badges: Safe Driver, Road Warrior, Explorer",
+                  "Monthly photo contests with prizes",
+                  "Unlock discounts with high scores",
+                  "Share trip photos and reviews"
+                ].map((item) => (
+                  <li key={item} className="flex items-center gap-2 text-sm text-slate-300">
+                    <CheckCircle2 className="h-4 w-4 text-blue-400" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <div className="flex gap-3">
+                <Button asChild className="bg-blue-600 hover:bg-blue-700">
+                  <Link href="/vehicles">
+                    Browse Vehicles
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button variant="outline" asChild className="border-slate-600 text-white hover:bg-slate-700">
+                  <Link href="/signup">
+                    Create Account
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t bg-muted/30 py-12">
         <div className="container mx-auto px-4">
@@ -524,18 +641,18 @@ export default function HomePage() {
               <h4 className="mb-4 font-semibold">Renters</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link href="/vehicles" className="hover:text-foreground">Browse Vehicles</Link></li>
-                <li><Link href="/vehicles?category=suv&awd=true" className="hover:text-foreground">AWD Vehicles</Link></li>
-                <li><Link href="/vehicles?category=rv" className="hover:text-foreground">RVs & Campers</Link></li>
-                <li><Link href="/signup" className="hover:text-foreground">Sign Up</Link></li>
+                <li><Link href="/vehicles?category=suv&awd=true" className="hover:text-foreground">AWD for Tahoe</Link></li>
+                <li><Link href="/dashboard/renter" className="hover:text-foreground">Renter&apos;s Road</Link></li>
+                <li><Link href="/rewards" className="hover:text-foreground">Social Rewards</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="mb-4 font-semibold">Hosts</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/signup?role=host" className="hover:text-foreground">List Your Vehicle</Link></li>
-                <li><Link href="/host/dashboard" className="hover:text-foreground">Host Dashboard</Link></li>
-                <li><Link href="#" className="hover:text-foreground">Insurance Info</Link></li>
-                <li><Link href="#" className="hover:text-foreground">Host Resources</Link></li>
+                <li><Link href="/hostslab/lobby" className="hover:text-foreground">HostsLab Dashboard</Link></li>
+                <li><Link href="/signup?role=host" className="hover:text-foreground">Become a Host</Link></li>
+                <li><Link href="/hostslab/academy" className="hover:text-foreground">Host Academy</Link></li>
+                <li><Link href="/hostslab/eagle-command" className="hover:text-foreground">Eagle GPS System</Link></li>
               </ul>
             </div>
             <div>
@@ -550,7 +667,7 @@ export default function HomePage() {
           </div>
           <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t pt-8 md:flex-row">
             <p className="text-sm text-muted-foreground">
-              © 2024 Rent and Drive LLC. Reno, Nevada.
+              © 2026 Rent and Drive LLC. Reno, Nevada.
             </p>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <Shield className="h-4 w-4" />
