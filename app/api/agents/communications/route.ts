@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { generateText } from 'ai'
+import { createAnthropic } from '@ai-sdk/anthropic'
+
+const anthropic = createAnthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+})
 
 // Trigger event types
 type TriggerEvent = 

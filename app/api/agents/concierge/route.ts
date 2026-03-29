@@ -4,10 +4,15 @@ import {
   UIMessage,
   tool,
 } from 'ai'
+import { createAnthropic } from '@ai-sdk/anthropic'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 
 export const maxDuration = 30
+
+const anthropic = createAnthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+})
 
 const RD_SYSTEM_PROMPT = `You are R&D, the friendly AI concierge for Rent and Drive LLC, a premium peer-to-peer vehicle rental service based in Reno/Lake Tahoe, Nevada.
 
@@ -38,7 +43,7 @@ export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json()
 
   const result = streamText({
-    model: 'anthropic/claude-sonnet-4-6',
+    model: anthropic('claude-sonnet-4-20250514'),
     system: RD_SYSTEM_PROMPT,
     messages: await convertToModelMessages(messages),
     abortSignal: req.signal,
