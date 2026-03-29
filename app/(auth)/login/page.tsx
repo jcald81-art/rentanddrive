@@ -30,7 +30,7 @@ export default function LoginPage() {
       
       // Redirect based on user role
       const role = data.user?.user_metadata?.role || 'renter'
-      router.push(role === 'host' ? '/host/dashboard' : '/dashboard')
+      router.push(role === 'host' ? '/dashboard' : '/vehicles')
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred')
     } finally {
@@ -62,7 +62,7 @@ export default function LoginPage() {
       {/* Mobile branding */}
       <div className="lg:hidden mb-8 text-center">
         <div className="inline-flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-[#D62828] rounded-lg flex items-center justify-center text-white">
+          <div className="w-10 h-10 bg-[#CC0000] rounded-lg flex items-center justify-center text-white">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -186,7 +186,7 @@ export default function LoginPage() {
           
           <Button 
             type="submit" 
-            className="w-full h-11 bg-[#D62828] hover:bg-[#D62828]/90" 
+            className="w-full h-11 bg-[#CC0000] hover:bg-[#CC0000]/90" 
             disabled={isLoading}
           >
             {isLoading ? 'Signing in...' : 'Sign in'}
@@ -203,7 +203,7 @@ export default function LoginPage() {
         {/* Value prop - mobile only */}
         <div className="lg:hidden pt-6 border-t">
           <div className="flex items-center gap-2 justify-center text-sm text-muted-foreground">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-[#D62828]">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-[#CC0000]">
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
               <polyline points="22 4 12 14.01 9 11.01" />
             </svg>

@@ -6,8 +6,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { cn } from '@/lib/utils'
+import Script from 'next/script'
 
 type UserRole = 'renter' | 'host'
 
@@ -20,7 +21,19 @@ export default function SignupPage() {
   const [role, setRole] = useState<UserRole>('renter')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const turnstileRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+
+  useEffect(() => {
+    // Initialize Turnstile widget
+    if (typeof window !== 'undefined' && (window as unknown as { turnstile?: { render: (container: HTMLElement, options: { sitekey: string; callback: (token: string) => void }) => void } }).turnstile && turnstileRef.current) {
+      (window as unknown as { turnstile: { render: (container: HTMLElement, options: { sitekey: string; callback: (token: string) => void }) => void } }).turnstile.render(turnstileRef.current, {
+        sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '',
+        callback: (token: string) => setTurnstileToken(token),
+      })
+    }
+  }, [])
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,6 +49,12 @@ export default function SignupPage() {
 
     if (password.length < 8) {
       setError('Password must be at least 8 characters')
+      setIsLoading(false)
+      return
+    }
+
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileToken) {
+      setError('Please complete the security check')
       setIsLoading(false)
       return
     }
@@ -83,6 +102,13 @@ export default function SignupPage() {
 
   return (
     <div className="w-full max-w-md">
+      {/* Cloudflare Turnstile Script */}
+      <Script 
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js" 
+        async 
+        defer 
+      />
+
       {/* Mobile branding */}
       <div className="lg:hidden mb-8 text-center">
         <div className="inline-flex items-center gap-3 mb-4">
@@ -318,10 +344,15 @@ export default function SignupPage() {
               {error}
             </div>
           )}
+
+          {/* Cloudflare Turnstile Widget */}
+          {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+            <div ref={turnstileRef} className="flex justify-center" />
+          )}
           
           <Button 
             type="submit" 
-            className="w-full h-11 bg-[#D62828] hover:bg-[#D62828]/90" 
+            className="w-full h-11 bg-[#CC0000] hover:bg-[#CC0000]/90" 
             disabled={isLoading}
           >
             {isLoading ? 'Creating account...' : 'Create account'}
