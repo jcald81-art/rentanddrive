@@ -56,6 +56,14 @@ export async function POST(request: Request) {
         await handleChargeRefunded(event.data.object as Stripe.Charge)
         break
 
+      case 'charge.dispute.created':
+        await handleDisputeCreated(event.data.object as Stripe.Dispute)
+        break
+
+      case 'checkout.session.completed':
+        await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session)
+        break
+
       case 'account.updated':
         await handleAccountUpdated(event.data.object as Stripe.Account)
         break
@@ -148,6 +156,32 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
       message: `You have a new confirmed booking for your ${booking.vehicles?.year} ${booking.vehicles?.make} ${booking.vehicles?.model}.`,
       data: { booking_id: bookingId },
     })
+
+    // Trigger Communications Agent for booking_confirmed SMS
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/agents/communications`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          booking_id: bookingId,
+          trigger_event: 'booking_confirmed',
+        }),
+      })
+      console.log(`[Stripe Webhook] Communications agent triggered for booking ${bookingId}`)
+    } catch (commError) {
+      console.error('[Stripe Webhook] Failed to trigger communications agent:', commError)
+    }
+  }
+
+  // Capture security deposit authorization
+  const depositIntentId = paymentIntent.metadata?.deposit_intent_id
+  if (depositIntentId) {
+    try {
+      await stripe.paymentIntents.capture(depositIntentId)
+      console.log(`[Stripe Webhook] Security deposit captured for booking ${bookingId}`)
+    } catch (depositError) {
+      console.error('[Stripe Webhook] Failed to capture security deposit:', depositError)
+    }
   }
 
   console.log(`[Stripe Webhook] Booking ${bookingId} activated successfully`)
@@ -252,6 +286,132 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
   })
 
   console.log(`[Stripe Webhook] Booking ${booking.id} refund processed`)
+}
+
+// Handle dispute created - flag booking and alert admin
+async function handleDisputeCreated(dispute: Stripe.Dispute) {
+  const paymentIntentId = dispute.payment_intent as string
+
+  console.log(`[Stripe Webhook] Dispute created for payment: ${paymentIntentId}`)
+
+  if (!paymentIntentId) {
+    console.log('[Stripe Webhook] No payment_intent on dispute')
+    return
+  }
+
+  // Find booking by payment intent
+  const { data: booking } = await supabaseAdmin
+    .from('bookings')
+    .select('id, renter_id, host_id')
+    .eq('payment_intent_id', paymentIntentId)
+    .single()
+
+  if (!booking) {
+    console.log('[Stripe Webhook] No booking found for disputed payment')
+    return
+  }
+
+  // Update booking status to disputed and flag it
+  const { error } = await supabaseAdmin
+    .from('bookings')
+    .update({
+      status: 'disputed',
+      is_flagged: true,
+      admin_notes: `Dispute created: ${dispute.reason} - Amount: $${(dispute.amount / 100).toFixed(2)}`,
+    })
+    .eq('id', booking.id)
+
+  if (error) {
+    console.error('[Stripe Webhook] Failed to update booking:', error)
+    throw error
+  }
+
+  // Alert admin via SendGrid
+  if (process.env.SENDGRID_API_KEY && process.env.ADMIN_EMAIL) {
+    try {
+      await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          personalizations: [{ to: [{ email: process.env.ADMIN_EMAIL }] }],
+          from: { email: process.env.SENDGRID_FROM_EMAIL || 'support@rentanddrive.net' },
+          subject: `[URGENT] Payment Dispute - Booking ${booking.id.slice(0, 8)}`,
+          content: [{
+            type: 'text/html',
+            value: `
+              <h2>Payment Dispute Alert</h2>
+              <p><strong>Booking ID:</strong> ${booking.id}</p>
+              <p><strong>Dispute Reason:</strong> ${dispute.reason}</p>
+              <p><strong>Amount:</strong> $${(dispute.amount / 100).toFixed(2)}</p>
+              <p><strong>Status:</strong> ${dispute.status}</p>
+              <p>Please review this dispute immediately in the <a href="https://dashboard.stripe.com/disputes/${dispute.id}">Stripe Dashboard</a>.</p>
+            `,
+          }],
+        }),
+      })
+      console.log(`[Stripe Webhook] Admin alerted about dispute for booking ${booking.id}`)
+    } catch (emailError) {
+      console.error('[Stripe Webhook] Failed to send dispute alert email:', emailError)
+    }
+  }
+
+  console.log(`[Stripe Webhook] Booking ${booking.id} marked as disputed`)
+}
+
+// Handle checkout session completed (same as payment succeeded)
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+  const bookingId = session.metadata?.booking_id
+
+  if (!bookingId) {
+    console.log('[Stripe Webhook] No booking_id in checkout session metadata')
+    return
+  }
+
+  console.log(`[Stripe Webhook] Checkout completed for booking: ${bookingId}`)
+
+  // Update booking status to confirmed
+  const { error } = await supabaseAdmin
+    .from('bookings')
+    .update({
+      status: 'confirmed',
+      payment_status: 'paid',
+      checkout_session_id: session.id,
+      paid_at: new Date().toISOString(),
+    })
+    .eq('id', bookingId)
+
+  if (error) {
+    console.error('[Stripe Webhook] Failed to update booking:', error)
+    throw error
+  }
+
+  // Get booking details and trigger communications
+  const { data: booking } = await supabaseAdmin
+    .from('bookings')
+    .select('id, renter_id')
+    .eq('id', bookingId)
+    .single()
+
+  if (booking) {
+    // Trigger booking_confirmed SMS
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/agents/communications`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          booking_id: bookingId,
+          trigger_event: 'booking_confirmed',
+        }),
+      })
+    } catch (commError) {
+      console.error('[Stripe Webhook] Failed to trigger communications agent:', commError)
+    }
+  }
+
+  console.log(`[Stripe Webhook] Checkout booking ${bookingId} confirmed`)
 }
 
 // Handle connected account updates (for host payouts)
