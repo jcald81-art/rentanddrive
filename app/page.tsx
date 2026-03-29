@@ -12,8 +12,11 @@ import {
   Users,
   CheckCircle2,
   ArrowRight,
-  Smartphone
+  Smartphone,
+  Search,
+  CalendarDays
 } from "lucide-react"
+import { HeroSearchBar } from "@/components/hero-search-bar"
 
 export default function HomePage() {
   return (
@@ -70,17 +73,13 @@ export default function HomePage() {
               Skip the rental counter. Book cars, SUVs, trucks, and more directly from 
               trusted hosts in your neighborhood. Better prices, better selection, better experience.
             </p>
-            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button size="lg" asChild className="w-full sm:w-auto">
-                <Link href="/vehicles">
-                  Browse Vehicles
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild className="w-full border-gray-700 bg-transparent text-white hover:bg-white/10 sm:w-auto">
-                <Link href="/signup?role=host">List Your Car</Link>
-              </Button>
-            </div>
+            
+            {/* Turo-style Search Bar */}
+            <HeroSearchBar />
+            
+            <p className="mt-4 text-sm text-gray-500">
+              or <Link href="/vehicles" className="text-primary hover:underline">browse all vehicles</Link>
+            </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-gray-400">
               <div className="flex items-center gap-2">
                 <Shield className="h-4 w-4 text-primary" />
