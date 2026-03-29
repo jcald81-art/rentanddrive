@@ -4,7 +4,8 @@ import { VehicleFilters } from '@/components/vehicles/vehicle-filters'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { Vehicle } from '@/lib/types/vehicle'
-import { headers } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
+import { SAMPLE_VEHICLES, filterVehicles } from '@/lib/data/sample-vehicles'
 
 export const metadata = {
   title: 'Browse Vehicles | Rent and Drive',
@@ -22,36 +23,38 @@ interface SearchParams {
 }
 
 async function getVehicles(searchParams: SearchParams): Promise<Vehicle[]> {
-  // Build query string from search params
-  const params = new URLSearchParams()
-  if (searchParams.category) params.set('category', searchParams.category)
-  if (searchParams.awd) params.set('awd', searchParams.awd)
-  if (searchParams.ski_rack) params.set('ski_rack', searchParams.ski_rack)
-  if (searchParams.min_rate) params.set('min_rate', searchParams.min_rate)
-  if (searchParams.max_rate) params.set('max_rate', searchParams.max_rate)
-  if (searchParams.start_date) params.set('start_date', searchParams.start_date)
-  if (searchParams.end_date) params.set('end_date', searchParams.end_date)
-
-  // Get the host from headers for absolute URL
-  const headersList = await headers()
-  const host = headersList.get('host') || 'localhost:3000'
-  const protocol = host.includes('localhost') ? 'http' : 'https'
-  
+  // Try database first
   try {
-    const res = await fetch(`${protocol}://${host}/api/vehicles?${params.toString()}`, {
-      cache: 'no-store',
-    })
-    
-    if (!res.ok) {
-      console.error('API error:', res.status)
-      return []
+    const supabase = await createClient()
+    let query = supabase.from('active_listings').select('*')
+
+    if (searchParams.category) {
+      query = query.eq('category', searchParams.category)
     }
-    
-    return await res.json()
-  } catch (error) {
-    console.error('Failed to fetch vehicles:', error)
-    return []
+    if (searchParams.awd === 'true') {
+      query = query.eq('is_awd', true)
+    }
+    if (searchParams.ski_rack === 'true') {
+      query = query.eq('has_ski_rack', true)
+    }
+    if (searchParams.min_rate) {
+      query = query.gte('daily_rate', parseFloat(searchParams.min_rate))
+    }
+    if (searchParams.max_rate) {
+      query = query.lte('daily_rate', parseFloat(searchParams.max_rate))
+    }
+
+    const { data, error } = await query.order('daily_rate', { ascending: true })
+
+    if (!error && data && data.length > 0) {
+      return data
+    }
+  } catch {
+    // Database not available, fall through to sample data
   }
+
+  // Return filtered sample data as fallback
+  return filterVehicles(SAMPLE_VEHICLES, searchParams)
 }
 
 function VehicleGridSkeleton() {

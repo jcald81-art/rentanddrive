@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { Star, Zap, Mountain } from 'lucide-react'
 import { Card } from '@/components/ui/card'
@@ -16,11 +15,10 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
     <Link href={`/vehicles/${vehicle.id}`}>
       <Card className="group overflow-hidden border-0 p-0 shadow-md transition-all hover:shadow-lg">
         <div className="relative aspect-[4/3] overflow-hidden">
-          <Image
-            src={vehicle.thumbnail_url || '/placeholder-car.jpg'}
+          <img
+            src={vehicle.thumbnail || '/placeholder-car.jpg'}
             alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-            fill
-            className="object-cover transition-transform group-hover:scale-105"
+            className="absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-105"
           />
           <div className="absolute left-3 top-3 flex flex-wrap gap-2">
             {vehicle.instant_book && (
@@ -50,8 +48,8 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
             <div className="flex items-center gap-1 text-sm">
               <Star className="size-4 fill-primary text-primary" />
               <span className="font-medium">{vehicle.rating?.toFixed(1) || 'New'}</span>
-              {vehicle.review_count > 0 && (
-                <span className="text-muted-foreground">({vehicle.review_count})</span>
+              {vehicle.trip_count > 0 && (
+                <span className="text-muted-foreground">({vehicle.trip_count} trips)</span>
               )}
             </div>
           </div>
