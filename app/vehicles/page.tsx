@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { VehicleCard } from '@/components/vehicles/vehicle-card'
 import { VehicleFilters } from '@/components/vehicles/vehicle-filters'
 import { HeroSearchBar } from '@/components/vehicles/hero-search-bar'
+import { SortSelect } from '@/components/vehicles/sort-select'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { Vehicle } from '@/lib/types/vehicle'
@@ -182,25 +183,7 @@ export default async function VehiclesPage({
                   </>
                 )}
               </div>
-              <form className="flex items-center gap-2">
-                <label htmlFor="sort" className="text-sm text-muted-foreground">Sort by:</label>
-                <select
-                  id="sort"
-                  name="sort"
-                  defaultValue={params.sort || 'price_asc'}
-                  onChange={(e) => {
-                    const url = new URL(window.location.href)
-                    url.searchParams.set('sort', e.target.value)
-                    window.location.href = url.toString()
-                  }}
-                  className="text-sm border rounded-md px-2 py-1 bg-background"
-                >
-                  <option value="price_asc">Price: Low to High</option>
-                  <option value="price_desc">Price: High to Low</option>
-                  <option value="rating">Highest Rated</option>
-                  <option value="newest">Newest</option>
-                </select>
-              </form>
+              <SortSelect defaultValue={params.sort || 'price_asc'} />
             </div>
 
 
