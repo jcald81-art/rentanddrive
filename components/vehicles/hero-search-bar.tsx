@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { format, addDays } from 'date-fns'
 import { Calendar as CalendarIcon, MapPin, Search } from 'lucide-react'
@@ -8,6 +8,7 @@ import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import type { DateRange } from 'react-day-picker'
 
@@ -20,7 +21,7 @@ const LOCATIONS = [
 ]
 
 const CATEGORIES = [
-  { value: '', label: 'All Vehicles' },
+  { value: 'all', label: 'All Vehicles' },
   { value: 'car', label: 'Cars' },
   { value: 'suv', label: 'SUVs' },
   { value: 'truck', label: 'Trucks' },
@@ -29,12 +30,12 @@ const CATEGORIES = [
   { value: 'atv', label: 'ATVs' },
 ]
 
-export function HeroSearchBar() {
+function HeroSearchBarInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
   const [location, setLocation] = useState(searchParams.get('location') || 'reno')
-  const [category, setCategory] = useState(searchParams.get('category') || '')
+  const [category, setCategory] = useState(searchParams.get('category') || 'all')
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
     const start = searchParams.get('start_date')
     const end = searchParams.get('end_date')
@@ -50,7 +51,7 @@ export function HeroSearchBar() {
     const params = new URLSearchParams()
     
     if (location) params.set('location', location)
-    if (category) params.set('category', category)
+    if (category && category !== 'all') params.set('category', category)
     if (dateRange?.from) params.set('start_date', format(dateRange.from, 'yyyy-MM-dd'))
     if (dateRange?.to) params.set('end_date', format(dateRange.to, 'yyyy-MM-dd'))
 
@@ -127,7 +128,7 @@ export function HeroSearchBar() {
             </SelectTrigger>
             <SelectContent>
               {CATEGORIES.map((cat) => (
-                <SelectItem key={cat.value || 'all'} value={cat.value}>
+                <SelectItem key={cat.value} value={cat.value}>
                   {cat.label}
                 </SelectItem>
               ))}
@@ -147,5 +148,37 @@ export function HeroSearchBar() {
         </div>
       </div>
     </div>
+  )
+}
+
+function HeroSearchBarFallback() {
+  return (
+    <div className="bg-white rounded-lg shadow-xl p-4 md:p-6">
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex-1">
+          <Skeleton className="h-4 w-16 mb-1" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+        <div className="flex-1">
+          <Skeleton className="h-4 w-12 mb-1" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+        <div className="flex-1">
+          <Skeleton className="h-4 w-20 mb-1" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+        <div className="flex items-end">
+          <Skeleton className="h-12 w-24" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function HeroSearchBar() {
+  return (
+    <Suspense fallback={<HeroSearchBarFallback />}>
+      <HeroSearchBarInner />
+    </Suspense>
   )
 }

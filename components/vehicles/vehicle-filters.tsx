@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon, Car, Truck, Bike, Caravan, SlidersHorizontal } from 'lucide-react'
@@ -10,11 +10,12 @@ import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
 import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import type { DateRange } from 'react-day-picker'
 
 const categories = [
-  { value: '', label: 'All Vehicles', icon: SlidersHorizontal },
+  { value: 'all', label: 'All Vehicles', icon: SlidersHorizontal },
   { value: 'car', label: 'Cars', icon: Car },
   { value: 'suv', label: 'SUVs', icon: Truck },
   { value: 'motorcycle', label: 'Motorcycles', icon: Bike },
@@ -22,11 +23,11 @@ const categories = [
   { value: 'atv', label: 'ATVs', icon: Bike },
 ]
 
-export function VehicleFilters() {
+function VehicleFiltersInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const [category, setCategory] = useState(searchParams.get('category') || '')
+  const [category, setCategory] = useState(searchParams.get('category') || 'all')
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
     const start = searchParams.get('start_date')
     const end = searchParams.get('end_date')
@@ -47,7 +48,7 @@ export function VehicleFilters() {
   useEffect(() => {
     const params = new URLSearchParams()
 
-    if (category) params.set('category', category)
+    if (category && category !== 'all') params.set('category', category)
     if (dateRange?.from) params.set('start_date', format(dateRange.from, 'yyyy-MM-dd'))
     if (dateRange?.to) params.set('end_date', format(dateRange.to, 'yyyy-MM-dd'))
     if (awd) params.set('awd', 'true')
@@ -209,7 +210,7 @@ export function VehicleFilters() {
           variant="outline"
           className="mt-4 w-full"
           onClick={() => {
-            setCategory('')
+            setCategory('all')
             setDateRange(undefined)
             setAwd(false)
             setSkiRack(false)
@@ -222,5 +223,43 @@ export function VehicleFilters() {
         </Button>
       </div>
     </aside>
+  )
+}
+
+function VehicleFiltersFallback() {
+  return (
+    <aside className="flex w-full flex-col gap-6 lg:w-72">
+      <div className="rounded-lg border bg-card p-5">
+        <Skeleton className="h-6 w-20 mb-4" />
+        <div className="mb-6">
+          <Skeleton className="h-4 w-16 mb-3" />
+          <div className="flex flex-col gap-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-9 w-full" />
+            ))}
+          </div>
+        </div>
+        <div className="mb-6">
+          <Skeleton className="h-4 w-12 mb-3" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex items-center justify-between">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-6 w-10" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </aside>
+  )
+}
+
+export function VehicleFilters() {
+  return (
+    <Suspense fallback={<VehicleFiltersFallback />}>
+      <VehicleFiltersInner />
+    </Suspense>
   )
 }
