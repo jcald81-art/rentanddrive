@@ -5,8 +5,8 @@
       "schedule": "*/15 * * * *"
     },
     {
-      "path": "/api/cron/pricing-agent",
-      "schedule": "0 7 * * *"
+      "path": "/api/cron/pricing-optimizer",
+      "schedule": "0 2 * * *"
     },
     {
       "path": "/api/cron/market-intel",
