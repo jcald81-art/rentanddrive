@@ -172,20 +172,59 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
             {[
-              { name: "Cars", icon: "🚗", count: 45, href: "/vehicles?category=car" },
-              { name: "SUVs", icon: "🚙", count: 32, href: "/vehicles?category=suv" },
-              { name: "Trucks", icon: "🛻", count: 18, href: "/vehicles?category=truck" },
-              { name: "RVs", icon: "🚐", count: 8, href: "/vehicles?category=rv" },
-              { name: "ATVs", icon: "🏍️", count: 12, href: "/vehicles?category=atv" },
+              { 
+                name: "Cars", 
+                count: 45, 
+                href: "/vehicles?category=car",
+                image: "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=400&auto=format&fit=crop",
+                alt: "Tesla Model Y electric car"
+              },
+              { 
+                name: "SUVs", 
+                count: 32, 
+                href: "/vehicles?category=suv",
+                image: "https://images.unsplash.com/photo-1619976215249-0da7b33b6b9d?w=400&auto=format&fit=crop",
+                alt: "Subaru Outback Wilderness SUV"
+              },
+              { 
+                name: "Trucks", 
+                count: 18, 
+                href: "/vehicles?category=truck",
+                image: "https://images.unsplash.com/photo-1590739225287-bd31519780c3?w=400&auto=format&fit=crop",
+                alt: "Ford F-150 Raptor truck"
+              },
+              { 
+                name: "RVs", 
+                count: 8, 
+                href: "/vehicles?category=rv",
+                image: "https://images.unsplash.com/photo-1561361513-2d000a50f0dc?w=400&auto=format&fit=crop",
+                alt: "Winnebago camper van"
+              },
+              { 
+                name: "ATVs", 
+                count: 12, 
+                href: "/vehicles?category=atv",
+                image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&auto=format&fit=crop",
+                alt: "Polaris RZR side-by-side"
+              },
             ].map((category) => (
               <Link
                 key={category.name}
                 href={category.href}
-                className="group flex flex-col items-center rounded-xl border bg-card p-6 text-center transition-colors hover:border-primary hover:bg-accent"
+                className="group relative overflow-hidden rounded-xl border bg-card transition-all hover:border-primary hover:shadow-lg"
               >
-                <span className="mb-3 text-4xl">{category.icon}</span>
-                <span className="font-medium">{category.name}</span>
-                <span className="text-sm text-muted-foreground">{category.count} available</span>
+                <div className="aspect-[4/3] overflow-hidden">
+                  <img 
+                    src={category.image} 
+                    alt={category.alt}
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                  <span className="text-lg font-semibold">{category.name}</span>
+                  <span className="block text-sm text-white/80">{category.count} available</span>
+                </div>
               </Link>
             ))}
           </div>
