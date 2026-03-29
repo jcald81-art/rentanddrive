@@ -1,13 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { Star, Zap, Mountain } from 'lucide-react'
+import { Star, Zap, Mountain, ShieldCheck } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { Vehicle } from '@/lib/types/vehicle'
 
 interface VehicleCardProps {
-  vehicle: Vehicle
+  vehicle: Vehicle & { has_vin_report?: boolean }
 }
 
 export function VehicleCard({ vehicle }: VehicleCardProps) {
@@ -22,7 +22,7 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
           />
           <div className="absolute left-3 top-3 flex flex-wrap gap-2">
             {vehicle.instant_book && (
-              <Badge className="bg-primary text-primary-foreground gap-1">
+              <Badge className="bg-[#CC0000] text-white gap-1">
                 <Zap className="size-3" />
                 Instant Book
               </Badge>
@@ -31,6 +31,12 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
               <Badge variant="secondary" className="bg-foreground/80 text-background gap-1">
                 <Mountain className="size-3" />
                 AWD
+              </Badge>
+            )}
+            {vehicle.has_vin_report && (
+              <Badge variant="secondary" className="bg-green-600 text-white gap-1">
+                <ShieldCheck className="size-3" />
+                Verified
               </Badge>
             )}
           </div>

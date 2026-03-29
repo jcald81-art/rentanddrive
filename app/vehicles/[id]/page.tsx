@@ -5,8 +5,10 @@ import { PricingCalculator } from '@/components/vehicles/pricing-calculator'
 import { HostCard } from '@/components/vehicles/host-card'
 import { AvailabilityCalendar } from '@/components/vehicles/availability-calendar'
 import { VehicleFeatures } from '@/components/vehicles/vehicle-features'
+import { VehicleReviews } from '@/components/vehicles/vehicle-reviews'
+import { SimilarVehicles } from '@/components/vehicles/similar-vehicles'
 import { Badge } from '@/components/ui/badge'
-import { Star, MapPin, Zap, Mountain, Shield, Check } from 'lucide-react'
+import { Star, MapPin, Zap, Mountain, Shield, Check, FileText } from 'lucide-react'
 import type { Vehicle } from '@/lib/types/vehicle'
 import type { Metadata } from 'next'
 
@@ -169,6 +171,30 @@ export default async function VehicleDetailPage({ params }: PageProps) {
             {/* Availability Calendar */}
             <AvailabilityCalendar vehicleId={vehicle.id} />
 
+            {/* VIN History Report */}
+            {vehicle.vin_report_url && (
+              <div className="mb-8 rounded-lg border bg-green-50 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <FileText className="size-6 text-green-600" />
+                  <h2 className="text-lg font-semibold text-foreground">Verified Vehicle History</h2>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  This vehicle has a verified VIN history report showing clean title and no reported accidents.
+                </p>
+                <a 
+                  href={vehicle.vin_report_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium text-green-600 hover:underline"
+                >
+                  View Full Report →
+                </a>
+              </div>
+            )}
+
+            {/* Reviews Section */}
+            <VehicleReviews vehicleId={vehicle.id} />
+
             {/* Host Card */}
             <HostCard
               hostId={vehicle.host_id}
@@ -177,6 +203,13 @@ export default async function VehicleDetailPage({ params }: PageProps) {
               hostRating={vehicle.host_rating}
               hostTrips={vehicle.host_trips}
               hostJoined={vehicle.host_joined}
+            />
+
+            {/* Similar Vehicles */}
+            <SimilarVehicles 
+              currentVehicleId={vehicle.id} 
+              category={vehicle.category}
+              locationCity={vehicle.location_city}
             />
           </div>
 

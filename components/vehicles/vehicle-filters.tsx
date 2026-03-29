@@ -37,6 +37,8 @@ export function VehicleFilters() {
   })
   const [awd, setAwd] = useState(searchParams.get('awd') === 'true')
   const [skiRack, setSkiRack] = useState(searchParams.get('ski_rack') === 'true')
+  const [towHitch, setTowHitch] = useState(searchParams.get('tow_hitch') === 'true')
+  const [minSeats, setMinSeats] = useState(searchParams.get('min_seats') || '')
   const [priceRange, setPriceRange] = useState<[number, number]>([
     parseInt(searchParams.get('min_rate') || '0'),
     parseInt(searchParams.get('max_rate') || '500'),
@@ -50,11 +52,13 @@ export function VehicleFilters() {
     if (dateRange?.to) params.set('end_date', format(dateRange.to, 'yyyy-MM-dd'))
     if (awd) params.set('awd', 'true')
     if (skiRack) params.set('ski_rack', 'true')
+    if (towHitch) params.set('tow_hitch', 'true')
+    if (minSeats) params.set('min_seats', minSeats)
     if (priceRange[0] > 0) params.set('min_rate', priceRange[0].toString())
     if (priceRange[1] < 500) params.set('max_rate', priceRange[1].toString())
 
     router.push(`/vehicles?${params.toString()}`, { scroll: false })
-  }, [category, dateRange, awd, skiRack, priceRange, router])
+  }, [category, dateRange, awd, skiRack, towHitch, minSeats, priceRange, router])
 
   return (
     <aside className="flex w-full flex-col gap-6 lg:w-72">
@@ -148,6 +152,39 @@ export function VehicleFilters() {
           />
         </div>
 
+        {/* Tow Hitch Toggle */}
+        <div className="mb-6 flex items-center justify-between">
+          <Label htmlFor="tow-hitch-toggle" className="text-sm font-medium">
+            Tow Hitch
+          </Label>
+          <Switch
+            id="tow-hitch-toggle"
+            checked={towHitch}
+            onCheckedChange={setTowHitch}
+          />
+        </div>
+
+        {/* Seats Filter */}
+        <div className="mb-6">
+          <Label htmlFor="seats-select" className="mb-3 block text-sm font-medium">
+            Minimum Seats
+          </Label>
+          <select
+            id="seats-select"
+            value={minSeats}
+            onChange={(e) => setMinSeats(e.target.value)}
+            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+          >
+            <option value="">Any</option>
+            <option value="2">2+ seats</option>
+            <option value="4">4+ seats</option>
+            <option value="5">5+ seats</option>
+            <option value="6">6+ seats</option>
+            <option value="7">7+ seats</option>
+            <option value="8">8+ seats</option>
+          </select>
+        </div>
+
         {/* Price Range */}
         <div className="mb-2">
           <Label className="mb-3 block text-sm font-medium">
@@ -176,6 +213,8 @@ export function VehicleFilters() {
             setDateRange(undefined)
             setAwd(false)
             setSkiRack(false)
+            setTowHitch(false)
+            setMinSeats('')
             setPriceRange([0, 500])
           }}
         >
