@@ -11,7 +11,12 @@ import {
   AlertTriangle,
   Settings,
   CalendarCheck,
-  Bot
+  Bot,
+  Shield,
+  Radar,
+  Newspaper,
+  Gift,
+  AlertCircle,
 } from 'lucide-react'
 
 export default async function AdminLayout({
@@ -45,7 +50,12 @@ export default async function AdminLayout({
     { href: '/dashboard/admin/vehicles', icon: Car, label: 'Vehicles' },
     { href: '/dashboard/admin/bookings', icon: CalendarCheck, label: 'Bookings' },
     { href: '/dashboard/admin/disputes', icon: AlertTriangle, label: 'Disputes' },
-    { href: '/dashboard/admin/agents', icon: Bot, label: 'AI Agents' },
+    { href: '/dashboard/admin/insurance', icon: Shield, label: 'Insurance' },
+    { href: '/dashboard/admin/eagle', icon: Radar, label: 'Eagle Network' },
+    { href: '/dashboard/admin/rd-costs', icon: Bot, label: 'R&D Costs' },
+    { href: '/dashboard/admin/briefs', icon: Newspaper, label: 'Morning Briefs' },
+    { href: '/dashboard/admin/rewards', icon: Gift, label: 'Social Rewards' },
+    { href: '/dashboard/admin/recalls', icon: AlertCircle, label: 'NHTSA Recalls' },
     { href: '/dashboard/admin/settings', icon: Settings, label: 'Settings' },
   ]
 
