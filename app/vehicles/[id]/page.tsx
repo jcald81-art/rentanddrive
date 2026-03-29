@@ -7,6 +7,8 @@ import { AvailabilityCalendar } from '@/components/vehicles/availability-calenda
 import { VehicleFeatures } from '@/components/vehicles/vehicle-features'
 import { VehicleReviews } from '@/components/vehicles/vehicle-reviews'
 import { SimilarVehicles } from '@/components/vehicles/similar-vehicles'
+import { RecallPanel } from '@/components/vehicles/recall-panel'
+import { RecallBadge } from '@/components/vehicles/recall-badge'
 import { Badge } from '@/components/ui/badge'
 import { Star, MapPin, Zap, Mountain, Shield, Check, FileText } from 'lucide-react'
 import type { Vehicle } from '@/lib/types/vehicle'
@@ -169,6 +171,13 @@ export default async function VehicleDetailPage({ params }: PageProps) {
                     AWD
                   </Badge>
                 )}
+                {vehicle.vin && (
+                  <RecallBadge 
+                    severity={vehicle.recall_severity as 'CRITICAL' | 'WARNING' | 'INFO' | null} 
+                    recallCount={vehicle.has_open_recalls ? 1 : 0}
+                    size="sm"
+                  />
+                )}
               </div>
               <h1 className="text-3xl font-bold tracking-tight text-foreground">
                 {vehicle.year} {vehicle.make} {vehicle.model}
@@ -244,6 +253,15 @@ export default async function VehicleDetailPage({ params }: PageProps) {
 
             {/* Availability Calendar */}
             <AvailabilityCalendar vehicleId={vehicle.id} />
+
+            {/* Safety & Recall Panel */}
+            {vehicle.vin && (
+              <RecallPanel 
+                vin={vehicle.vin} 
+                vehicleId={vehicle.id}
+                className="mb-8"
+              />
+            )}
 
             {/* VIN History Report */}
             {vehicle.vin_report_url && (

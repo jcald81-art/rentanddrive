@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Progress } from '@/components/ui/progress'
 import { VinCheckWidget } from '@/components/vin/vin-check-widget'
+import { VinDecoder } from '@/components/vehicles/vin-decoder'
 import { 
   Car, 
   ArrowLeft, 
@@ -96,6 +97,8 @@ export default function NewVehiclePage() {
 
     // Step 6: VIN Check
     vin_report_purchased: false,
+    vin_decoded: false,
+    has_critical_recall: false,
   })
 
   const [photoFiles, setPhotoFiles] = useState<File[]>([])
@@ -353,7 +356,33 @@ export default function NewVehiclePage() {
                   </div>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-3">
+                {/* VIN Decoder - Auto-fills vehicle info */}
+                <div className="space-y-3">
+                  <Label>VIN (Vehicle Identification Number)</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Enter your VIN to auto-fill vehicle details and check for recalls
+                  </p>
+                  <VinDecoder
+                    onDecoded={(data) => {
+                      // Auto-fill form from decoded VIN
+                      if (data.make) updateFormData('make', data.make)
+                      if (data.model) updateFormData('model', data.model)
+                      if (data.year) updateFormData('year', data.year)
+                      if (data.suggested_category) updateFormData('category', data.suggested_category)
+                      if (data.is_awd) updateFormData('is_awd', true)
+                      updateFormData('vin', data.vin)
+                      updateFormData('vin_decoded', true)
+                    }}
+                    onRecallsChecked={(data) => {
+                      if (data.summary.critical > 0) {
+                        updateFormData('has_critical_recall', true)
+                        setError('This vehicle has a critical safety recall. It cannot be listed until the recall is resolved at an authorized dealership (free of charge).')
+                      }
+                    }}
+                  />
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="color">Color</Label>
                     <Input
@@ -361,16 +390,6 @@ export default function NewVehiclePage() {
                       placeholder="Silver"
                       value={formData.color}
                       onChange={(e) => updateFormData('color', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="vin">VIN</Label>
-                    <Input
-                      id="vin"
-                      placeholder="17 characters"
-                      maxLength={17}
-                      value={formData.vin}
-                      onChange={(e) => updateFormData('vin', e.target.value.toUpperCase())}
                     />
                   </div>
                   <div>
