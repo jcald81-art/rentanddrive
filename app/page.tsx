@@ -222,7 +222,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Meet R&D AI Agents */}
+      {/* Meet Your AI Team - R&D or RAD */}
       <section className="border-t bg-gradient-to-b from-muted/30 to-background py-16 md:py-24">
         <div className="container mx-auto px-4">
           <div className="mb-12 text-center">
@@ -231,12 +231,60 @@ export default function HomePage() {
               AI-Powered
             </Badge>
             <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
-              Meet R&D - Your AI Team
+              Meet Your AI Concierge
             </h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
-              Our suite of AI agents work together to make your rental experience seamless. From finding the perfect vehicle to 24/7 support, R&D has you covered.
+              Choose your AI personality! <span className="font-semibold text-[#D62828]">R&D</span> for cutting-edge beta features, 
+              or <span className="font-semibold text-[#00B4D8]">RAD</span> for chill, production-ready vibes. Either way, we&apos;ve got you covered.
             </p>
           </div>
+          
+          {/* R&D vs RAD Cards */}
+          <div className="mb-12 grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+            <Card className="border-[#D62828]/30 bg-gradient-to-br from-[#D62828]/5 to-transparent overflow-hidden">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#D62828] to-[#A31D1D]">
+                    <span className="text-2xl">🔬</span>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-[#D62828]">R&D</h3>
+                    <p className="text-sm text-muted-foreground">Rent & Drive Intelligence</p>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  The cutting-edge choice. Access beta features first, get predictive analytics, and help shape the future of Rent and Drive.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary" className="bg-[#D62828]/10 text-[#D62828]">Beta Access</Badge>
+                  <Badge variant="secondary" className="bg-[#D62828]/10 text-[#D62828]">Advanced Analytics</Badge>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="border-[#00B4D8]/30 bg-gradient-to-br from-[#00B4D8]/5 to-transparent overflow-hidden">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#00B4D8] to-[#0077B6]">
+                    <span className="text-2xl">🏄</span>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-[#00B4D8]">RAD</h3>
+                    <p className="text-sm text-muted-foreground">Ride And Drive, Dude!</p>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  The chill choice. Stable features, good vibes, no surprises. Just smooth sailing and making money the easy way.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary" className="bg-[#00B4D8]/10 text-[#00B4D8]">Stable Features</Badge>
+                  <Badge variant="secondary" className="bg-[#00B4D8]/10 text-[#00B4D8]">Good Vibes</Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <h3 className="text-center text-xl font-semibold mb-8">Powered by Our AI Agent Team</h3>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <Card className="border-[#CC0000]/20 bg-gradient-to-br from-[#CC0000]/5 to-transparent">
               <CardContent className="pt-6">
