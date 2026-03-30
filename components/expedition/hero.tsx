@@ -49,17 +49,20 @@ export function ExpeditionHero() {
 
   return (
     <section className="relative min-h-screen bg-[#1C1F1A] overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1C1F1A] via-[#252923] to-[#1C1F1A]" />
+      <div className="absolute inset-0 grain-overlay" />
+      
+      {/* Hero Vehicle Image - positioned on right side */}
+      <div className="absolute right-0 bottom-0 w-full lg:w-[60%] h-[50%] lg:h-[80%]">
         <Image
-          src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1920&auto=format&fit=crop&q=80"
-          alt="Adventure vehicle on mountain road"
+          src="/images/hero-audi-q5.png"
+          alt="2014 Audi Q5 - Premium adventure SUV"
           fill
-          className="object-cover opacity-40"
+          className="object-contain object-right-bottom"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1C1F1A] via-[#1C1F1A]/80 to-transparent" />
-        <div className="absolute inset-0 grain-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1C1F1A] via-transparent to-transparent" />
       </div>
 
       {/* Content */}
