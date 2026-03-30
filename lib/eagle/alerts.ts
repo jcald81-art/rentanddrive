@@ -348,6 +348,26 @@ export async function processBouncieEvent(payload: BouncieWebhookPayload): Promi
         .from('fleet_alerts')
         .update({ notified_at: new Date().toISOString() })
         .eq('id', alert.id)
+
+      // For speed violations with active booking, offer to connect host and renter
+      if (activeBooking && payload.eventType === 'speed') {
+        try {
+          await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/connect`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'offer_connection',
+              booking_id: activeBooking.id,
+              initiator: 'system',
+              connection_type: 'text',
+              message: `Eagle here. I detected a speed violation (${payload.data.speed} mph) on your ${vehicle.year} ${vehicle.make} ${vehicle.model}. Would you like me to connect you with the renter so you can discuss this directly? Reply YES to connect or NO to decline.`,
+              agent_name: 'Eagle',
+            }),
+          })
+        } catch (err) {
+          console.error('[Eagle] Failed to offer connection:', err)
+        }
+      }
     }
 
     return processedAlert

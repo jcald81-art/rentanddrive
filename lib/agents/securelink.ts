@@ -383,3 +383,66 @@ export async function sendUrgentAlert(
     channels: ['email', 'sms'],
   })
 }
+
+// Offer to connect host and renter
+// This allows any R&D agent to offer establishing a text session or call
+export async function offerConnection(options: {
+  bookingId: string
+  agentName: string
+  connectionType: 'text' | 'call'
+  initiator: 'host' | 'renter' | 'system'
+  reason: string
+}): Promise<{ success: boolean; offerId?: string; error?: string }> {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/connect`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'offer_connection',
+        booking_id: options.bookingId,
+        initiator: options.initiator,
+        connection_type: options.connectionType,
+        message: options.reason,
+        agent_name: options.agentName,
+      }),
+    })
+
+    const data = await response.json()
+    return {
+      success: data.success || false,
+      offerId: data.offer_id,
+      error: data.error,
+    }
+  } catch (error) {
+    console.error('[SecureLink] Connection offer failed:', error)
+    return { success: false, error: (error as Error).message }
+  }
+}
+
+// Quick connect - immediately send contact info to both parties
+export async function quickConnect(options: {
+  bookingId: string
+  agentName: string
+  reason: string
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/connect`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'accept_connection', // Skip the offer step
+        booking_id: options.bookingId,
+        initiator: 'system',
+        connection_type: 'text',
+        message: options.reason,
+        agent_name: options.agentName,
+      }),
+    })
+
+    const data = await response.json()
+    return { success: data.success || false, error: data.error }
+  } catch (error) {
+    console.error('[SecureLink] Quick connect failed:', error)
+    return { success: false, error: (error as Error).message }
+  }
+}

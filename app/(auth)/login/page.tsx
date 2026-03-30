@@ -29,9 +29,8 @@ export default function LoginPage() {
       })
       if (error) throw error
       
-      // Redirect based on user role
-      const role = data.user?.user_metadata?.role || 'renter'
-      router.push(role === 'host' ? '/dashboard' : '/vehicles')
+      // Redirect to unified portal - it will route based on role
+      router.push('/portal')
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred')
     } finally {

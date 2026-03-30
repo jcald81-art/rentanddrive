@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { 
   Home, Car, Calendar, Gamepad2, User, Bell, Menu, X,
   Map, Trophy, Shield, Gift, Camera, HelpCircle, ShoppingCart,
-  Route
+  Route, FlaskConical
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -143,6 +143,18 @@ export default function RRLayout({ children }: { children: React.ReactNode }) {
                     {item.label}
                   </Link>
                 ))}
+                
+                {/* Switch to HostsLab */}
+                <div className="pt-4 mt-4 border-t border-slate-800">
+                  <Link
+                    href="/hostslab/lobby"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800"
+                  >
+                    <FlaskConical className="h-5 w-5 text-[#CC0000]" />
+                    Switch to HostsLab
+                  </Link>
+                </div>
               </nav>
             </SheetContent>
           </Sheet>

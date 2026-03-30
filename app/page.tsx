@@ -56,8 +56,11 @@ export default function HomePage() {
             <Link href="/vehicles" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
               Browse Vehicles
             </Link>
-            <Link href="/host/dashboard" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-              List Your Car
+            <Link href="/hostslab/lobby" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              For Hosts
+            </Link>
+            <Link href="/rr/lounge" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              For Renters
             </Link>
             <Link href="/login" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
               Sign In

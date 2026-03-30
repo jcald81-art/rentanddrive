@@ -27,7 +27,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Shield,
+  Route,
 } from 'lucide-react'
+import { PortalSwitcher } from '@/components/portal-switcher'
 
 const NAV_ITEMS = [
   { href: '/hostslab/lobby', label: 'The Lobby', icon: Home },
@@ -213,6 +215,17 @@ function Sidebar({
           >
             <Shield className="h-4 w-4" />
             <span className="text-sm">Admin Override</span>
+          </Link>
+        )}
+
+        {/* Switch to Renter's Road */}
+        {!collapsed && (
+          <Link 
+            href="/rr/lounge"
+            className="flex items-center gap-2 p-3 mb-3 bg-slate-700/50 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors"
+          >
+            <Route className="h-4 w-4 text-[#CC0000]" />
+            <span className="text-sm">Switch to Renter&apos;s Road</span>
           </Link>
         )}
 
