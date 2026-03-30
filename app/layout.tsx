@@ -1,3 +1,4 @@
+// Root layout for Rent and Drive
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'

@@ -34,7 +34,7 @@ import { PortalSwitcher } from '@/components/portal-switcher'
 
 const NAV_ITEMS = [
   { href: '/hostslab/lobby', label: 'The Lobby', icon: Home },
-  { href: '/hostslab/workshop', label: 'The Workshop', icon: Wrench },
+  { href: '/hostslab/workshop', label: 'The Garage', icon: Wrench },
   { href: '/hostslab/eagle-command', label: 'Eagle Command Center', icon: Radar },
   { href: '/hostslab/rd-navigator', label: 'R&D Navigator', icon: Compass },
   { href: '/hostslab/briefing-room', label: 'The Briefing Room', icon: FileText },

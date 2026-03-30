@@ -361,7 +361,7 @@ export default function WorkshopPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between">
         <div>
-          <h1 className="text-2xl font-bold">The Workshop</h1>
+          <h1 className="text-2xl font-bold">The Garage</h1>
           <p className="text-muted-foreground">Manage your fleet of vehicles</p>
         </div>
         <div className="flex gap-2">
