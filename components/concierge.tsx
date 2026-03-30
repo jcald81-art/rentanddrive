@@ -1,5 +1,5 @@
 'use client'
-
+// Universal Concierge - supports both R&D and RAD personas
 import { useState, useRef, useEffect } from 'react'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'

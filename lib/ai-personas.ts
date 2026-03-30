@@ -1,6 +1,7 @@
 // AI Persona System - R&D vs RAD
 // R&D = Beta tester, cutting-edge features, technical/professional tone
 // RAD = Production-ready, chill surfer vibe, laid-back and fun
+// NOTE: This file is CLIENT-SAFE - no server imports allowed
 
 export type AIPersona = 'R&D' | 'RAD'
 
@@ -107,24 +108,10 @@ Always be helpful and represent the Rent and Drive brand with positive, chill en
   }
 }
 
-// Get persona for a user (checks their preference)
-export async function getUserPersona(userId: string): Promise<AIPersona> {
-  // Default to RAD for production stability
-  // In reality, this would fetch from user preferences
-  try {
-    const { createClient } = await import('@/lib/supabase/server')
-    const supabase = await createClient()
-    
-    const { data } = await supabase
-      .from('profiles')
-      .select('ai_persona')
-      .eq('id', userId)
-      .single()
-    
-    return (data?.ai_persona as AIPersona) || 'RAD'
-  } catch {
-    return 'RAD'
-  }
+// Get default persona (client-safe)
+// For server-side user persona fetching, use the API route /api/host/ai-persona
+export function getDefaultPersona(): AIPersona {
+  return 'RAD' // Default to RAD for production stability
 }
 
 // Get persona config
