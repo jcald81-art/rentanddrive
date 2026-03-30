@@ -81,12 +81,12 @@ export function VinBadge({
         {isVerifiedClean && !hasFlags ? (
           <>
             <Shield className={cn(size === 'sm' ? "h-3 w-3" : "h-4 w-4")} />
-            History Verified
+            CarFidelity Verified
           </>
         ) : (
           <>
             <AlertTriangle className={cn(size === 'sm' ? "h-3 w-3" : "h-4 w-4")} />
-            Report Available
+            Diesel Flagged
           </>
         )}
       </Badge>

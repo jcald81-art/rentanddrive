@@ -22,6 +22,7 @@ import {
   Activity,
   Users,
   Clock,
+  Wrench,
 } from 'lucide-react'
 import FleetMap from '@/components/fleet/fleet-map'
 
@@ -72,6 +73,7 @@ const AGENT_ICONS: Record<string, React.ReactNode> = {
   commandcontrol: <Radar className="h-5 w-5" />,
   pulse: <Activity className="h-5 w-5" />,
   funtime: <Gamepad2 className="h-5 w-5" />,
+  diesel: <Wrench className="h-5 w-5" />,
 }
 
 export default function LobbyPage() {

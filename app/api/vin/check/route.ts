@@ -159,8 +159,8 @@ export async function POST(request: NextRequest) {
       vinAuditData = getMockVinAuditData(normalizedVin)
     }
 
-    // Generate report ID
-    const reportId = `QV-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`
+    // Generate CarFidelity report ID
+    const reportId = `CF-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`
 
     // Combine all data
     const fullReport = {
@@ -217,6 +217,44 @@ export async function POST(request: NextRequest) {
       console.error('[VIN Report Save Error]:', saveError)
     }
 
+    // Log to Diesel (CarFidelity agent)
+    if (user_id) {
+      try {
+        // Get user's Diesel agent
+        const { data: dieselAgent } = await supabase
+          .from('rd_agents')
+          .select('id')
+          .eq('user_id', user_id)
+          .eq('agent_type', 'verification')
+          .single()
+
+        if (dieselAgent) {
+          await supabase.from('rd_agent_log').insert({
+            agent_id: dieselAgent.id,
+            user_id,
+            action_type: 'vin_verification',
+            action_summary: `CarFidelity Report: ${normalizedVin} - ${fullReport.is_clean ? 'CLEAN' : 'FLAGS DETECTED'}`,
+            input_data: { vin: normalizedVin, vehicle_id },
+            output_data: { report_id: reportId, is_clean: fullReport.is_clean, flags: fullReport.flags },
+            model_used: vinAuditKey ? 'vinaudit-api' : 'nhtsa-free',
+            triggered_by: 'user_action',
+            success: true,
+          })
+
+          // Update Diesel's action count
+          await supabase
+            .from('rd_agents')
+            .update({ 
+              last_action_at: new Date().toISOString(),
+              total_actions_count: dieselAgent.id ? supabase.rpc('increment_agent_actions', { agent_id: dieselAgent.id }) : 1,
+            })
+            .eq('id', dieselAgent.id)
+        }
+      } catch (err) {
+        console.error('[Diesel Log Error]:', err)
+      }
+    }
+
     // Admin blocking: if salvage title or odometer rollback, block vehicle
     if (vehicle_id && (vinAuditData.title_status !== 'clean' || vinAuditData.odometer_rollback)) {
       // Set vehicle as not approved
@@ -225,12 +263,12 @@ export async function POST(request: NextRequest) {
         .update({ 
           is_approved: false,
           rejection_reason: vinAuditData.title_status !== 'clean' 
-            ? 'Salvage title detected by QuickVIN' 
-            : 'Odometer rollback detected by QuickVIN'
+            ? 'Diesel found salvage title - vehicle blocked' 
+            : 'Diesel found odometer rollback - vehicle blocked'
         })
         .eq('id', vehicle_id)
 
-      // Send SecureLink alert to admin
+      // Send SecureLink alert to admin (Diesel's no-nonsense message)
       try {
         await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/agents/securelink`, {
           method: 'POST',
@@ -238,10 +276,10 @@ export async function POST(request: NextRequest) {
           body: JSON.stringify({
             action: 'send_urgent_alert',
             to_admin: true,
-            subject: `QuickVIN Alert: Vehicle Blocked`,
-            message: `Vehicle ID ${vehicle_id} (VIN: ${normalizedVin}) has been automatically blocked due to ${
+            subject: `Diesel Alert: Vehicle Blocked`,
+            message: `Diesel here. Ran CarFidelity check on VIN ${normalizedVin}. Found ${
               vinAuditData.title_status !== 'clean' ? 'salvage title' : 'odometer rollback'
-            } detected by QuickVIN.`,
+            }. Vehicle blocked. No exceptions.`,
           }),
         })
       } catch (err) {

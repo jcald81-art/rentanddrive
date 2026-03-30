@@ -241,10 +241,10 @@ export function VinCheckWidget({
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <FileSearch className="h-4 w-4" />
-              Run Cartegrity History Check
+              CarFidelity Vehicle History
             </CardTitle>
             <CardDescription>
-              Verify this vehicle&apos;s history before listing
+              Diesel checks this vehicle&apos;s history. No sugarcoating, just facts.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -298,11 +298,11 @@ export function VinCheckWidget({
             <div className="flex items-center justify-between p-3 rounded-lg border border-[#CC0000]/30 bg-[#CC0000]/5">
               <div>
                 <p className="font-medium flex items-center gap-2">
-                  Full History Report
-                  <Badge variant="secondary" className="text-xs">Recommended</Badge>
+                  CarFidelity Report
+                  <Badge variant="secondary" className="text-xs">Diesel Verified</Badge>
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Complete VinAudit report, instant results
+                  Full history check. Diesel tells it like it is.
                 </p>
               </div>
               <Button 
@@ -336,12 +336,12 @@ export function VinCheckWidget({
                 {fullReport.is_clean ? (
                   <>
                     <Shield className="h-5 w-5 text-green-600" />
-                    <span className="text-green-600">Clean History Verified</span>
+                    <span className="text-green-600">CarFidelity Verified by Diesel</span>
                   </>
                 ) : (
                   <>
                     <AlertTriangle className="h-5 w-5 text-amber-600" />
-                    <span className="text-amber-600">Issues Found</span>
+                    <span className="text-amber-600">Diesel Found Issues</span>
                   </>
                 )}
               </CardTitle>
@@ -434,7 +434,7 @@ export function VinCheckWidget({
       )}
 
       <p className="text-xs text-center text-muted-foreground">
-        QuickVIN by Rent and Drive LLC. Reports powered by NHTSA & VinAudit.
+        CarFidelity Reports - Powered by Diesel. Data from NHTSA & VinAudit.
       </p>
     </div>
   )

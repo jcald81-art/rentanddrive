@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,10 +13,18 @@ import { cn } from "@/lib/utils"
 export function HeroSearchBar() {
   const router = useRouter()
   const [location, setLocation] = useState("Reno, NV")
-  const [startDate, setStartDate] = useState<Date | undefined>(addDays(new Date(), 1))
-  const [endDate, setEndDate] = useState<Date | undefined>(addDays(new Date(), 4))
+  const [mounted, setMounted] = useState(false)
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined)
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined)
   const [startOpen, setStartOpen] = useState(false)
   const [endOpen, setEndOpen] = useState(false)
+
+  // Initialize dates only on client to avoid hydration mismatch
+  useEffect(() => {
+    setStartDate(addDays(new Date(), 1))
+    setEndDate(addDays(new Date(), 4))
+    setMounted(true)
+  }, [])
 
   const handleSearch = () => {
     const params = new URLSearchParams()
@@ -52,7 +60,7 @@ export function HeroSearchBar() {
               <div className="flex-1">
                 <p className="text-xs font-medium text-gray-500">From</p>
                 <p className={cn("text-sm font-medium", startDate ? "text-gray-900" : "text-gray-400")}>
-                  {startDate ? format(startDate, "MMM d, yyyy") : "Add date"}
+                  {!mounted ? "Loading..." : startDate ? format(startDate, "MMM d, yyyy") : "Add date"}
                 </p>
               </div>
             </button>
@@ -82,7 +90,7 @@ export function HeroSearchBar() {
               <div className="flex-1">
                 <p className="text-xs font-medium text-gray-500">Until</p>
                 <p className={cn("text-sm font-medium", endDate ? "text-gray-900" : "text-gray-400")}>
-                  {endDate ? format(endDate, "MMM d, yyyy") : "Add date"}
+                  {!mounted ? "Loading..." : endDate ? format(endDate, "MMM d, yyyy") : "Add date"}
                 </p>
               </div>
             </button>

@@ -4,7 +4,7 @@
 CREATE TABLE IF NOT EXISTS rd_agents (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-  agent_type TEXT NOT NULL CHECK (agent_type IN ('communications', 'pricing', 'reputation', 'intel', 'fleet', 'engagement')),
+  agent_type TEXT NOT NULL CHECK (agent_type IN ('communications', 'pricing', 'reputation', 'intel', 'fleet', 'engagement', 'verification')),
   default_name TEXT NOT NULL,
   custom_name TEXT,
   is_active BOOLEAN DEFAULT TRUE,
@@ -167,7 +167,8 @@ BEGIN
     (NEW.id, 'reputation', 'Shield', 'Shield', true),
     (NEW.id, 'intel', 'Command&Control', 'Command&Control', true),
     (NEW.id, 'fleet', 'Pulse', 'Pulse', true),
-    (NEW.id, 'engagement', 'Funtime', 'Funtime', true);
+    (NEW.id, 'engagement', 'Funtime', 'Funtime', true),
+    (NEW.id, 'verification', 'Diesel', 'Diesel', true);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
