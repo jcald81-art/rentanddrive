@@ -11,7 +11,6 @@ import { MapPin, CalendarDays, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function HeroSearchBar() {
-  console.log("[v0] HeroSearchBar rendering")
   const router = useRouter()
   const [location, setLocation] = useState("Reno, NV")
   const [mounted, setMounted] = useState(false)
