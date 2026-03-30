@@ -1,5 +1,10 @@
 'use client'
-// Vehicle filters with hydration-safe date handling
+
+/**
+ * Vehicle Filters Component
+ * Uses hydration-safe date handling to prevent SSR/CSR mismatch
+ */
+
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { format } from 'date-fns'
@@ -23,33 +28,15 @@ const categories = [
   { value: 'atv', label: 'ATVs', icon: Bike },
 ]
 
-// Helper to format date range - only called on client after mount
-function formatDateRangeDisplay(dateRange: DateRange | undefined, mounted: boolean): string {
-  if (!mounted) return 'Pick dates'
-  if (!dateRange?.from) return 'Pick dates'
-  if (dateRange.to) {
-    return `${format(dateRange.from, 'MMM d')} - ${format(dateRange.to, 'MMM d')}`
-  }
-  return format(dateRange.from, 'MMM d, yyyy')
-}
-
 function VehicleFiltersInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [mounted, setMounted] = useState(false)
-
+  
+  // CRITICAL: Track client-side mount to prevent hydration mismatch
+  const [isClient, setIsClient] = useState(false)
+  
   const [category, setCategory] = useState(searchParams.get('category') || 'all')
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
-  
-  // Initialize date range only on client to avoid hydration mismatch
-  useEffect(() => {
-    const start = searchParams.get('start_date')
-    const end = searchParams.get('end_date')
-    if (start && end) {
-      setDateRange({ from: new Date(start), to: new Date(end) })
-    }
-    setMounted(true)
-  }, [searchParams])
   const [awd, setAwd] = useState(searchParams.get('awd') === 'true')
   const [skiRack, setSkiRack] = useState(searchParams.get('ski_rack') === 'true')
   const [towHitch, setTowHitch] = useState(searchParams.get('tow_hitch') === 'true')
@@ -59,7 +46,20 @@ function VehicleFiltersInner() {
     parseInt(searchParams.get('max_rate') || '500'),
   ])
 
+  // Initialize date range and mark as client-side ONLY after mount
   useEffect(() => {
+    const start = searchParams.get('start_date')
+    const end = searchParams.get('end_date')
+    if (start && end) {
+      setDateRange({ from: new Date(start), to: new Date(end) })
+    }
+    setIsClient(true)
+  }, [searchParams])
+
+  // Update URL when filters change
+  useEffect(() => {
+    if (!isClient) return // Don't update URL until client-side
+    
     const params = new URLSearchParams()
 
     if (category && category !== 'all') params.set('category', category)
@@ -73,7 +73,17 @@ function VehicleFiltersInner() {
     if (priceRange[1] < 500) params.set('max_rate', priceRange[1].toString())
 
     router.push(`/vehicles?${params.toString()}`, { scroll: false })
-  }, [category, dateRange, awd, skiRack, towHitch, minSeats, priceRange, router])
+  }, [category, dateRange, awd, skiRack, towHitch, minSeats, priceRange, router, isClient])
+
+  // Format date range display - returns static string on server
+  const getDateDisplay = (): string => {
+    if (!isClient) return 'Pick dates'
+    if (!dateRange?.from) return 'Pick dates'
+    if (dateRange.to) {
+      return `${format(dateRange.from, 'MMM d')} - ${format(dateRange.to, 'MMM d')}`
+    }
+    return format(dateRange.from, 'MMM d, yyyy')
+  }
 
   return (
     <aside className="flex w-full flex-col gap-6 lg:w-72">
@@ -105,7 +115,7 @@ function VehicleFiltersInner() {
           </div>
         </div>
 
-        {/* Date Range */}
+        {/* Date Range - HYDRATION SAFE */}
         <div className="mb-6">
           <Label className="mb-3 block text-sm font-medium">Dates</Label>
           <Popover>
@@ -118,11 +128,11 @@ function VehicleFiltersInner() {
                 )}
               >
                 <CalendarIcon className="mr-2 size-4" />
-                {formatDateRangeDisplay(dateRange, mounted)}
+                {getDateDisplay()}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              {mounted && (
+              {isClient ? (
                 <Calendar
                   mode="range"
                   selected={dateRange}
@@ -130,6 +140,8 @@ function VehicleFiltersInner() {
                   numberOfMonths={2}
                   disabled={{ before: new Date() }}
                 />
+              ) : (
+                <div className="p-4 text-center text-muted-foreground">Loading...</div>
               )}
             </PopoverContent>
           </Popover>
