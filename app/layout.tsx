@@ -1,6 +1,6 @@
-// Root layout for Rent and Drive - Updated 2026-03-30
+// Root layout for Rent and Drive - Expedition Design System
 import type { Metadata, Viewport } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { DM_Sans, Instrument_Serif, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import Script from 'next/script'
 import { Concierge } from '@/components/concierge'
@@ -8,14 +8,26 @@ import { ErrorBoundary } from '@/components/error-boundary'
 import { CookieConsent } from '@/components/cookie-consent'
 import './globals.css'
 
-const geistSans = Geist({ 
+const dmSans = DM_Sans({ 
   subsets: ["latin"],
   display: "swap",
-});
+  variable: "--font-sans",
+  weight: ["300", "400", "500"],
+})
+
+const instrumentSerif = Instrument_Serif({ 
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-serif",
+  weight: ["400"],
+  style: ["normal", "italic"],
+})
+
 const geistMono = Geist_Mono({ 
   subsets: ["latin"],
   display: "swap",
-});
+  variable: "--font-mono",
+})
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rentanddrive.net'
 
@@ -104,7 +116,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#CC0000',
+  themeColor: '#2D4A2D',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -126,7 +138,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="R&D" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="msapplication-TileColor" content="#CC0000" />
+        <meta name="msapplication-TileColor" content="#2D4A2D" />
         <meta name="msapplication-tap-highlight" content="no" />
         
         {/* Google Search Console Verification */}
@@ -153,7 +165,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body className="font-sans antialiased" suppressHydrationWarning>
+      <body className={`${dmSans.variable} ${instrumentSerif.variable} ${geistMono.variable} font-sans antialiased`} suppressHydrationWarning>
         <ErrorBoundary>
           {children}
         </ErrorBoundary>
