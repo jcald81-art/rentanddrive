@@ -1,3 +1,4 @@
+// Root layout for Rent and Drive - Updated 2026-03-29
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'

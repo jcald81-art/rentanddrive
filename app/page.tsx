@@ -18,9 +18,10 @@ import {
   Search,
   CalendarDays,
   Zap,
-  Mountain,
   Sparkles,
-  Download
+  Download,
+  Bot,
+  CircleDot
 } from "lucide-react"
 import { HeroSearchBar } from "@/components/hero-search-bar"
 import { FeaturedVehicles } from "@/components/featured-vehicles"
@@ -138,11 +139,16 @@ export default function HomePage() {
             <Card className="border-0 bg-muted/50">
               <CardContent className="pt-6">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#CC0000]/10">
-                  <Mountain className="h-6 w-6 text-[#CC0000]" />
+                  <div className="grid grid-cols-2 gap-0.5">
+                    <CircleDot className="h-3 w-3 text-[#CC0000]" />
+                    <CircleDot className="h-3 w-3 text-[#CC0000]" />
+                    <CircleDot className="h-3 w-3 text-[#CC0000]" />
+                    <CircleDot className="h-3 w-3 text-[#CC0000]" />
+                  </div>
                 </div>
                 <h3 className="mb-2 text-lg font-semibold">AWD Fleet for Tahoe</h3>
                 <p className="text-sm text-muted-foreground">
-                  We specialize in all-wheel drive vehicles perfect for Sierra winter adventures.
+                  4-wheel drive vehicles perfect for Sierra winter adventures.
                 </p>
               </CardContent>
             </Card>
@@ -204,11 +210,75 @@ export default function HomePage() {
             <Card className="border-0 bg-muted/50">
               <CardContent className="pt-6">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#CC0000]/10">
-                  <Sparkles className="h-6 w-6 text-[#CC0000]" />
+                  <Bot className="h-6 w-6 text-[#CC0000]" />
                 </div>
-                <h3 className="mb-2 text-lg font-semibold">AI-Powered Platform</h3>
+                <h3 className="mb-2 text-lg font-semibold">Meet R&D - Your AI Concierge</h3>
                 <p className="text-sm text-muted-foreground">
-                  Smart pricing, automated communications, and intelligent fleet management.
+                  Our AI agents help you find the perfect vehicle, plan trips, and provide 24/7 support.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Meet R&D AI Agents */}
+      <section className="border-t bg-gradient-to-b from-muted/30 to-background py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="mb-12 text-center">
+            <Badge className="mb-4 bg-[#CC0000]/10 text-[#CC0000] border-[#CC0000]/20">
+              <Bot className="mr-1 h-3 w-3" />
+              AI-Powered
+            </Badge>
+            <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
+              Meet R&D - Your AI Team
+            </h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              Our suite of AI agents work together to make your rental experience seamless. From finding the perfect vehicle to 24/7 support, R&D has you covered.
+            </p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="border-[#CC0000]/20 bg-gradient-to-br from-[#CC0000]/5 to-transparent">
+              <CardContent className="pt-6">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#CC0000]/10">
+                  <Search className="h-6 w-6 text-[#CC0000]" />
+                </div>
+                <h3 className="mb-2 font-semibold">Concierge</h3>
+                <p className="text-sm text-muted-foreground">
+                  Your personal trip planner. Helps find vehicles, suggests itineraries, and answers questions instantly.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-[#CC0000]/20 bg-gradient-to-br from-[#CC0000]/5 to-transparent">
+              <CardContent className="pt-6">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#CC0000]/10">
+                  <DollarSign className="h-6 w-6 text-[#CC0000]" />
+                </div>
+                <h3 className="mb-2 font-semibold">Dollar</h3>
+                <p className="text-sm text-muted-foreground">
+                  Smart pricing agent that ensures competitive rates and finds the best deals for your rental.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-[#CC0000]/20 bg-gradient-to-br from-[#CC0000]/5 to-transparent">
+              <CardContent className="pt-6">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#CC0000]/10">
+                  <Shield className="h-6 w-6 text-[#CC0000]" />
+                </div>
+                <h3 className="mb-2 font-semibold">Shield</h3>
+                <p className="text-sm text-muted-foreground">
+                  Handles insurance verification, driver screening, and ensures every rental is protected.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-[#CC0000]/20 bg-gradient-to-br from-[#CC0000]/5 to-transparent">
+              <CardContent className="pt-6">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#CC0000]/10">
+                  <Zap className="h-6 w-6 text-[#CC0000]" />
+                </div>
+                <h3 className="mb-2 font-semibold">Pulse</h3>
+                <p className="text-sm text-muted-foreground">
+                  Real-time monitoring and instant alerts. Keeps you informed about your vehicle status.
                 </p>
               </CardContent>
             </Card>
