@@ -1,5 +1,5 @@
 'use client'
-
+// Signup page - cleaned up 2026-03-29
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
