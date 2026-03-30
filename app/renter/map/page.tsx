@@ -67,7 +67,7 @@ export default function MapRoomPage() {
   }, [])
 
   const shareRoute = () => {
-    const url = `${window.location.origin}/rr/map?from=reno&to=tahoe`
+    const url = `${window.location.origin}/renter/map?from=reno&to=tahoe`
     navigator.clipboard.writeText(url)
     toast.success('Route link copied to clipboard!')
   }

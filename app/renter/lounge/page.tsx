@@ -150,7 +150,7 @@ export default function LoungePage() {
     const params = new URLSearchParams()
     if (dateRange?.from) params.set('start_date', format(dateRange.from, 'yyyy-MM-dd'))
     if (dateRange?.to) params.set('end_date', format(dateRange.to, 'yyyy-MM-dd'))
-    router.push(`/rr/garage?${params.toString()}`)
+    router.push(`/renter/garage?${params.toString()}`)
   }
 
   return (
@@ -299,7 +299,7 @@ export default function LoungePage() {
                 </div>
               </div>
               <Button asChild className="mt-4 bg-white text-[#CC0000] hover:bg-white/90">
-                <Link href="/rr/trips">View Trip Details</Link>
+                <Link href="/renter/trips">View Trip Details</Link>
               </Button>
             </CardContent>
           </Card>
@@ -309,7 +309,7 @@ export default function LoungePage() {
               <Car className="h-12 w-12 text-slate-600 mx-auto mb-3" />
               <p className="text-slate-400">No upcoming trips</p>
               <Button asChild className="mt-4 bg-[#CC0000] hover:bg-[#AA0000]">
-                <Link href="/rr/garage">Book Your Adventure</Link>
+                <Link href="/renter/garage">Book Your Adventure</Link>
               </Button>
             </CardContent>
           </Card>
@@ -328,7 +328,7 @@ export default function LoungePage() {
               </p>
             </div>
             <Button asChild className="ml-auto bg-amber-600 hover:bg-amber-700">
-              <Link href="/rr/garage?awd=true">View AWD</Link>
+              <Link href="/renter/garage?awd=true">View AWD</Link>
             </Button>
           </CardContent>
         </Card>
@@ -339,7 +339,7 @@ export default function LoungePage() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-white">Top Rated Rides</h2>
           <Button variant="ghost" asChild className="text-[#CC0000] hover:text-[#AA0000]">
-            <Link href="/rr/garage">
+            <Link href="/renter/garage">
               See All <ChevronRight className="h-4 w-4 ml-1" />
             </Link>
           </Button>

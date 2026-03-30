@@ -116,7 +116,7 @@ export default function ShipmentTrackingPage() {
   }
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/rr/my-trips/shipment/${shipmentId}`
+    const url = `${window.location.origin}/renter/my-trips/shipment/${shipmentId}`
     
     if (navigator.share) {
       await navigator.share({
@@ -168,7 +168,7 @@ export default function ShipmentTrackingPage() {
           <h1 className="text-2xl font-bold mb-2">Shipment Not Found</h1>
           <p className="text-slate-400 mb-4">This tracking link may be invalid or expired.</p>
           <Button asChild>
-            <Link href="/rr/my-trips">Back to My Trips</Link>
+            <Link href="/renter/trips">Back to My Trips</Link>
           </Button>
         </div>
       </div>

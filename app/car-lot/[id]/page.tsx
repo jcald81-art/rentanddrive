@@ -477,7 +477,7 @@ export default function CarLotListingPage() {
                     setShowDeliveryChoice(false)
                   } else {
                     toast.success('Shipment booked! Check your email for tracking details.')
-                    router.push(`/rr/my-trips/shipment/${(data as any)?.shipment?.id}`)
+                    router.push(`/renter/my-trips/shipment/${(data as any)?.shipment?.id}`)
                   }
                 }}
               />

@@ -1,9 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { FlaskConical, Route, ArrowLeftRight, Car, ChevronDown } from 'lucide-react'
+import { Home, ArrowLeftRight, Car, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -22,10 +21,10 @@ interface PortalSwitcherProps {
 
 export function PortalSwitcher({ className, variant = 'default' }: PortalSwitcherProps) {
   const pathname = usePathname()
-  const isHostsLab = pathname.startsWith('/hostslab')
-  const isRR = pathname.startsWith('/rr')
+  const isHostSuite = pathname.startsWith('/host')
+  const isRenterSuite = pathname.startsWith('/renter')
 
-  const currentPortal = isHostsLab ? 'hostslab' : isRR ? 'rr' : null
+  const currentPortal = isHostSuite ? 'host' : isRenterSuite ? 'renter' : null
 
   if (variant === 'compact') {
     return (
@@ -37,22 +36,22 @@ export function PortalSwitcher({ className, variant = 'default' }: PortalSwitche
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel>Switch Portal</DropdownMenuLabel>
+          <DropdownMenuLabel>Switch Suite</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href="/hostslab/lobby" className="flex items-center gap-2">
-              <FlaskConical className="h-4 w-4 text-[#CC0000]" />
+            <Link href="/host/dashboard" className="flex items-center gap-2">
+              <Home className="h-4 w-4 text-[#CC0000]" />
               <div>
-                <div className="font-medium">HostsLab</div>
+                <div className="font-medium">Host Suite</div>
                 <div className="text-xs text-muted-foreground">Host command center</div>
               </div>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/rr/lounge" className="flex items-center gap-2">
-              <Route className="h-4 w-4 text-[#CC0000]" />
+            <Link href="/renter/suite" className="flex items-center gap-2">
+              <Car className="h-4 w-4 text-[#CC0000]" />
               <div>
-                <div className="font-medium">Renter&apos;s Road</div>
+                <div className="font-medium">Renter Suite</div>
                 <div className="text-xs text-muted-foreground">Renter experience</div>
               </div>
             </Link>
@@ -72,20 +71,20 @@ export function PortalSwitcher({ className, variant = 'default' }: PortalSwitche
   return (
     <div className={cn("flex items-center gap-2", className)}>
       <Link
-        href={currentPortal === 'hostslab' ? '/rr/lounge' : '/hostslab/lobby'}
+        href={currentPortal === 'host' ? '/renter/suite' : '/host/dashboard'}
         className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors text-sm"
       >
-        {currentPortal === 'hostslab' ? (
+        {currentPortal === 'host' ? (
           <>
-            <Route className="h-4 w-4 text-[#CC0000]" />
-            <span className="hidden sm:inline">Switch to Renter&apos;s Road</span>
-            <span className="sm:hidden">RR</span>
+            <Car className="h-4 w-4 text-[#CC0000]" />
+            <span className="hidden sm:inline">Switch to Renter Suite</span>
+            <span className="sm:hidden">Renter</span>
           </>
         ) : (
           <>
-            <FlaskConical className="h-4 w-4 text-[#CC0000]" />
-            <span className="hidden sm:inline">Switch to HostsLab</span>
-            <span className="sm:hidden">HostsLab</span>
+            <Home className="h-4 w-4 text-[#CC0000]" />
+            <span className="hidden sm:inline">Switch to Host Suite</span>
+            <span className="sm:hidden">Host</span>
           </>
         )}
       </Link>

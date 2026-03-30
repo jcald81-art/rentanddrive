@@ -91,7 +91,7 @@ export default function GalleryPage() {
   }
 
   const sharePhoto = (photo: TripPhoto) => {
-    const url = `${window.location.origin}/rr/gallery/photo/${photo.id}`
+    const url = `${window.location.origin}/renter/gallery/photo/${photo.id}`
     const text = `Check out my adventure! ${HASHTAGS.join(' ')}`
     navigator.clipboard.writeText(`${text}\n${url}`)
     setCopied(true)

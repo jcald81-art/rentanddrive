@@ -25,10 +25,10 @@ export default function ProfilePage() {
   })
 
   const menuItems = [
-    { href: '/rr/reputation', icon: Trophy, label: 'My Reputation', description: 'Road Score & Reviews' },
-    { href: '/rr/coverage', icon: Shield, label: 'My Coverage', description: 'Insurance & Protection' },
-    { href: '/rr/trips', icon: Calendar, label: 'Trip History', description: 'Past & Upcoming Trips' },
-    { href: '/rr/gameroom', icon: Star, label: 'Badges & Rewards', description: 'Your Achievements' },
+    { href: '/renter/reputation', icon: Trophy, label: 'My Reputation', description: 'Road Score & Reviews' },
+    { href: '/renter/coverage', icon: Shield, label: 'My Coverage', description: 'Insurance & Protection' },
+    { href: '/renter/trips', icon: Calendar, label: 'Trip History', description: 'Past & Upcoming Trips' },
+    { href: '/renter/gameroom', icon: Star, label: 'Badges & Rewards', description: 'Your Achievements' },
     { href: '/settings', icon: Settings, label: 'Settings', description: 'Account & Preferences' },
   ]
 

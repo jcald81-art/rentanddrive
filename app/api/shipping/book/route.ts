@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
     if (shipment.buyer?.phone) {
       await secureLink.sendSMS({
         to: shipment.buyer.phone,
-        message: `Your ${vehicleName} shipment is confirmed! Carrier: ${shipment.carrier_name}. Tracking: ${trackingNumber}. Estimated delivery: ${shipment.estimated_delivery}. Track at rentanddrive.net/rr/my-trips/shipment/${shipment_id}`
+        message: `Your ${vehicleName} shipment is confirmed! Carrier: ${shipment.carrier_name}. Tracking: ${trackingNumber}. Estimated delivery: ${shipment.estimated_delivery}. Track at rentanddrive.net/renter/my-trips/shipment/${shipment_id}`
       })
     }
 
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
           carrierName: shipment.carrier_name,
           trackingNumber,
           estimatedDelivery: shipment.estimated_delivery,
-          trackingUrl: `${process.env.NEXT_PUBLIC_APP_URL}/rr/my-trips/shipment/${shipment_id}`,
+          trackingUrl: `${process.env.NEXT_PUBLIC_APP_URL}/renter/my-trips/shipment/${shipment_id}`,
           origin: shipment.origin_address,
           destination: shipment.destination_address
         }
@@ -190,7 +190,7 @@ export async function POST(request: NextRequest) {
       success: true,
       shipment: updatedShipment,
       tracking_number: trackingNumber,
-      tracking_url: `/rr/my-trips/shipment/${shipment_id}`,
+      tracking_url: `/renter/my-trips/shipment/${shipment_id}`,
       estimated_delivery: shipment.estimated_delivery
     })
 

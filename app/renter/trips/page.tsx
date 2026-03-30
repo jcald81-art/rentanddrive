@@ -336,7 +336,7 @@ Inspection Report
                       <Calendar className="h-12 w-12 text-slate-600 mx-auto mb-4" />
                       <p className="text-slate-400 mb-4">No upcoming trips</p>
                       <Button asChild className="bg-[#CC0000] hover:bg-[#AA0000]">
-                        <Link href="/rr/garage">Find Your Next Ride</Link>
+                        <Link href="/renter/garage">Find Your Next Ride</Link>
                       </Button>
                     </CardContent>
                   </Card>

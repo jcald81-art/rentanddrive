@@ -5,8 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { 
   Home, Car, Calendar, Gamepad2, User, Bell, Menu, X,
-  Map, Trophy, Shield, Gift, Camera, HelpCircle, ShoppingCart,
-  Route, FlaskConical
+  Map, Trophy, Shield, Gift, Camera, HelpCircle, ShoppingCart
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -14,28 +13,29 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
 
 const MOBILE_TABS = [
-  { href: '/rr/lounge', icon: Home, label: 'Lounge' },
-  { href: '/rr/garage', icon: Car, label: 'Garage' },
-  { href: '/rr/trips', icon: Calendar, label: 'Trips' },
-  { href: '/rr/gameroom', icon: Gamepad2, label: 'Game' },
-  { href: '/rr/profile', icon: User, label: 'Profile' },
+  { href: '/renter/lounge', icon: Home, label: 'Lounge' },
+  { href: '/renter/garage', icon: Car, label: 'Garage' },
+  { href: '/renter/trips', icon: Calendar, label: 'Trips' },
+  { href: '/renter/gameroom', icon: Gamepad2, label: 'Game' },
+  { href: '/renter/profile', icon: User, label: 'Profile' },
 ]
 
 const FULL_NAV = [
-  { href: '/rr/lounge', icon: Home, label: 'The Lounge' },
-  { href: '/rr/garage', icon: Car, label: 'The Garage' },
-  { href: '/rr/trips', icon: Calendar, label: 'My Trips' },
-  { href: '/rr/map', icon: Map, label: 'The Map Room' },
-  { href: '/rr/gameroom', icon: Gamepad2, label: 'The Game Room' },
-  { href: '/rr/reputation', icon: Trophy, label: 'My Reputation' },
-  { href: '/rr/coverage', icon: Shield, label: 'My Coverage' },
-  { href: '/rr/rewards', icon: Gift, label: 'The Rewards Desk' },
-  { href: '/rr/gallery', icon: Camera, label: 'Trip Gallery' },
-  { href: '/rr/support', icon: HelpCircle, label: 'Renter Support' },
-  { href: '/rr/car-lot', icon: ShoppingCart, label: 'The Car Lot' },
+  { href: '/renter/suite', icon: Home, label: 'Renter Suite' },
+  { href: '/renter/lounge', icon: Home, label: 'The Lounge' },
+  { href: '/renter/garage', icon: Car, label: 'The Garage' },
+  { href: '/renter/trips', icon: Calendar, label: 'My Trips' },
+  { href: '/renter/map', icon: Map, label: 'The Map Room' },
+  { href: '/renter/gameroom', icon: Gamepad2, label: 'The Game Room' },
+  { href: '/renter/reputation', icon: Trophy, label: 'My Reputation' },
+  { href: '/renter/coverage', icon: Shield, label: 'My Coverage' },
+  { href: '/renter/rewards', icon: Gift, label: 'The Rewards Desk' },
+  { href: '/renter/gallery', icon: Camera, label: 'Trip Gallery' },
+  { href: '/renter/support', icon: HelpCircle, label: 'Renter Support' },
+  { href: '/renter/car-lot', icon: ShoppingCart, label: 'The Car Lot' },
 ]
 
-export default function RRLayout({ children }: { children: React.ReactNode }) {
+export default function RenterLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [roadScore, setRoadScore] = useState(85)
@@ -45,7 +45,7 @@ export default function RRLayout({ children }: { children: React.ReactNode }) {
     // Fetch road score and notifications
     const fetchData = async () => {
       try {
-        const res = await fetch('/api/rr/me')
+        const res = await fetch('/api/renter/me')
         if (res.ok) {
           const data = await res.json()
           setRoadScore(data.roadScore || 85)
@@ -63,11 +63,11 @@ export default function RRLayout({ children }: { children: React.ReactNode }) {
       {/* Desktop Top Navigation */}
       <header className="hidden md:flex fixed top-0 left-0 right-0 z-50 h-16 bg-black/95 backdrop-blur border-b border-slate-800 items-center px-6">
         {/* Logo */}
-        <Link href="/rr/lounge" className="flex items-center gap-2 mr-8">
+        <Link href="/renter/suite" className="flex items-center gap-2 mr-8">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#CC0000]">
-            <Route className="h-6 w-6 text-white" />
+            <Car className="h-6 w-6 text-white" />
           </div>
-          <span className="font-bold text-xl">RR</span>
+          <span className="font-bold text-xl">Renter Suite</span>
         </Link>
 
         {/* Desktop Nav Links */}
@@ -100,7 +100,7 @@ export default function RRLayout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Notifications */}
-          <Link href="/rr/notifications" className="relative p-2 hover:bg-slate-800 rounded-lg">
+          <Link href="/renter/notifications" className="relative p-2 hover:bg-slate-800 rounded-lg">
             <Bell className="h-5 w-5 text-slate-400" />
             {unreadCount > 0 && (
               <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-[#CC0000] text-xs">
@@ -119,10 +119,10 @@ export default function RRLayout({ children }: { children: React.ReactNode }) {
             <SheetContent side="right" className="bg-black border-slate-800 w-80">
               <div className="flex items-center gap-3 mb-8 mt-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#CC0000]">
-                  <Route className="h-7 w-7 text-white" />
+                  <Car className="h-7 w-7 text-white" />
                 </div>
                 <div>
-                  <p className="font-bold text-lg">Renter&apos;s Road</p>
+                  <p className="font-bold text-lg">Renter Suite</p>
                   <p className="text-sm text-slate-400">Your adventure awaits</p>
                 </div>
               </div>
@@ -144,15 +144,15 @@ export default function RRLayout({ children }: { children: React.ReactNode }) {
                   </Link>
                 ))}
                 
-                {/* Switch to HostsLab */}
+                {/* Switch to Host Suite */}
                 <div className="pt-4 mt-4 border-t border-slate-800">
                   <Link
-                    href="/hostslab/lobby"
+                    href="/host/dashboard"
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800"
                   >
-                    <FlaskConical className="h-5 w-5 text-[#CC0000]" />
-                    Switch to HostsLab
+                    <Home className="h-5 w-5 text-[#CC0000]" />
+                    Switch to Host Suite
                   </Link>
                 </div>
               </nav>
@@ -160,7 +160,7 @@ export default function RRLayout({ children }: { children: React.ReactNode }) {
           </Sheet>
 
           {/* Profile */}
-          <Link href="/rr/profile" className="p-2 hover:bg-slate-800 rounded-lg">
+          <Link href="/renter/profile" className="p-2 hover:bg-slate-800 rounded-lg">
             <User className="h-5 w-5 text-slate-400" />
           </Link>
         </div>
@@ -169,11 +169,11 @@ export default function RRLayout({ children }: { children: React.ReactNode }) {
       {/* Mobile Top Bar */}
       <header className="md:hidden fixed top-0 left-0 right-0 z-50 h-14 bg-black/95 backdrop-blur border-b border-slate-800 flex items-center justify-between px-4">
         {/* Logo */}
-        <Link href="/rr/lounge" className="flex items-center gap-2">
+        <Link href="/renter/suite" className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#CC0000]">
-            <Route className="h-5 w-5 text-white" />
+            <Car className="h-5 w-5 text-white" />
           </div>
-          <span className="font-bold">RR</span>
+          <span className="font-bold">Renter</span>
         </Link>
 
         {/* Road Score */}
@@ -186,7 +186,7 @@ export default function RRLayout({ children }: { children: React.ReactNode }) {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
-          <Link href="/rr/notifications" className="relative p-2">
+          <Link href="/renter/notifications" className="relative p-2">
             <Bell className="h-5 w-5 text-slate-400" />
             {unreadCount > 0 && (
               <Badge className="absolute -top-0.5 -right-0.5 h-4 w-4 p-0 flex items-center justify-center bg-[#CC0000] text-[10px]">
