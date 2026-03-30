@@ -68,6 +68,18 @@ export async function POST(request: Request) {
         await handleAccountUpdated(event.data.object as Stripe.Account)
         break
 
+      case 'transfer.created':
+        await handleTransferCreated(event.data.object as Stripe.Transfer)
+        break
+
+      case 'customer.subscription.created':
+        await handleSubscriptionCreated(event.data.object as Stripe.Subscription)
+        break
+
+      case 'customer.subscription.deleted':
+        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription)
+        break
+
       default:
         console.log(`[Stripe Webhook] Unhandled event type: ${event.type}`)
     }
@@ -412,6 +424,127 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   }
 
   console.log(`[Stripe Webhook] Checkout booking ${bookingId} confirmed`)
+}
+
+// Handle transfer created (host payout)
+async function handleTransferCreated(transfer: Stripe.Transfer) {
+  console.log(`[Stripe Webhook] Transfer created: ${transfer.id}`)
+
+  const hostAccountId = transfer.destination as string
+  const amount = transfer.amount
+
+  // Find host by Stripe account ID
+  const { data: host } = await supabaseAdmin
+    .from('profiles')
+    .select('id, full_name')
+    .eq('stripe_account_id', hostAccountId)
+    .single()
+
+  if (!host) {
+    console.log('[Stripe Webhook] No host found for transfer destination')
+    return
+  }
+
+  // Log the payout
+  await supabaseAdmin.from('host_payouts').insert({
+    host_id: host.id,
+    stripe_transfer_id: transfer.id,
+    amount: amount,
+    currency: transfer.currency,
+    status: 'completed',
+  })
+
+  // Notify host
+  await supabaseAdmin.from('notifications').insert({
+    user_id: host.id,
+    type: 'payout_sent',
+    title: 'Payout Sent!',
+    message: `$${(amount / 100).toFixed(2)} has been transferred to your bank account.`,
+    data: { transfer_id: transfer.id, amount },
+  })
+
+  console.log(`[Stripe Webhook] Payout logged for host ${host.id}: $${(amount / 100).toFixed(2)}`)
+}
+
+// Handle Vehicle Protection Plan subscription created
+async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
+  const vehicleId = subscription.metadata?.vehicle_id
+  const hostId = subscription.metadata?.host_id
+
+  if (!vehicleId) {
+    console.log('[Stripe Webhook] No vehicle_id in subscription metadata')
+    return
+  }
+
+  console.log(`[Stripe Webhook] Protection Plan activated for vehicle: ${vehicleId}`)
+
+  // Update vehicle protection plan status
+  const { error } = await supabaseAdmin
+    .from('vehicles')
+    .update({
+      protection_plan_subscription_id: subscription.id,
+      protection_plan_status: 'active',
+      protection_plan_started_at: new Date().toISOString(),
+    })
+    .eq('id', vehicleId)
+
+  if (error) {
+    console.error('[Stripe Webhook] Failed to update vehicle:', error)
+    return
+  }
+
+  // Notify host
+  if (hostId) {
+    await supabaseAdmin.from('notifications').insert({
+      user_id: hostId,
+      type: 'protection_plan_active',
+      title: 'Vehicle Protection Plan Active',
+      message: `Your Vehicle Protection Plan is now active. Your vehicle is protected with $1M coverage.`,
+      data: { vehicle_id: vehicleId, subscription_id: subscription.id },
+    })
+  }
+
+  console.log(`[Stripe Webhook] Vehicle ${vehicleId} protection plan activated`)
+}
+
+// Handle Vehicle Protection Plan subscription deleted/cancelled
+async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
+  const vehicleId = subscription.metadata?.vehicle_id
+  const hostId = subscription.metadata?.host_id
+
+  if (!vehicleId) {
+    console.log('[Stripe Webhook] No vehicle_id in subscription metadata')
+    return
+  }
+
+  console.log(`[Stripe Webhook] Protection Plan deactivated for vehicle: ${vehicleId}`)
+
+  // Update vehicle protection plan status
+  const { error } = await supabaseAdmin
+    .from('vehicles')
+    .update({
+      protection_plan_status: 'cancelled',
+      protection_plan_ended_at: new Date().toISOString(),
+    })
+    .eq('id', vehicleId)
+
+  if (error) {
+    console.error('[Stripe Webhook] Failed to update vehicle:', error)
+    return
+  }
+
+  // Notify host
+  if (hostId) {
+    await supabaseAdmin.from('notifications').insert({
+      user_id: hostId,
+      type: 'protection_plan_cancelled',
+      title: 'Vehicle Protection Plan Cancelled',
+      message: `Your Vehicle Protection Plan has been cancelled. Consider re-subscribing for continued coverage.`,
+      data: { vehicle_id: vehicleId },
+    })
+  }
+
+  console.log(`[Stripe Webhook] Vehicle ${vehicleId} protection plan deactivated`)
 }
 
 // Handle connected account updates (for host payouts)
