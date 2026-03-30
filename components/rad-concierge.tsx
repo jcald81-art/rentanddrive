@@ -6,14 +6,13 @@ import { DefaultChatTransport } from 'ai'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { X, Send, Loader2, Waves } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export function RADConcierge() {
   const [isOpen, setIsOpen] = useState(false)
   const [input, setInput] = useState('')
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
   
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({ api: '/api/agents/concierge?persona=RAD' }),
@@ -21,11 +20,10 @@ export function RADConcierge() {
 
   const isLoading = status === 'streaming' || status === 'submitted'
 
+  // Auto-scroll to bottom when messages change
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-    }
-  }, [messages])
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages, isLoading])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -63,13 +61,13 @@ export function RADConcierge() {
 
       {/* Chat Window - Surfer Theme */}
       {isOpen && (
-        <Card className="fixed bottom-24 right-6 z-50 flex h-[500px] w-[380px] flex-col overflow-hidden shadow-2xl border-0">
-          {/* Header - Ocean Gradient */}
-          <div className="flex items-center gap-3 bg-gradient-to-r from-[#00B4D8] to-[#0077B6] px-4 py-3 text-white">
+        <Card className="fixed bottom-24 right-6 z-50 w-[380px] max-h-[500px] flex flex-col overflow-hidden shadow-2xl border-0">
+          {/* Header - Ocean Gradient - Fixed height */}
+          <div className="flex-shrink-0 flex items-center gap-3 bg-gradient-to-r from-[#00B4D8] to-[#0077B6] px-4 py-3 text-white">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur">
               <span className="text-2xl">🏄</span>
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <h3 className="font-semibold flex items-center gap-2">
                 RAD
                 <span className="text-xs font-normal bg-white/20 px-2 py-0.5 rounded-full">
@@ -81,10 +79,10 @@ export function RADConcierge() {
             <div className="flex h-2 w-2 rounded-full bg-green-400 animate-pulse" title="Vibin'" />
           </div>
 
-          {/* Messages */}
-          <ScrollArea className="flex-1 p-4 bg-gradient-to-b from-[#00B4D8]/5 to-white" ref={scrollRef}>
-            {messages.length === 0 && (
-              <div className="flex flex-col items-center justify-center h-full text-center px-4">
+          {/* Messages - Scrollable area with fixed boundaries */}
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 bg-gradient-to-b from-[#00B4D8]/5 to-white">
+            {messages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full min-h-[280px] text-center px-4">
                 <div className="text-6xl mb-4">🏄‍♂️</div>
                 <h4 className="font-semibold text-lg mb-2">Yo! RAD here!</h4>
                 <p className="text-sm text-muted-foreground mb-4">
@@ -111,51 +109,54 @@ export function RADConcierge() {
                   ))}
                 </div>
               </div>
-            )}
-
-            <div className="space-y-4">
-              {messages.map((message) => {
-                const text = getMessageText(message)
-                if (!text) return null
-                
-                return (
-                  <div
-                    key={message.id}
-                    className={cn(
-                      'flex',
-                      message.role === 'user' ? 'justify-end' : 'justify-start'
-                    )}
-                  >
+            ) : (
+              <div className="space-y-4">
+                {messages.map((message) => {
+                  const text = getMessageText(message)
+                  if (!text) return null
+                  
+                  return (
                     <div
+                      key={message.id}
                       className={cn(
-                        'max-w-[80%] rounded-2xl px-4 py-2.5',
-                        message.role === 'user'
-                          ? 'bg-gradient-to-br from-[#00B4D8] to-[#0077B6] text-white'
-                          : 'bg-[#0077B6]/10 text-foreground'
+                        'flex',
+                        message.role === 'user' ? 'justify-end' : 'justify-start'
                       )}
                     >
-                      <p className="text-sm whitespace-pre-wrap">{text}</p>
+                      <div
+                        className={cn(
+                          'max-w-[80%] rounded-2xl px-4 py-2.5',
+                          message.role === 'user'
+                            ? 'bg-gradient-to-br from-[#00B4D8] to-[#0077B6] text-white'
+                            : 'bg-[#0077B6]/10 text-foreground'
+                        )}
+                      >
+                        <p className="text-sm whitespace-pre-wrap break-words">{text}</p>
+                      </div>
+                    </div>
+                  )
+                })}
+                
+                {isLoading && (
+                  <div className="flex justify-start">
+                    <div className="bg-[#0077B6]/10 rounded-2xl px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🌊</span>
+                        <span className="text-sm text-muted-foreground">Catchin&apos; a wave...</span>
+                        <Loader2 className="h-4 w-4 animate-spin text-[#00B4D8]" />
+                      </div>
                     </div>
                   </div>
-                )
-              })}
-              
-              {isLoading && (
-                <div className="flex justify-start">
-                  <div className="bg-[#0077B6]/10 rounded-2xl px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">🌊</span>
-                      <span className="text-sm text-muted-foreground">Catchin&apos; a wave...</span>
-                      <Loader2 className="h-4 w-4 animate-spin text-[#00B4D8]" />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </ScrollArea>
+                )}
+                
+                {/* Scroll anchor */}
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+          </div>
 
-          {/* Input */}
-          <form onSubmit={handleSubmit} className="border-t p-3 bg-white">
+          {/* Input - Fixed at bottom */}
+          <form onSubmit={handleSubmit} className="flex-shrink-0 border-t p-3 bg-white">
             <div className="flex gap-2">
               <Input
                 value={input}
@@ -168,7 +169,7 @@ export function RADConcierge() {
                 type="submit"
                 size="icon"
                 disabled={isLoading || !input.trim()}
-                className="bg-gradient-to-br from-[#00B4D8] to-[#0077B6] hover:from-[#0096C7] hover:to-[#005F8A]"
+                className="flex-shrink-0 bg-gradient-to-br from-[#00B4D8] to-[#0077B6] hover:from-[#0096C7] hover:to-[#005F8A]"
               >
                 <Send className="h-4 w-4" />
               </Button>
