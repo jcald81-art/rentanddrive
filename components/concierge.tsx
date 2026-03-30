@@ -212,7 +212,7 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
               <h3 className="font-semibold flex items-center gap-2">
                 {config.name}
                 <span className="text-xs font-normal bg-white/20 px-2 py-0.5 rounded-full">
-                  {isRAD ? 'Chill Mode' : 'Beta Mode'}
+                  {isRAD ? 'Standard' : 'Beta'}
                 </span>
               </h3>
               <p className="text-xs text-white/80">{config.tagline}</p>
@@ -231,14 +231,14 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
                   className={cn(persona === 'RAD' && 'bg-[#00B4D8]/10')}
                 >
                   <Waves className="h-4 w-4 mr-2 text-[#00B4D8]" />
-                  RAD - Chill Mode
+                  RAD - Standard
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => handlePersonaSwitch('R&D')}
                   className={cn(persona === 'R&D' && 'bg-[#D62828]/10')}
                 >
                   <Beaker className="h-4 w-4 mr-2 text-[#D62828]" />
-                  R&D - Beta Mode
+                  R&D - Beta
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel>Pause Assistant</DropdownMenuLabel>
@@ -277,9 +277,9 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
           >
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                <div className="text-6xl mb-4">{isRAD ? '🏄‍♂️' : '🔬'}</div>
+                <div className="text-5xl mb-4">{isRAD ? '🚗' : '🔬'}</div>
                 <h4 className="font-semibold text-lg mb-2">
-                  {isRAD ? "Yo! RAD here!" : "Welcome to R&D!"}
+                  {isRAD ? "Hey, I'm RAD" : "Welcome to R&D"}
                 </h4>
                 <p className="text-sm text-muted-foreground mb-4">
                   {config.greeting}
@@ -342,9 +342,9 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
                     style={{ background: `${primaryColor}15` }}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">{isRAD ? '🌊' : '⚡'}</span>
+                      <span className="text-lg">{isRAD ? '🔍' : '⚡'}</span>
                       <span className="text-sm text-muted-foreground">
-                        {isRAD ? "Catchin' a wave..." : "Processing..."}
+                        {isRAD ? "Searching..." : "Processing..."}
                       </span>
                       <Loader2 className="h-4 w-4 animate-spin" style={{ color: primaryColor }} />
                     </div>
@@ -359,7 +359,7 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={isRAD ? "What's up, dude?" : "How can I help?"}
+                placeholder={isRAD ? "Ask me anything..." : "How can I help?"}
                 className="flex-1"
                 style={{
                   borderColor: `${primaryColor}30`,
@@ -378,7 +378,7 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
               </Button>
             </div>
             <p className="text-[10px] text-center text-muted-foreground mt-2">
-              {isRAD ? 'Hang 10 and drive 55' : 'Powered by R&D Intelligence'}
+              Powered by R&D Intelligence
             </p>
           </form>
         </Card>

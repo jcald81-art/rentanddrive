@@ -32,45 +32,45 @@ export const PERSONAS: Record<AIPersona, {
 }> = {
   'R&D': {
     name: 'R&D',
-    tagline: 'Rent & Drive Intelligence',
-    emoji: '🔬',
-    color: '#D62828',
-    bgGradient: 'from-[#D62828] to-[#A31D1D]',
+    tagline: 'Route & Discovery Intelligence',
+    emoji: '🧭',
+    color: '#2D4A2D',
+    bgGradient: 'from-[#2D4A2D] to-[#1C3A1C]',
     tone: 'professional',
-    greeting: "Hello! I'm R&D, your advanced AI assistant. I have access to beta features and cutting-edge analytics. How can I help optimize your experience today?",
+    greeting: "Welcome to R&D — Route & Discovery Intelligence. You have access to beta features, predictive analytics, and the full 10-agent Expedition suite. How can I help optimize your fleet today?",
     quickReplies: [
       'Show beta features',
       'Analyze my fleet',
       'Market insights',
-      'Pricing optimization'
+      'Run pricing analysis'
     ],
     features: [
       'Beta feature access',
+      'Full agent suite',
       'Advanced analytics',
-      'Predictive pricing',
-      'Market intelligence'
+      'Predictive intelligence'
     ],
     isBeta: true
   },
   'RAD': {
     name: 'RAD',
-    tagline: 'Ride And Drive, Dude!',
-    emoji: '🏄',
-    color: '#00B4D8',
-    bgGradient: 'from-[#00B4D8] to-[#0077B6]',
-    tone: 'casual',
-    greeting: "Hey dude! RAD here - your chill AI buddy. Just cruisin' and ready to help you make some sweet rides happen. What's up?",
+    tagline: 'Rent and Drive — Standard Mode',
+    emoji: '🚗',
+    color: '#C4813A',
+    bgGradient: 'from-[#C4813A] to-[#A36A2E]',
+    tone: 'professional',
+    greeting: "Hi, I'm RAD — your Rent and Drive assistant. I can help you find the right vehicle for your adventure, answer questions about bookings, or connect you with support.",
     quickReplies: [
-      'Find me a ride',
+      'Find me a vehicle',
       'Check my bookings',
-      'How do I earn more?',
+      'What gear is available?',
       'Talk to support'
     ],
     features: [
       'Stable features',
-      'Smooth experience',
-      'Reliable service',
-      'Good vibes only'
+      'Clean interface',
+      'Proven performance',
+      'Full fleet access'
     ],
     isBeta: false
   }

@@ -71,10 +71,10 @@ export function RADConcierge() {
               <h3 className="font-semibold flex items-center gap-2">
                 RAD
                 <span className="text-xs font-normal bg-white/20 px-2 py-0.5 rounded-full">
-                  Chill Mode
+                  Standard
                 </span>
               </h3>
-              <p className="text-xs text-white/80">Ride And Drive, Dude!</p>
+              <p className="text-xs text-white/80">Rent and Drive Assistant</p>
             </div>
             <div className="flex h-2 w-2 rounded-full bg-green-400 animate-pulse" title="Vibin'" />
           </div>
@@ -83,17 +83,17 @@ export function RADConcierge() {
           <div className="h-[340px] overflow-y-auto p-4 bg-gradient-to-b from-[#00B4D8]/5 to-white">
             {messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center px-2">
-                <div className="text-6xl mb-4">🏄‍♂️</div>
-                <h4 className="font-semibold text-lg mb-2">Yo! RAD here!</h4>
+                <div className="text-5xl mb-4">🚗</div>
+                <h4 className="font-semibold text-lg mb-2">Hey, I&apos;m RAD</h4>
                 <p className="text-sm text-muted-foreground mb-4">
-                  What&apos;s up, dude? I&apos;m your chill ride concierge. Let&apos;s find you something sweet to cruise in!
+                  Your Rent and Drive assistant. I can help you find the right vehicle for your adventure.
                 </p>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {[
-                    'Hook me up with a ride',
-                    'What deals you got?',
-                    'Need a Tahoe cruiser',
-                    'Show me the vibes'
+                    'Find me a vehicle',
+                    'Show available deals',
+                    'Need a Tahoe ride',
+                    'What gear options?'
                   ].map((suggestion) => (
                     <Button
                       key={suggestion}
@@ -141,8 +141,8 @@ export function RADConcierge() {
                   <div className="flex justify-start">
                     <div className="bg-[#0077B6]/10 rounded-2xl px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">🌊</span>
-                        <span className="text-sm text-muted-foreground">Catchin&apos; a wave...</span>
+                        <span className="text-lg">🔍</span>
+                        <span className="text-sm text-muted-foreground">Searching...</span>
                         <Loader2 className="h-4 w-4 animate-spin text-[#00B4D8]" />
                       </div>
                     </div>
@@ -161,7 +161,7 @@ export function RADConcierge() {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="What's up, dude?"
+                placeholder="Ask me anything..."
                 className="flex-1 border-[#00B4D8]/30 focus-visible:ring-[#00B4D8]"
                 disabled={isLoading}
               />
@@ -175,7 +175,7 @@ export function RADConcierge() {
               </Button>
             </div>
             <p className="text-[10px] text-center text-muted-foreground mt-2">
-              Hang 10 and drive 55
+              Powered by R&D Intelligence
             </p>
           </form>
         </Card>

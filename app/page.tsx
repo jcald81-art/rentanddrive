@@ -6,6 +6,7 @@ import {
   TrustBar,
   VehiclesSection,
   WhyRADSection,
+  AgentsSection,
   MarketsSection,
   HostCTASection,
   ExpeditionFooter,
@@ -46,6 +47,9 @@ export default function HomePage() {
 
         {/* Why RAD Section - Dark */}
         <WhyRADSection />
+
+        {/* AI Agents Section - Light (Parchment) */}
+        <AgentsSection />
 
         {/* Markets Section - Light (Parchment) */}
         <MarketsSection />
