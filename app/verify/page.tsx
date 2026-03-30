@@ -3,18 +3,15 @@
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { 
-  Upload, 
   CheckCircle, 
   ArrowRight, 
   ArrowLeft,
   Loader2,
   Camera,
-  FileCheck,
   Clock,
   Smartphone,
   QrCode,
@@ -27,7 +24,7 @@ import QRCode from 'qrcode'
 
 type Step = 1 | 2 | 3 | 4
 
-export default function VerifyPage() {
+function VerifyPageContent() {
   const [step, setStep] = useState<Step>(1)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
@@ -725,5 +722,17 @@ export default function VerifyPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[#f97316]" />
+      </div>
+    }>
+      <VerifyPageContent />
+    </Suspense>
   )
 }
