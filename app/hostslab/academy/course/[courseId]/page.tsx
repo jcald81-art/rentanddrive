@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
+import { NavHeader } from '@/components/nav-header'
 import {
   ChevronLeft,
   ChevronRight,
@@ -671,9 +672,10 @@ export default function CoursePlayerPage() {
   const isLastSlide = currentSlideIndex === totalSlides - 1 && currentLessonIndex === totalLessons - 1
 
   return (
-    <div className="min-h-screen bg-[#0a0f1a]">
-      {/* Header */}
-      <header className="border-b border-white/10 bg-[#0d1220]">
+  <div className="min-h-screen bg-[#0a0f1a]">
+  <NavHeader variant="dark" />
+  {/* Course Header */}
+  <header className="border-b border-white/10 bg-[#0d1220]">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" asChild className="text-white/70 hover:text-white">

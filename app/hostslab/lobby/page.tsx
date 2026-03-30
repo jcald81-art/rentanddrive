@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { NavHeader } from '@/components/nav-header'
 import {
   Car,
   TrendingUp,
@@ -135,9 +136,11 @@ export default function LobbyPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Morning Brief */}
-      <Card className="bg-gradient-to-br from-slate-900 to-slate-800 text-white border-0">
+  <div className="min-h-screen bg-background">
+  <NavHeader />
+  <div className="p-6 space-y-6">
+  {/* Morning Brief */}
+  <Card className="bg-gradient-to-br from-slate-900 to-slate-800 text-white border-0">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -423,5 +426,6 @@ export default function LobbyPage() {
         </CardContent>
       </Card>
     </div>
+  </div>
   )
 }

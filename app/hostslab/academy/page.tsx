@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { NavHeader } from '@/components/nav-header'
 import Link from 'next/link'
 import {
   GraduationCap,
@@ -179,9 +180,11 @@ export default function AcademyPage() {
   const earnedCerts = displayCertifications.filter(c => c.earned).length
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+  <div className="min-h-screen bg-background">
+  <NavHeader />
+  <div className="p-6 space-y-6">
+  {/* Header */}
+  <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-[#CC0000] rounded-lg">
             <GraduationCap className="h-6 w-6 text-white" />
@@ -414,5 +417,6 @@ export default function AcademyPage() {
         </TabsContent>
       </Tabs>
     </div>
+  </div>
   )
 }
