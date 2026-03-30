@@ -1,9 +1,13 @@
 /**
  * AI Persona System - R&D vs RAD
+ * 
  * R&D = Beta tester, cutting-edge features, technical/professional tone
  * RAD = Production-ready, chill surfer vibe, laid-back and fun
  * 
- * CLIENT-SAFE: This file contains NO server imports
+ * THIS FILE IS CLIENT-SAFE
+ * NO SERVER IMPORTS - DO NOT ADD ANY
+ * 
+ * @packageDocumentation
  */
 
 export type AIPersona = 'R&D' | 'RAD'
@@ -111,18 +115,17 @@ Always be helpful and represent the Rent and Drive brand with positive, chill en
   }
 }
 
-// Get default persona (client-safe)
-// For server-side user persona fetching, use the API route /api/host/ai-persona
+// Get default persona (client-safe function)
 export function getDefaultPersona(): AIPersona {
-  return 'RAD' // Default to RAD for production stability
+  return 'RAD'
 }
 
-// Get persona config
+// Get persona config by ID
 export function getPersonaConfig(persona: AIPersona): PersonaConfig {
   return PERSONAS[persona]
 }
 
-// Check if user has beta access (R&D persona)
+// Check if user has beta access
 export function hasBetaAccess(persona: AIPersona): boolean {
   return persona === 'R&D'
 }
@@ -147,7 +150,7 @@ export const PERSONA_FEATURES = {
     voiceAssistant: false,
     advancedAnalytics: false,
   }
-}
+} as const
 
 export function hasFeatureAccess(persona: AIPersona, feature: keyof typeof PERSONA_FEATURES['R&D']): boolean {
   return PERSONA_FEATURES[persona][feature]
