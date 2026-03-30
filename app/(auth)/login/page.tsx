@@ -71,7 +71,7 @@ function LoginForm() {
       {/* Mobile branding */}
       <div className="lg:hidden mb-8 text-center">
         <div className="flex justify-center mb-4">
-          <Logo size="lg" linkTo={undefined} />
+          <Logo size="lg" />
         </div>
         <span className="text-xl font-semibold">Rent and Drive</span>
       </div>
