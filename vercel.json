@@ -1,28 +1,40 @@
 {
   "crons": [
     {
-      "path": "/api/cron/turo-sync",
-      "schedule": "*/15 * * * *"
+      "path": "/api/cron/securelink",
+      "schedule": "0 * * * *"
     },
     {
-      "path": "/api/cron/pricing-agent",
-      "schedule": "0 7 * * *"
+      "path": "/api/cron/dollar",
+      "schedule": "0 2 * * *"
     },
     {
-      "path": "/api/cron/market-intel",
-      "schedule": "0 8 * * 1"
+      "path": "/api/cron/shield",
+      "schedule": "0 6 * * *"
     },
     {
-      "path": "/api/cron/send-messages",
-      "schedule": "*/10 * * * *"
+      "path": "/api/cron/commandcontrol",
+      "schedule": "0 6 * * 0"
     },
     {
-      "path": "/api/cron/review-monitor",
-      "schedule": "0 */6 * * *"
+      "path": "/api/cron/pulse",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/funtime",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/morning-brief",
+      "schedule": "30 5 * * *"
     },
     {
       "path": "/api/cron/fleet-health",
-      "schedule": "0 6 * * *"
+      "schedule": "0 0 * * 0"
+    },
+    {
+      "path": "/api/cron/model-health",
+      "schedule": "0 */6 * * *"
     }
   ]
 }

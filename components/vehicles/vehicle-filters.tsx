@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon, Car, Truck, Bike, Caravan, SlidersHorizontal } from 'lucide-react'
@@ -10,11 +10,12 @@ import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
 import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import type { DateRange } from 'react-day-picker'
 
 const categories = [
-  { value: '', label: 'All Vehicles', icon: SlidersHorizontal },
+  { value: 'all', label: 'All Vehicles', icon: SlidersHorizontal },
   { value: 'car', label: 'Cars', icon: Car },
   { value: 'suv', label: 'SUVs', icon: Truck },
   { value: 'motorcycle', label: 'Motorcycles', icon: Bike },
@@ -22,11 +23,11 @@ const categories = [
   { value: 'atv', label: 'ATVs', icon: Bike },
 ]
 
-export function VehicleFilters() {
+function VehicleFiltersInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const [category, setCategory] = useState(searchParams.get('category') || '')
+  const [category, setCategory] = useState(searchParams.get('category') || 'all')
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
     const start = searchParams.get('start_date')
     const end = searchParams.get('end_date')
@@ -37,6 +38,8 @@ export function VehicleFilters() {
   })
   const [awd, setAwd] = useState(searchParams.get('awd') === 'true')
   const [skiRack, setSkiRack] = useState(searchParams.get('ski_rack') === 'true')
+  const [towHitch, setTowHitch] = useState(searchParams.get('tow_hitch') === 'true')
+  const [minSeats, setMinSeats] = useState(searchParams.get('min_seats') || '')
   const [priceRange, setPriceRange] = useState<[number, number]>([
     parseInt(searchParams.get('min_rate') || '0'),
     parseInt(searchParams.get('max_rate') || '500'),
@@ -45,16 +48,18 @@ export function VehicleFilters() {
   useEffect(() => {
     const params = new URLSearchParams()
 
-    if (category) params.set('category', category)
+    if (category && category !== 'all') params.set('category', category)
     if (dateRange?.from) params.set('start_date', format(dateRange.from, 'yyyy-MM-dd'))
     if (dateRange?.to) params.set('end_date', format(dateRange.to, 'yyyy-MM-dd'))
     if (awd) params.set('awd', 'true')
     if (skiRack) params.set('ski_rack', 'true')
+    if (towHitch) params.set('tow_hitch', 'true')
+    if (minSeats) params.set('min_seats', minSeats)
     if (priceRange[0] > 0) params.set('min_rate', priceRange[0].toString())
     if (priceRange[1] < 500) params.set('max_rate', priceRange[1].toString())
 
     router.push(`/vehicles?${params.toString()}`, { scroll: false })
-  }, [category, dateRange, awd, skiRack, priceRange, router])
+  }, [category, dateRange, awd, skiRack, towHitch, minSeats, priceRange, router])
 
   return (
     <aside className="flex w-full flex-col gap-6 lg:w-72">
@@ -148,6 +153,39 @@ export function VehicleFilters() {
           />
         </div>
 
+        {/* Tow Hitch Toggle */}
+        <div className="mb-6 flex items-center justify-between">
+          <Label htmlFor="tow-hitch-toggle" className="text-sm font-medium">
+            Tow Hitch
+          </Label>
+          <Switch
+            id="tow-hitch-toggle"
+            checked={towHitch}
+            onCheckedChange={setTowHitch}
+          />
+        </div>
+
+        {/* Seats Filter */}
+        <div className="mb-6">
+          <Label htmlFor="seats-select" className="mb-3 block text-sm font-medium">
+            Minimum Seats
+          </Label>
+          <select
+            id="seats-select"
+            value={minSeats}
+            onChange={(e) => setMinSeats(e.target.value)}
+            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+          >
+            <option value="">Any</option>
+            <option value="2">2+ seats</option>
+            <option value="4">4+ seats</option>
+            <option value="5">5+ seats</option>
+            <option value="6">6+ seats</option>
+            <option value="7">7+ seats</option>
+            <option value="8">8+ seats</option>
+          </select>
+        </div>
+
         {/* Price Range */}
         <div className="mb-2">
           <Label className="mb-3 block text-sm font-medium">
@@ -172,10 +210,12 @@ export function VehicleFilters() {
           variant="outline"
           className="mt-4 w-full"
           onClick={() => {
-            setCategory('')
+            setCategory('all')
             setDateRange(undefined)
             setAwd(false)
             setSkiRack(false)
+            setTowHitch(false)
+            setMinSeats('')
             setPriceRange([0, 500])
           }}
         >
@@ -183,5 +223,43 @@ export function VehicleFilters() {
         </Button>
       </div>
     </aside>
+  )
+}
+
+function VehicleFiltersFallback() {
+  return (
+    <aside className="flex w-full flex-col gap-6 lg:w-72">
+      <div className="rounded-lg border bg-card p-5">
+        <Skeleton className="h-6 w-20 mb-4" />
+        <div className="mb-6">
+          <Skeleton className="h-4 w-16 mb-3" />
+          <div className="flex flex-col gap-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-9 w-full" />
+            ))}
+          </div>
+        </div>
+        <div className="mb-6">
+          <Skeleton className="h-4 w-12 mb-3" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex items-center justify-between">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-6 w-10" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </aside>
+  )
+}
+
+export function VehicleFilters() {
+  return (
+    <Suspense fallback={<VehicleFiltersFallback />}>
+      <VehicleFiltersInner />
+    </Suspense>
   )
 }

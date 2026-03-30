@@ -19,10 +19,12 @@ export async function GET(request: NextRequest) {
     .select(`
       id,
       booking_number,
+      vehicle_id,
       start_date,
       end_date,
       total_amount,
       status,
+      lockbox_code,
       lyft_pickup_requested,
       lyft_pickup_status,
       created_at,
@@ -59,5 +61,23 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  return NextResponse.json(data)
+  // Check which bookings have reviews
+  const bookingIds = data?.map(b => b.id) || []
+  if (bookingIds.length > 0) {
+    const { data: reviews } = await supabase
+      .from('reviews')
+      .select('booking_id')
+      .in('booking_id', bookingIds)
+
+    const reviewedBookingIds = new Set(reviews?.map(r => r.booking_id) || [])
+    
+    const bookingsWithReviewStatus = data?.map(b => ({
+      ...b,
+      has_review: reviewedBookingIds.has(b.id),
+    }))
+
+    return NextResponse.json({ bookings: bookingsWithReviewStatus })
+  }
+
+  return NextResponse.json({ bookings: data })
 }

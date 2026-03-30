@@ -19,9 +19,9 @@ export async function GET(request: Request) {
         })
       }
 
-      // Determine redirect based on role
+      // Determine redirect based on role (hosts to /dashboard, renters to /vehicles)
       const userRole = data.user.user_metadata?.role || role
-      const redirectPath = userRole === 'host' ? '/host/dashboard' : '/dashboard'
+      const redirectPath = userRole === 'host' ? '/dashboard' : '/vehicles'
       
       return NextResponse.redirect(`${origin}${redirectPath}`)
     }

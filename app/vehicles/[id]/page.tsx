@@ -1,12 +1,18 @@
 import { notFound } from 'next/navigation'
+import Script from 'next/script'
 import { createClient } from '@/lib/supabase/server'
+import { getVehicleSchema, getBreadcrumbSchema } from '@/lib/structured-data'
 import { PhotoGallery } from '@/components/vehicles/photo-gallery'
 import { PricingCalculator } from '@/components/vehicles/pricing-calculator'
 import { HostCard } from '@/components/vehicles/host-card'
 import { AvailabilityCalendar } from '@/components/vehicles/availability-calendar'
 import { VehicleFeatures } from '@/components/vehicles/vehicle-features'
+import { VehicleReviews } from '@/components/vehicles/vehicle-reviews'
+import { SimilarVehicles } from '@/components/vehicles/similar-vehicles'
+import { RecallPanel } from '@/components/vehicles/recall-panel'
+import { RecallBadge } from '@/components/vehicles/recall-badge'
 import { Badge } from '@/components/ui/badge'
-import { Star, MapPin, Zap, Mountain, Shield, Check } from 'lucide-react'
+import { Star, MapPin, Zap, Mountain, Shield, Check, FileText } from 'lucide-react'
 import type { Vehicle } from '@/lib/types/vehicle'
 import type { Metadata } from 'next'
 
@@ -33,23 +39,90 @@ async function getVehicle(id: string): Promise<Vehicle | null> {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params
   const vehicle = await getVehicle(id)
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rentanddrive.net'
 
   if (!vehicle) {
     return { title: 'Vehicle Not Found | Rent and Drive' }
   }
 
+  const title = `${vehicle.year} ${vehicle.make} ${vehicle.model} Rental in ${vehicle.location_city || 'Reno'} Nevada`
+  const description = `Rent this ${vehicle.year} ${vehicle.make} ${vehicle.model} in ${vehicle.location_city || 'Reno'}, Nevada. ${vehicle.is_awd ? 'AWD perfect for Tahoe. ' : ''}${vehicle.seats} seats. $${vehicle.daily_rate}/day. Book direct and save 10% vs Turo.`
+
   return {
-    title: `${vehicle.year} ${vehicle.make} ${vehicle.model} | Rent and Drive`,
-    description: `Rent this ${vehicle.year} ${vehicle.make} ${vehicle.model} in ${vehicle.location_city}. $${vehicle.daily_rate}/day. Save 10% vs Turo.`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${baseUrl}/vehicles/${id}`,
+      siteName: 'Rent and Drive',
+      images: vehicle.thumbnail_url ? [{
+        url: vehicle.thumbnail_url,
+        width: 1200,
+        height: 630,
+        alt: `${vehicle.year} ${vehicle.make} ${vehicle.model}`,
+      }] : undefined,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: vehicle.thumbnail_url ? [vehicle.thumbnail_url] : undefined,
+    },
+    alternates: {
+      canonical: `${baseUrl}/vehicles/${id}`,
+    },
   }
 }
 
 export default async function VehicleDetailPage({ params }: PageProps) {
   const { id } = await params
   const vehicle = await getVehicle(id)
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rentanddrive.net'
 
   if (!vehicle) {
     notFound()
+  }
+
+  // JSON-LD Structured Data for Vehicle Listing
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: `${vehicle.year} ${vehicle.make} ${vehicle.model}`,
+    description: vehicle.description || `Rent this ${vehicle.year} ${vehicle.make} ${vehicle.model} in ${vehicle.location_city}, Nevada.`,
+    image: vehicle.images?.[0] || vehicle.thumbnail_url,
+    brand: {
+      '@type': 'Brand',
+      name: vehicle.make,
+    },
+    model: vehicle.model,
+    vehicleModelDate: vehicle.year?.toString(),
+    offers: {
+      '@type': 'Offer',
+      url: `${baseUrl}/vehicles/${id}`,
+      priceCurrency: 'USD',
+      price: vehicle.daily_rate,
+      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      availability: 'https://schema.org/InStock',
+      seller: {
+        '@type': 'Organization',
+        name: 'Rent and Drive LLC',
+        url: baseUrl,
+      },
+    },
+    aggregateRating: vehicle.rating ? {
+      '@type': 'AggregateRating',
+      ratingValue: vehicle.rating,
+      reviewCount: vehicle.review_count || 1,
+      bestRating: 5,
+      worstRating: 1,
+    } : undefined,
+    additionalProperty: [
+      { '@type': 'PropertyValue', name: 'Seats', value: vehicle.seats },
+      { '@type': 'PropertyValue', name: 'AWD', value: vehicle.is_awd ? 'Yes' : 'No' },
+      { '@type': 'PropertyValue', name: 'Location', value: `${vehicle.location_city}, ${vehicle.location_state}` },
+    ],
   }
 
   const features = [
@@ -60,9 +133,16 @@ export default async function VehicleDetailPage({ params }: PageProps) {
   ]
 
   return (
-    <main className="min-h-screen bg-background">
-      {/* Value Prop Banner */}
-      <div className="bg-primary px-4 py-3 text-center">
+    <>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      
+      <main className="min-h-screen bg-background">
+        {/* Value Prop Banner */}
+        <div className="bg-primary px-4 py-3 text-center">
         <p className="text-sm font-medium text-primary-foreground">
           Save 10% vs Turo — book direct here for the best price
         </p>
@@ -92,6 +172,13 @@ export default async function VehicleDetailPage({ params }: PageProps) {
                     <Mountain className="size-3" />
                     AWD
                   </Badge>
+                )}
+                {vehicle.vin && (
+                  <RecallBadge 
+                    severity={vehicle.recall_severity as 'CRITICAL' | 'WARNING' | 'INFO' | null} 
+                    recallCount={vehicle.has_open_recalls ? 1 : 0}
+                    size="sm"
+                  />
                 )}
               </div>
               <h1 className="text-3xl font-bold tracking-tight text-foreground">
@@ -169,6 +256,39 @@ export default async function VehicleDetailPage({ params }: PageProps) {
             {/* Availability Calendar */}
             <AvailabilityCalendar vehicleId={vehicle.id} />
 
+            {/* Safety & Recall Panel */}
+            {vehicle.vin && (
+              <RecallPanel 
+                vin={vehicle.vin} 
+                vehicleId={vehicle.id}
+                className="mb-8"
+              />
+            )}
+
+            {/* VIN History Report */}
+            {vehicle.vin_report_url && (
+              <div className="mb-8 rounded-lg border bg-green-50 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <FileText className="size-6 text-green-600" />
+                  <h2 className="text-lg font-semibold text-foreground">Verified Vehicle History</h2>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  This vehicle has a verified VIN history report showing clean title and no reported accidents.
+                </p>
+                <a 
+                  href={vehicle.vin_report_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium text-green-600 hover:underline"
+                >
+                  View Full Report →
+                </a>
+              </div>
+            )}
+
+            {/* Reviews Section */}
+            <VehicleReviews vehicleId={vehicle.id} />
+
             {/* Host Card */}
             <HostCard
               hostId={vehicle.host_id}
@@ -177,6 +297,13 @@ export default async function VehicleDetailPage({ params }: PageProps) {
               hostRating={vehicle.host_rating}
               hostTrips={vehicle.host_trips}
               hostJoined={vehicle.host_joined}
+            />
+
+            {/* Similar Vehicles */}
+            <SimilarVehicles 
+              currentVehicleId={vehicle.id} 
+              category={vehicle.category}
+              locationCity={vehicle.location_city}
             />
           </div>
 
@@ -190,8 +317,9 @@ export default async function VehicleDetailPage({ params }: PageProps) {
               />
             </div>
           </div>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   )
 }
