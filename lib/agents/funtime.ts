@@ -37,6 +37,7 @@ const BADGES = {
   host_superhost: { name: 'Superhost', description: '10+ trips, 4.8+ rating', xp: 200 },
   host_quick_responder: { name: 'Quick Responder', description: 'Average response time under 30 min', xp: 75 },
   host_fleet_master: { name: 'Fleet Master', description: '5+ active vehicles', xp: 250 },
+  car_lot_closer: { name: 'Car Lot Closer', description: 'Sold your first vehicle on The Car Lot', xp: 500 },
   
   // Renter badges
   renter_first_ride: { name: 'First Ride', description: 'Completed your first rental', xp: 25 },

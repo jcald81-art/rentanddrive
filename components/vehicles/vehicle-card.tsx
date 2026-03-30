@@ -1,13 +1,17 @@
 'use client'
 
 import Link from 'next/link'
-import { Star, Zap, Mountain, ShieldCheck } from 'lucide-react'
+import { Star, Zap, Mountain, ShieldCheck, Tag } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { Vehicle } from '@/lib/types/vehicle'
 
 interface VehicleCardProps {
-  vehicle: Vehicle & { has_vin_report?: boolean }
+  vehicle: Vehicle & { 
+    has_vin_report?: boolean
+    sell_while_renting?: boolean
+    for_sale?: boolean
+  }
 }
 
 export function VehicleCard({ vehicle }: VehicleCardProps) {
@@ -40,6 +44,15 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
               </Badge>
             )}
           </div>
+          {/* For Sale Tag - subtle red tag icon */}
+          {(vehicle.sell_while_renting || vehicle.for_sale) && (
+            <div className="absolute bottom-3 right-3">
+              <Badge className="bg-[#CC0000]/90 text-white gap-1">
+                <Tag className="size-3" />
+                For Sale
+              </Badge>
+            </div>
+          )}
         </div>
         <div className="flex flex-col gap-2 p-4">
           <div className="flex items-start justify-between gap-2">

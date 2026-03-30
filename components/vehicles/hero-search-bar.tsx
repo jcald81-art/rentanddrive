@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { format, addDays } from 'date-fns'
 import { Calendar as CalendarIcon, MapPin, Search } from 'lucide-react'
@@ -36,16 +36,22 @@ function HeroSearchBarInner() {
 
   const [location, setLocation] = useState(searchParams.get('location') || 'reno')
   const [category, setCategory] = useState(searchParams.get('category') || 'all')
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+  const [mounted, setMounted] = useState(false)
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
+
+  // Initialize date range only on client to avoid hydration mismatch
+  useEffect(() => {
     const start = searchParams.get('start_date')
     const end = searchParams.get('end_date')
     if (start && end) {
-      return { from: new Date(start), to: new Date(end) }
+      setDateRange({ from: new Date(start), to: new Date(end) })
+    } else {
+      // Default to tomorrow for 3 days
+      const tomorrow = addDays(new Date(), 1)
+      setDateRange({ from: tomorrow, to: addDays(tomorrow, 3) })
     }
-    // Default to tomorrow for 3 days
-    const tomorrow = addDays(new Date(), 1)
-    return { from: tomorrow, to: addDays(tomorrow, 3) }
-  })
+    setMounted(true)
+  }, [searchParams])
 
   function handleSearch() {
     const params = new URLSearchParams()
@@ -94,7 +100,9 @@ function HeroSearchBarInner() {
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4 text-[#CC0000]" />
-                {dateRange?.from ? (
+                {!mounted ? (
+                  'Loading...'
+                ) : dateRange?.from ? (
                   dateRange.to ? (
                     <>
                       {format(dateRange.from, 'MMM d')} - {format(dateRange.to, 'MMM d')}
