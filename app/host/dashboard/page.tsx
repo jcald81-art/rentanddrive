@@ -17,7 +17,9 @@ import {
   Users,
   TrendingUp,
   Calendar,
-  Star
+  Star,
+  FileText,
+  FolderOpen
 } from 'lucide-react'
 
 export default async function HostDashboardPage() {
@@ -226,7 +228,7 @@ export default async function HostDashboardPage() {
       <section className="border-t border-white/10 bg-[#0d1220]">
         <div className="container mx-auto px-4 py-12">
           <h2 className="text-xl font-bold text-white mb-6">Quick Actions</h2>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="bg-[#151c2c] border-white/10">
               <CardContent className="p-6 space-y-4">
                 <div className="h-10 w-10 rounded-lg bg-[#D62828]/20 flex items-center justify-center">
@@ -262,6 +264,19 @@ export default async function HostDashboardPage() {
                 <p className="text-sm text-gray-400">Track your income and manage payouts</p>
                 <Button asChild variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
                   <Link href="/host/earnings">View Earnings</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-[#151c2c] border-white/10">
+              <CardContent className="p-6 space-y-4">
+                <div className="h-10 w-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                  <FolderOpen className="h-5 w-5 text-amber-400" />
+                </div>
+                <h3 className="font-semibold text-white">Filing Cabinet</h3>
+                <p className="text-sm text-gray-400">Store service records, oil changes, inspections & documents</p>
+                <Button asChild variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
+                  <Link href="/host/documents">Open Cabinet</Link>
                 </Button>
               </CardContent>
             </Card>
