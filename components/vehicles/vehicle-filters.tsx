@@ -26,16 +26,20 @@ const categories = [
 function VehicleFiltersInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [mounted, setMounted] = useState(false)
 
   const [category, setCategory] = useState(searchParams.get('category') || 'all')
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
+  
+  // Initialize date range only on client to avoid hydration mismatch
+  useEffect(() => {
     const start = searchParams.get('start_date')
     const end = searchParams.get('end_date')
     if (start && end) {
-      return { from: new Date(start), to: new Date(end) }
+      setDateRange({ from: new Date(start), to: new Date(end) })
     }
-    return undefined
-  })
+    setMounted(true)
+  }, [searchParams])
   const [awd, setAwd] = useState(searchParams.get('awd') === 'true')
   const [skiRack, setSkiRack] = useState(searchParams.get('ski_rack') === 'true')
   const [towHitch, setTowHitch] = useState(searchParams.get('tow_hitch') === 'true')
@@ -104,7 +108,9 @@ function VehicleFiltersInner() {
                 )}
               >
                 <CalendarIcon className="mr-2 size-4" />
-                {dateRange?.from ? (
+                {!mounted ? (
+                  'Pick dates'
+                ) : dateRange?.from ? (
                   dateRange.to ? (
                     <>
                       {format(dateRange.from, 'MMM d')} - {format(dateRange.to, 'MMM d')}
@@ -123,7 +129,7 @@ function VehicleFiltersInner() {
                 selected={dateRange}
                 onSelect={setDateRange}
                 numberOfMonths={2}
-                disabled={{ before: new Date() }}
+                disabled={mounted ? { before: new Date() } : undefined}
               />
             </PopoverContent>
           </Popover>
