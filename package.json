@@ -48,6 +48,7 @@
     "@stripe/stripe-js": "^9.0.0",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.100.1",
+    "@upstash/redis": "^1.37.0",
     "@vercel/analytics": "1.6.1",
     "ai": "^6.0.141",
     "autoprefixer": "^10.4.20",
@@ -91,6 +92,9 @@
     "typescript": "5.7.3"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["core-js", "sharp"]
+    "onlyBuiltDependencies": [
+      "core-js",
+      "sharp"
+    ]
   }
 }

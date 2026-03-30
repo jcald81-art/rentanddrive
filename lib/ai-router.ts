@@ -1,11 +1,17 @@
+/**
+ * Rent and Drive - Expedition Agent System AI Router
+ * Full router with 13 agent task types, primary/fallback routing,
+ * cross-validation, and usage logging.
+ */
+
 import { generateText, streamText } from 'ai'
-import { createAnthropic } from '@ai-sdk/anthropic'
-import { createOpenAI } from '@ai-sdk/openai'
-import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createClient } from '@supabase/supabase-js'
 
-// Task types for routing
-export type TaskType = 
+// ============================================
+// TYPES
+// ============================================
+
+export type AgentTaskType =
   | 'communications'
   | 'pricing'
   | 'reviews'
@@ -14,99 +20,214 @@ export type TaskType =
   | 'realtime_conditions'
   | 'document_analysis'
   | 'bulk_processing'
+  | 'driver_verification'
+  | 'damage_assessment'
+  | 'fraud_detection'
+  | 'upsell_recommendation'
+  | 'engagement'
   | 'concierge'
 
-// Model configuration
-interface ModelConfig {
-  name: string
-  provider: string
-  modelId: string
-  costPer1MTokens: number
-  timeout: number
-  envKey: string
+export interface RouteConfig {
+  agent_name: string
+  former_name: string
+  primary: string
+  fallback: string
+  cross_validation?: string
+  requires_dual_agreement?: boolean
+  streaming: boolean
+  cache_ttl_seconds: number
+  icon: string
+  color: string
+  tagline: string
 }
 
-const MODELS: Record<string, ModelConfig> = {
-  claude: {
-    name: 'claude',
-    provider: 'anthropic',
-    modelId: 'claude-sonnet-4-20250514',
-    costPer1MTokens: 3.00,
-    timeout: 30000,
-    envKey: 'ANTHROPIC_API_KEY',
+// ============================================
+// EXPEDITION AGENT ROUTES
+// ============================================
+
+export const AGENT_ROUTES: Record<AgentTaskType, RouteConfig> = {
+  communications: {
+    agent_name: 'Beacon',
+    former_name: 'SecureLink',
+    primary: 'anthropic/claude-sonnet-4-20250514',
+    fallback: 'groq/llama-4-scout',
+    streaming: true,
+    cache_ttl_seconds: 0,
+    icon: 'radio',
+    color: '#F59E0B',
+    tagline: 'Trail Communications',
   },
-  'gpt-4o': {
-    name: 'gpt-4o',
-    provider: 'openai',
-    modelId: 'gpt-4o',
-    costPer1MTokens: 5.00,
-    timeout: 30000,
-    envKey: 'OPENAI_API_KEY',
+  pricing: {
+    agent_name: 'Gauge',
+    former_name: 'Dollar',
+    primary: 'anthropic/claude-sonnet-4-20250514',
+    fallback: 'openai/gpt-4o',
+    cross_validation: 'openai/gpt-4o',
+    streaming: false,
+    cache_ttl_seconds: 300,
+    icon: 'gauge',
+    color: '#22C55E',
+    tagline: 'Revenue Optimization',
   },
-  grok: {
-    name: 'grok',
-    provider: 'xai',
-    modelId: 'grok-2',
-    costPer1MTokens: 5.00,
-    timeout: 15000,
-    envKey: 'GROK_API_KEY',
+  reviews: {
+    agent_name: 'Guard',
+    former_name: 'Shield',
+    primary: 'anthropic/claude-sonnet-4-20250514',
+    fallback: 'google/gemini-2.5-flash',
+    streaming: false,
+    cache_ttl_seconds: 600,
+    icon: 'shield',
+    color: '#8B5CF6',
+    tagline: 'Reputation Protection',
   },
-  gemini: {
-    name: 'gemini',
-    provider: 'google',
-    modelId: 'gemini-1.5-pro',
-    costPer1MTokens: 2.00,
-    timeout: 30000,
-    envKey: 'GEMINI_API_KEY',
+  market_intelligence: {
+    agent_name: 'Scout',
+    former_name: 'Command&Control',
+    primary: 'perplexity/sonar-pro',
+    fallback: 'anthropic/claude-sonnet-4-20250514',
+    streaming: true,
+    cache_ttl_seconds: 1800,
+    icon: 'binoculars',
+    color: '#06B6D4',
+    tagline: 'Market Recon',
   },
-  perplexity: {
-    name: 'perplexity',
-    provider: 'perplexity',
-    modelId: 'llama-3.1-sonar-large-128k-online',
-    costPer1MTokens: 1.00,
-    timeout: 30000,
-    envKey: 'PERPLEXITY_API_KEY',
+  fleet_health: {
+    agent_name: 'Vitals',
+    former_name: 'Pulse',
+    primary: 'nvidia/nemotron-70b',
+    fallback: 'anthropic/claude-sonnet-4-20250514',
+    streaming: false,
+    cache_ttl_seconds: 900,
+    icon: 'heart-pulse',
+    color: '#EF4444',
+    tagline: 'Fleet Health Monitor',
   },
-  deepseek: {
-    name: 'deepseek',
-    provider: 'deepseek',
-    modelId: 'deepseek-chat',
-    costPer1MTokens: 0.27,
-    timeout: 30000,
-    envKey: 'DEEPSEEK_API_KEY',
+  realtime_conditions: {
+    agent_name: 'Grok',
+    former_name: 'Grok',
+    primary: 'xai/grok-3',
+    fallback: 'anthropic/claude-sonnet-4-20250514',
+    streaming: true,
+    cache_ttl_seconds: 60,
+    icon: 'cloud-sun',
+    color: '#3B82F6',
+    tagline: 'Real-Time Conditions',
   },
-  llama: {
-    name: 'llama',
-    provider: 'groq',
-    modelId: 'llama-3.3-70b-versatile',
-    costPer1MTokens: 0.27,
-    timeout: 10000,
-    envKey: 'GROQ_API_KEY',
+  document_analysis: {
+    agent_name: 'Gemini',
+    former_name: 'Gemini',
+    primary: 'google/gemini-2.5-pro',
+    fallback: 'anthropic/claude-sonnet-4-20250514',
+    streaming: false,
+    cache_ttl_seconds: 3600,
+    icon: 'file-search',
+    color: '#4285F4',
+    tagline: 'Document Analysis',
   },
-  nemotron: {
-    name: 'nemotron',
-    provider: 'nvidia',
-    modelId: 'nvidia/llama-3.1-nemotron-70b-instruct',
-    costPer1MTokens: 4.00,
-    timeout: 30000,
-    envKey: 'NVIDIA_API_KEY',
+  bulk_processing: {
+    agent_name: 'DeepSeek',
+    former_name: 'DeepSeek',
+    primary: 'deepseek/deepseek-chat-v3',
+    fallback: 'anthropic/claude-haiku-4-5-20251001',
+    streaming: false,
+    cache_ttl_seconds: 7200,
+    icon: 'layers',
+    color: '#6366F1',
+    tagline: 'Batch Processing',
+  },
+  driver_verification: {
+    agent_name: 'Badge',
+    former_name: 'Diesel',
+    primary: 'openai/gpt-4o',
+    fallback: 'google/gemini-2.5-pro',
+    cross_validation: 'anthropic/claude-sonnet-4-20250514',
+    streaming: false,
+    cache_ttl_seconds: 0,
+    icon: 'badge-check',
+    color: '#10B981',
+    tagline: 'Driver Verification',
+  },
+  damage_assessment: {
+    agent_name: 'Surveyor',
+    former_name: 'Inspector Cartegrity',
+    primary: 'google/gemini-2.5-pro',
+    fallback: 'openai/gpt-4o',
+    streaming: false,
+    cache_ttl_seconds: 0,
+    icon: 'camera',
+    color: '#CC0000',
+    tagline: 'Damage Assessment',
+  },
+  fraud_detection: {
+    agent_name: 'Lookout',
+    former_name: 'NEW',
+    primary: 'anthropic/claude-sonnet-4-20250514',
+    fallback: 'openai/gpt-4o',
+    cross_validation: 'openai/gpt-4o',
+    requires_dual_agreement: true,
+    streaming: false,
+    cache_ttl_seconds: 0,
+    icon: 'eye',
+    color: '#DC2626',
+    tagline: 'Fraud Detection',
+  },
+  upsell_recommendation: {
+    agent_name: 'Outfitter',
+    former_name: 'NEW',
+    primary: 'anthropic/claude-sonnet-4-20250514',
+    fallback: 'anthropic/claude-haiku-4-5-20251001',
+    streaming: true,
+    cache_ttl_seconds: 300,
+    icon: 'backpack',
+    color: '#F97316',
+    tagline: 'Trip Outfitting',
+  },
+  engagement: {
+    agent_name: 'Boost',
+    former_name: 'Funtime',
+    primary: 'anthropic/claude-sonnet-4-20250514',
+    fallback: 'groq/llama-4-scout',
+    streaming: true,
+    cache_ttl_seconds: 600,
+    icon: 'rocket',
+    color: '#EC4899',
+    tagline: 'Engagement & Loyalty',
+  },
+  concierge: {
+    agent_name: 'RAD',
+    former_name: 'RAD',
+    primary: 'anthropic/claude-sonnet-4-20250514',
+    fallback: 'groq/llama-4-scout',
+    streaming: true,
+    cache_ttl_seconds: 0,
+    icon: 'compass',
+    color: '#00B4D8',
+    tagline: 'AI Concierge',
   },
 }
 
-// Task type to primary/fallback model mapping
-const TASK_ROUTING: Record<TaskType, { primary: string; fallback: string; crossValidation?: string }> = {
-  communications: { primary: 'claude', fallback: 'llama' },
-  pricing: { primary: 'claude', fallback: 'gpt-4o', crossValidation: 'gpt-4o' },
-  reviews: { primary: 'claude', fallback: 'gemini' },
-  market_intelligence: { primary: 'perplexity', fallback: 'claude' },
-  fleet_health: { primary: 'nemotron', fallback: 'claude' },
-  realtime_conditions: { primary: 'grok', fallback: 'claude' },
-  document_analysis: { primary: 'gemini', fallback: 'claude' },
-  bulk_processing: { primary: 'deepseek', fallback: 'claude' },
-  concierge: { primary: 'claude', fallback: 'llama' },
+// ============================================
+// MODEL COST CONFIGURATION
+// ============================================
+
+const MODEL_COSTS: Record<string, number> = {
+  'anthropic/claude-sonnet-4-20250514': 3.00,
+  'anthropic/claude-haiku-4-5-20251001': 0.25,
+  'openai/gpt-4o': 5.00,
+  'openai/gpt-4o-mini': 0.15,
+  'google/gemini-2.5-pro': 2.00,
+  'google/gemini-2.5-flash': 0.50,
+  'xai/grok-3': 5.00,
+  'perplexity/sonar-pro': 1.00,
+  'deepseek/deepseek-chat-v3': 0.27,
+  'groq/llama-4-scout': 0.10,
+  'nvidia/nemotron-70b': 4.00,
 }
 
-// Supabase client for logging and status
+// ============================================
+// SUPABASE CLIENT
+// ============================================
+
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -114,477 +235,357 @@ function getSupabase() {
   )
 }
 
-// Get model provider instance
-function getModelProvider(modelName: string) {
-  const config = MODELS[modelName]
-  if (!config) throw new Error(`Unknown model: ${modelName}`)
+// ============================================
+// COST CALCULATION
+// ============================================
 
-  const apiKey = process.env[config.envKey]
-  if (!apiKey) return null
-
-  switch (config.provider) {
-    case 'anthropic':
-      return createAnthropic({ apiKey })(config.modelId)
-    case 'openai':
-      return createOpenAI({ apiKey })(config.modelId)
-    case 'google':
-      return createGoogleGenerativeAI({ apiKey })(config.modelId)
-    case 'xai':
-      // xAI uses OpenAI-compatible API
-      return createOpenAI({ 
-        apiKey, 
-        baseURL: 'https://api.x.ai/v1' 
-      })(config.modelId)
-    case 'perplexity':
-      return createOpenAI({ 
-        apiKey, 
-        baseURL: 'https://api.perplexity.ai' 
-      })(config.modelId)
-    case 'deepseek':
-      return createOpenAI({ 
-        apiKey, 
-        baseURL: 'https://api.deepseek.com' 
-      })(config.modelId)
-    case 'groq':
-      return createOpenAI({ 
-        apiKey, 
-        baseURL: 'https://api.groq.com/openai/v1' 
-      })(config.modelId)
-    case 'nvidia':
-      return createOpenAI({ 
-        apiKey, 
-        baseURL: 'https://integrate.api.nvidia.com/v1' 
-      })(config.modelId)
-    default:
-      return null
-  }
+function calculateCostUSD(tokensIn: number, tokensOut: number, model: string): number {
+  const costPer1M = MODEL_COSTS[model] || 3.00
+  const totalTokens = tokensIn + tokensOut * 3 // Output tokens typically cost 3x
+  return (totalTokens / 1_000_000) * costPer1M
 }
 
-// Check if model is available
-async function isModelAvailable(modelName: string): Promise<boolean> {
-  const config = MODELS[modelName]
-  if (!config) return false
-  
-  // Check if API key exists
-  if (!process.env[config.envKey]) return false
+// ============================================
+// LOGGING
+// ============================================
 
-  // Check model_status table
-  const supabase = getSupabase()
-  const { data } = await supabase
-    .from('model_status')
-    .select('is_available, is_manually_disabled, consecutive_failures')
-    .eq('model_name', modelName)
-    .single()
-
-  if (!data) return true // Default to available if no status record
-  if (data.is_manually_disabled) return false
-  if (data.consecutive_failures >= 3) return false
-  
-  return data.is_available
+interface LogEntry {
+  agent_name: string
+  task_type: AgentTaskType
+  model_used: string
+  tokens_in: number
+  tokens_out: number
+  latency_ms: number
+  cached: boolean
+  cost_usd: number
+  user_id?: string
+  booking_id?: string
+  vehicle_id?: string
 }
 
-// Calculate cost in cents
-function calculateCost(tokens: number, modelName: string): number {
-  const config = MODELS[modelName]
-  if (!config) return 0
-  return Math.ceil((tokens / 1_000_000) * config.costPer1MTokens * 100)
-}
-
-// Log model usage to agent_logs and update model_status
-async function logModelUsage(
-  agentName: string,
-  actionType: string,
-  modelUsed: string,
-  tokensUsed: number,
-  costCents: number,
-  status: 'success' | 'error',
-  responseMs: number,
-  inputData?: Record<string, unknown>,
-  outputData?: Record<string, unknown>,
-  errorMessage?: string
-) {
-  const supabase = getSupabase()
-
-  // Log to agent_logs
-  await supabase.from('agent_logs').insert({
-    agent_name: agentName,
-    action_type: actionType,
-    model_used: modelUsed,
-    tokens_used: tokensUsed,
-    cost_cents: costCents,
-    status,
-    input_data: inputData || {},
-    output_data: outputData || { error: errorMessage },
-  })
-
-  // Update model_status
-  const now = new Date().toISOString()
-  
-  if (status === 'success') {
-    await supabase.rpc('update_model_success', {
-      p_model_name: modelUsed,
-      p_tokens: tokensUsed,
-      p_cost_cents: costCents,
-      p_response_ms: responseMs,
-    }).catch(() => {
-      // Fallback if RPC doesn't exist
-      supabase
-        .from('model_status')
-        .update({
-          last_checked: now,
-          last_success: now,
-          consecutive_failures: 0,
-          error_count: 0,
-          is_available: true,
-          total_requests: supabase.rpc('increment', { x: 1 }),
-          total_tokens_used: supabase.rpc('increment', { x: tokensUsed }),
-          total_cost_cents: supabase.rpc('increment', { x: costCents }),
-          cost_today_cents: supabase.rpc('increment', { x: costCents }),
-          updated_at: now,
-        })
-        .eq('model_name', modelUsed)
+async function logAgentCall(entry: LogEntry) {
+  try {
+    const supabase = getSupabase()
+    await supabase.from('agent_logs').insert({
+      ...entry,
+      created_at: new Date().toISOString(),
     })
-  } else {
-    await supabase
-      .from('model_status')
-      .update({
-        last_checked: now,
-        consecutive_failures: supabase.rpc('increment', { x: 1 }),
-        error_count: supabase.rpc('increment', { x: 1 }),
-        is_available: false,
-        updated_at: now,
-      })
-      .eq('model_name', modelUsed)
-      .catch(() => {})
+  } catch (error) {
+    console.error('[v0] Failed to log agent call:', error)
   }
 }
 
-// Main router interface
-export interface RouterOptions {
-  taskType: TaskType
-  agentName: string
-  actionType: string
-  system: string
+// ============================================
+// REDIS CACHE (Optional)
+// ============================================
+
+async function getCachedResponse(cacheKey: string): Promise<string | null> {
+  // If REDIS_URL is not set, skip caching
+  if (!process.env.REDIS_URL) return null
+  
+  try {
+    // Dynamic import to avoid errors if redis is not installed
+    const { Redis } = await import('@upstash/redis')
+    const redis = new Redis({ url: process.env.REDIS_URL, token: process.env.REDIS_TOKEN || '' })
+    return await redis.get(cacheKey)
+  } catch {
+    return null
+  }
+}
+
+async function setCachedResponse(cacheKey: string, value: string, ttlSeconds: number): Promise<void> {
+  if (!process.env.REDIS_URL || ttlSeconds === 0) return
+  
+  try {
+    const { Redis } = await import('@upstash/redis')
+    const redis = new Redis({ url: process.env.REDIS_URL, token: process.env.REDIS_TOKEN || '' })
+    await redis.set(cacheKey, value, { ex: ttlSeconds })
+  } catch {
+    // Silent fail - caching is optional
+  }
+}
+
+function generateCacheKey(task: AgentTaskType, prompt: string): string {
+  // Simple hash for cache key
+  const hash = Buffer.from(prompt).toString('base64').slice(0, 32)
+  return `rad:agent:${task}:${hash}`
+}
+
+// ============================================
+// MAIN ROUTER
+// ============================================
+
+export interface RouterInput {
+  task: AgentTaskType
   prompt: string
-  maxTokens?: number
-  temperature?: number
-  forceModel?: string // Override routing
-  enableCrossValidation?: boolean
+  systemPrompt: string
+  context?: Record<string, unknown>
+  userId?: string
+  bookingId?: string
+  vehicleId?: string
+  skipCache?: boolean
 }
 
-export interface RouterResult {
-  text: string
-  modelUsed: string
-  tokensUsed: number
-  costCents: number
-  responseMs: number
-  crossValidation?: {
-    text: string
-    modelUsed: string
-    agreement: boolean
+export interface RouterOutput {
+  result: string
+  agent_name: string
+  model_used: string
+  cached: boolean
+  latency_ms: number
+  cost_usd: number
+  cross_validation?: {
+    model: string
+    result: string
+    agrees: boolean
+    divergence_pct?: number
   }
+  requires_review?: boolean
 }
 
-// Main router function
-export async function routeAIRequest(options: RouterOptions): Promise<RouterResult> {
-  const {
-    taskType,
-    agentName,
-    actionType,
-    system,
-    prompt,
-    maxTokens = 1024,
-    temperature = 0.7,
-    forceModel,
-    enableCrossValidation = false,
-  } = options
-
-  const routing = TASK_ROUTING[taskType]
+export async function routeAgentRequest(input: RouterInput): Promise<RouterOutput> {
   const startTime = Date.now()
+  const route = AGENT_ROUTES[input.task]
   
-  // Determine which models to try
-  const modelsToTry = forceModel 
-    ? [forceModel] 
-    : [routing.primary, routing.fallback, 'claude'] // Always have Claude as final fallback
+  if (!route) {
+    throw new Error(`Unknown task type: ${input.task}`)
+  }
   
-  let lastError: Error | null = null
-
-  for (const modelName of modelsToTry) {
-    // Skip if already tried or not available
-    if (!(await isModelAvailable(modelName))) {
-      continue
+  // Check cache first
+  const cacheKey = generateCacheKey(input.task, input.prompt)
+  if (!input.skipCache && route.cache_ttl_seconds > 0) {
+    const cached = await getCachedResponse(cacheKey)
+    if (cached) {
+      return {
+        result: cached,
+        agent_name: route.agent_name,
+        model_used: route.primary,
+        cached: true,
+        latency_ms: Date.now() - startTime,
+        cost_usd: 0,
+      }
     }
-
-    const model = getModelProvider(modelName)
-    if (!model) continue
-
-    const config = MODELS[modelName]
+  }
+  
+  // Try primary model
+  let result: string
+  let modelUsed = route.primary
+  let tokensIn = 0
+  let tokensOut = 0
+  
+  try {
+    const response = await generateText({
+      model: route.primary as any,
+      system: input.systemPrompt,
+      prompt: input.prompt,
+      maxTokens: 2048,
+      temperature: 0.7,
+    })
     
+    result = response.text
+    tokensIn = response.usage?.promptTokens || 0
+    tokensOut = response.usage?.completionTokens || 0
+  } catch (primaryError) {
+    console.error(`[v0] Primary model ${route.primary} failed:`, primaryError)
+    
+    // Fall back to secondary model
     try {
-      // Create abort controller for timeout
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), config.timeout)
-
-      const result = await generateText({
-        model,
-        system,
-        prompt,
-        maxTokens,
-        temperature,
-        abortSignal: controller.signal,
+      modelUsed = route.fallback
+      const response = await generateText({
+        model: route.fallback as any,
+        system: input.systemPrompt,
+        prompt: input.prompt,
+        maxTokens: 2048,
+        temperature: 0.7,
       })
-
-      clearTimeout(timeoutId)
-
-      const responseMs = Date.now() - startTime
-      const tokensUsed = result.usage?.totalTokens || 0
-      const costCents = calculateCost(tokensUsed, modelName)
-
-      // Log success
-      await logModelUsage(
-        agentName,
-        actionType,
-        modelName,
-        tokensUsed,
-        costCents,
-        'success',
-        responseMs,
-        { taskType, promptLength: prompt.length },
-        { textLength: result.text.length }
-      )
-
-      // Cross-validation for high-value decisions
-      let crossValidation: RouterResult['crossValidation']
-      if (enableCrossValidation && routing.crossValidation && modelName !== routing.crossValidation) {
-        try {
-          const cvModel = getModelProvider(routing.crossValidation)
-          if (cvModel && await isModelAvailable(routing.crossValidation)) {
-            const cvResult = await generateText({
-              model: cvModel,
-              system: `${system}\n\nPrevious analysis concluded: "${result.text.slice(0, 500)}..."\n\nDo you agree with this analysis? Provide your own assessment.`,
-              prompt,
-              maxTokens: 512,
-              temperature: 0.3,
-            })
-
-            const agreement = cvResult.text.toLowerCase().includes('agree') || 
-                             cvResult.text.toLowerCase().includes('concur') ||
-                             cvResult.text.toLowerCase().includes('correct')
-
-            crossValidation = {
-              text: cvResult.text,
-              modelUsed: routing.crossValidation,
-              agreement,
-            }
-
-            // Log cross-validation
-            await logModelUsage(
-              agentName,
-              `${actionType}_crossvalidation`,
-              routing.crossValidation,
-              cvResult.usage?.totalTokens || 0,
-              calculateCost(cvResult.usage?.totalTokens || 0, routing.crossValidation),
-              'success',
-              Date.now() - startTime - responseMs
-            )
-          }
-        } catch {
-          // Cross-validation is optional, don't fail if it errors
+      
+      result = response.text
+      tokensIn = response.usage?.promptTokens || 0
+      tokensOut = response.usage?.completionTokens || 0
+    } catch (fallbackError) {
+      console.error(`[v0] Fallback model ${route.fallback} failed:`, fallbackError)
+      throw new Error(`All models failed for task ${input.task}`)
+    }
+  }
+  
+  const latencyMs = Date.now() - startTime
+  const costUsd = calculateCostUSD(tokensIn, tokensOut, modelUsed)
+  
+  // Cross-validation for high-stakes tasks
+  let crossValidation: RouterOutput['cross_validation']
+  let requiresReview = false
+  
+  if (route.cross_validation && modelUsed !== route.cross_validation) {
+    try {
+      const cvResponse = await generateText({
+        model: route.cross_validation as any,
+        system: input.systemPrompt,
+        prompt: input.prompt,
+        maxTokens: 2048,
+        temperature: 0.3, // Lower temp for validation
+      })
+      
+      // Calculate divergence for pricing tasks
+      if (input.task === 'pricing') {
+        const primaryPrice = extractPrice(result)
+        const cvPrice = extractPrice(cvResponse.text)
+        const divergence = primaryPrice > 0 && cvPrice > 0 
+          ? Math.abs(primaryPrice - cvPrice) / primaryPrice * 100 
+          : 0
+        
+        crossValidation = {
+          model: route.cross_validation,
+          result: cvResponse.text,
+          agrees: divergence <= 5,
+          divergence_pct: divergence,
+        }
+        
+        if (divergence > 5) {
+          requiresReview = true
         }
       }
-
-      return {
-        text: result.text,
-        modelUsed: modelName,
-        tokensUsed,
-        costCents,
-        responseMs,
-        crossValidation,
+      
+      // For fraud detection, check agreement
+      if (input.task === 'fraud_detection') {
+        const primaryRisk = extractRiskTier(result)
+        const cvRisk = extractRiskTier(cvResponse.text)
+        const agrees = primaryRisk === cvRisk
+        
+        crossValidation = {
+          model: route.cross_validation,
+          result: cvResponse.text,
+          agrees,
+        }
+        
+        // Only auto-block if BOTH agree on critical
+        if (route.requires_dual_agreement && primaryRisk === 'critical' && !agrees) {
+          requiresReview = true
+        }
       }
-    } catch (error) {
-      lastError = error as Error
-      const responseMs = Date.now() - startTime
-
-      // Log failure
-      await logModelUsage(
-        agentName,
-        actionType,
-        modelName,
-        0,
-        0,
-        'error',
-        responseMs,
-        { taskType, promptLength: prompt.length },
-        undefined,
-        (error as Error).message
-      )
-
-      // Continue to next model
-      continue
+    } catch (cvError) {
+      console.error(`[v0] Cross-validation failed:`, cvError)
     }
   }
-
-  throw lastError || new Error('All models failed')
-}
-
-// Streaming version of router
-export async function routeAIStreamRequest(options: RouterOptions) {
-  const {
-    taskType,
-    system,
-    prompt,
-    maxTokens = 1024,
-    temperature = 0.7,
-    forceModel,
-  } = options
-
-  const routing = TASK_ROUTING[taskType]
   
-  // Determine which model to use
-  const modelsToTry = forceModel 
-    ? [forceModel] 
-    : [routing.primary, routing.fallback, 'claude']
-  
-  for (const modelName of modelsToTry) {
-    if (!(await isModelAvailable(modelName))) continue
-    
-    const model = getModelProvider(modelName)
-    if (!model) continue
-
-    try {
-      const result = streamText({
-        model,
-        system,
-        prompt,
-        maxTokens,
-        temperature,
-      })
-
-      return { stream: result, modelUsed: modelName }
-    } catch {
-      continue
-    }
+  // Cache the result
+  if (route.cache_ttl_seconds > 0) {
+    await setCachedResponse(cacheKey, result, route.cache_ttl_seconds)
   }
-
-  // Final fallback to Claude via AI Gateway
+  
+  // Log the call
+  await logAgentCall({
+    agent_name: route.agent_name,
+    task_type: input.task,
+    model_used: modelUsed,
+    tokens_in: tokensIn,
+    tokens_out: tokensOut,
+    latency_ms: latencyMs,
+    cached: false,
+    cost_usd: costUsd,
+    user_id: input.userId,
+    booking_id: input.bookingId,
+    vehicle_id: input.vehicleId,
+  })
+  
   return {
-    stream: streamText({
-      model: 'anthropic/claude-sonnet-4-6' as any,
-      system,
-      prompt,
-      maxTokens,
-      temperature,
-    }),
-    modelUsed: 'claude-gateway',
+    result,
+    agent_name: route.agent_name,
+    model_used: modelUsed,
+    cached: false,
+    latency_ms: latencyMs,
+    cost_usd: costUsd,
+    cross_validation: crossValidation,
+    requires_review: requiresReview,
   }
 }
 
-// Health check function for cron job
-export async function checkAllModelHealth(): Promise<Record<string, { available: boolean; responseMs: number; error?: string }>> {
-  const results: Record<string, { available: boolean; responseMs: number; error?: string }> = {}
-  const supabase = getSupabase()
-  const now = new Date().toISOString()
+// ============================================
+// STREAMING ROUTER
+// ============================================
 
-  for (const [modelName, config] of Object.entries(MODELS)) {
-    const startTime = Date.now()
-    
-    // Check if API key exists
-    if (!process.env[config.envKey]) {
-      results[modelName] = { available: false, responseMs: 0, error: 'No API key' }
-      continue
-    }
-
-    try {
-      const model = getModelProvider(modelName)
-      if (!model) {
-        results[modelName] = { available: false, responseMs: 0, error: 'Provider init failed' }
-        continue
-      }
-
-      // Simple health check prompt
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 10000)
-
-      await generateText({
-        model,
-        prompt: 'Reply with "OK" only.',
-        maxTokens: 10,
-        abortSignal: controller.signal,
-      })
-
-      clearTimeout(timeoutId)
-      const responseMs = Date.now() - startTime
-
-      results[modelName] = { available: true, responseMs }
-
-      // Update model_status
-      await supabase
-        .from('model_status')
-        .update({
-          is_available: true,
-          consecutive_failures: 0,
-          last_checked: now,
-          last_success: now,
-          avg_response_ms: responseMs,
-          updated_at: now,
-        })
-        .eq('model_name', modelName)
-
-    } catch (error) {
-      const responseMs = Date.now() - startTime
-      results[modelName] = { 
-        available: false, 
-        responseMs, 
-        error: (error as Error).message 
-      }
-
-      // Update model_status with failure
-      const { data: current } = await supabase
-        .from('model_status')
-        .select('consecutive_failures, error_count')
-        .eq('model_name', modelName)
-        .single()
-
-      const newConsecutiveFailures = (current?.consecutive_failures || 0) + 1
-
-      await supabase
-        .from('model_status')
-        .update({
-          is_available: newConsecutiveFailures < 3,
-          consecutive_failures: newConsecutiveFailures,
-          error_count: (current?.error_count || 0) + 1,
-          last_checked: now,
-          updated_at: now,
-        })
-        .eq('model_name', modelName)
-    }
+export async function routeAgentStreamRequest(input: RouterInput) {
+  const route = AGENT_ROUTES[input.task]
+  
+  if (!route) {
+    throw new Error(`Unknown task type: ${input.task}`)
   }
-
-  return results
-}
-
-// Get model status for dashboard
-export async function getModelStatuses() {
-  const supabase = getSupabase()
   
-  const { data, error } = await supabase
-    .from('model_status')
-    .select('*')
-    .order('model_name')
-
-  if (error) throw error
-  return data
-}
-
-// Toggle model availability (admin function)
-export async function toggleModelAvailability(modelName: string, disabled: boolean) {
-  const supabase = getSupabase()
+  if (!route.streaming) {
+    throw new Error(`Task ${input.task} does not support streaming`)
+  }
   
-  await supabase
-    .from('model_status')
-    .update({ 
-      is_manually_disabled: disabled,
-      updated_at: new Date().toISOString(),
+  try {
+    const stream = streamText({
+      model: route.primary as any,
+      system: input.systemPrompt,
+      prompt: input.prompt,
+      maxTokens: 2048,
+      temperature: 0.7,
     })
-    .eq('model_name', modelName)
+    
+    return { stream, agent_name: route.agent_name, model_used: route.primary }
+  } catch {
+    // Fall back
+    const stream = streamText({
+      model: route.fallback as any,
+      system: input.systemPrompt,
+      prompt: input.prompt,
+      maxTokens: 2048,
+      temperature: 0.7,
+    })
+    
+    return { stream, agent_name: route.agent_name, model_used: route.fallback }
+  }
+}
+
+// ============================================
+// HELPERS
+// ============================================
+
+function extractPrice(text: string): number {
+  const match = text.match(/(?:recommended_daily_rate|price|rate)["\s:]+(\d+(?:\.\d+)?)/i)
+  return match ? parseFloat(match[1]) : 0
+}
+
+function extractRiskTier(text: string): string {
+  const match = text.match(/risk_tier["\s:]+["']?(low|medium|high|critical)["']?/i)
+  return match ? match[1].toLowerCase() : 'unknown'
+}
+
+// ============================================
+// AGENT METADATA HELPERS
+// ============================================
+
+export function getAgentConfig(task: AgentTaskType): RouteConfig {
+  return AGENT_ROUTES[task]
+}
+
+export function getAllAgents(): RouteConfig[] {
+  return Object.values(AGENT_ROUTES)
+}
+
+export function getAgentByName(name: string): RouteConfig | undefined {
+  return Object.values(AGENT_ROUTES).find(
+    (route) => route.agent_name.toLowerCase() === name.toLowerCase()
+  )
+}
+
+export function getAgentLoadingMessage(task: AgentTaskType): string {
+  const agent = AGENT_ROUTES[task]
+  const messages: Record<string, string> = {
+    Beacon: 'Beacon is transmitting...',
+    Gauge: 'Gauge is reading the market...',
+    Guard: 'Guard is analyzing reputation...',
+    Scout: 'Scout is running recon...',
+    Vitals: 'Vitals is checking fleet health...',
+    Grok: 'Grok is scanning conditions...',
+    Gemini: 'Gemini is analyzing documents...',
+    DeepSeek: 'DeepSeek is processing batch...',
+    Badge: 'Badge is verifying credentials...',
+    Surveyor: 'Surveyor is assessing damage...',
+    Lookout: 'Lookout is scanning for threats...',
+    Outfitter: 'Outfitter is preparing gear...',
+    Boost: 'Boost is charging up...',
+    RAD: 'RAD is plotting your course...',
+  }
+  return messages[agent.agent_name] || `${agent.agent_name} is working...`
 }
