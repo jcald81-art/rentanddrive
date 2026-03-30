@@ -1,3 +1,4 @@
+// Next.js 16 Proxy - handles authentication and route protection
 import { updateSession } from '@/lib/supabase/session'
 import { type NextRequest } from 'next/server'
 
