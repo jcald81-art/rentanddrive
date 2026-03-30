@@ -65,8 +65,7 @@ export default function LoginPage() {
         <div className="flex justify-center mb-4">
           <Logo size="lg" linkTo={undefined} />
         </div>
-          <span className="text-xl font-semibold">Rent and Drive</span>
-        </div>
+        <span className="text-xl font-semibold">Rent and Drive</span>
       </div>
 
       <div className="space-y-6">
