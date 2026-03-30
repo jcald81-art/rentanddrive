@@ -1,10 +1,5 @@
 'use client'
 
-/**
- * Vehicle Filters Component
- * Hydration-safe: All dates initialized client-side only
- */
-
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -42,7 +37,6 @@ function VehicleFiltersInner() {
   const [category, setCategory] = useState(searchParams.get('category') || 'all')
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
 
-  // Only run on client to avoid hydration mismatch
   useEffect(() => {
     setIsClient(true)
     const start = searchParams.get('start_date')
@@ -52,7 +46,6 @@ function VehicleFiltersInner() {
     }
   }, [searchParams])
 
-  // Helper function for date display - returns static string during SSR
   const getDateDisplay = (): string => {
     if (!isClient) return 'Pick dates'
     if (!dateRange?.from) return 'Pick dates'
@@ -64,25 +57,21 @@ function VehicleFiltersInner() {
 
   const applyFilters = () => {
     const params = new URLSearchParams(searchParams.toString())
-    
     if (category !== 'all') {
       params.set('category', category)
     } else {
       params.delete('category')
     }
-
     if (dateRange?.from) {
       params.set('start_date', dateRange.from.toISOString().split('T')[0])
     } else {
       params.delete('start_date')
     }
-
     if (dateRange?.to) {
       params.set('end_date', dateRange.to.toISOString().split('T')[0])
     } else {
       params.delete('end_date')
     }
-
     router.push(`/vehicles?${params.toString()}`)
   }
 
@@ -98,9 +87,7 @@ function VehicleFiltersInner() {
         <SlidersHorizontal className="size-5 text-muted-foreground" />
         <h3 className="font-semibold">Filters</h3>
       </div>
-
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {/* Category Filter */}
         <div className="space-y-2">
           <label className="text-sm font-medium">Category</label>
           <Select value={category} onValueChange={setCategory}>
@@ -116,8 +103,6 @@ function VehicleFiltersInner() {
             </SelectContent>
           </Select>
         </div>
-
-        {/* Date Range Filter - Hydration Safe */}
         <div className="space-y-2">
           <label className="text-sm font-medium">Dates</label>
           <Popover>
@@ -148,8 +133,6 @@ function VehicleFiltersInner() {
             </PopoverContent>
           </Popover>
         </div>
-
-        {/* Action Buttons */}
         <div className="flex items-end gap-2">
           <Button onClick={applyFilters} className="flex-1">
             Apply Filters
@@ -160,14 +143,6 @@ function VehicleFiltersInner() {
         </div>
       </div>
     </div>
-  )
-}
-
-export function VehicleFilters() {
-  return (
-    <Suspense fallback={<VehicleFiltersSkeleton />}>
-      <VehicleFiltersInner />
-    </Suspense>
   )
 }
 
@@ -184,5 +159,13 @@ function VehicleFiltersSkeleton() {
         <div className="h-10 animate-pulse rounded bg-muted" />
       </div>
     </div>
+  )
+}
+
+export function VehicleFilters() {
+  return (
+    <Suspense fallback={<VehicleFiltersSkeleton />}>
+      <VehicleFiltersInner />
+    </Suspense>
   )
 }
