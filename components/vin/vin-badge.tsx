@@ -2,25 +2,26 @@
 
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { Shield, FileText } from 'lucide-react'
+import { Shield, FileText, AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { VinReportModal } from './vin-report-modal'
 
 interface VinBadgeProps {
   vehicleId: string
-  isClean?: boolean
   hasReport?: boolean
+  isClean?: boolean
   reportSummary?: {
+    report_id?: string
     is_clean: boolean
     accident_count: number
     title_status: string
-    theft_record: boolean
+    theft_record?: boolean
     odometer_rollback: boolean
     last_reported_mileage: number | null
     owner_count: number | null
     recall_count: number
     market_value?: { base: number; low: number; high: number }
-    flags: {
+    flags?: {
       has_accidents: boolean
       has_salvage_title: boolean
       has_theft_record: boolean
@@ -29,32 +30,46 @@ interface VinBadgeProps {
     }
   } | null
   className?: string
+  size?: 'sm' | 'md'
 }
 
 export function VinBadge({ 
   vehicleId, 
-  isClean, 
-  hasReport = false, 
+  hasReport = false,
+  isClean,
   reportSummary,
-  className 
+  className,
+  size = 'sm',
 }: VinBadgeProps) {
   const [showModal, setShowModal] = useState(false)
 
-  if (!hasReport) {
+  // No badge if no report
+  if (!hasReport && !reportSummary) {
     return null
   }
 
+  // Determine status
   const isVerifiedClean = isClean ?? reportSummary?.is_clean ?? false
+  const hasFlags = reportSummary?.flags && (
+    reportSummary.flags.has_accidents ||
+    reportSummary.flags.has_salvage_title ||
+    reportSummary.flags.has_odometer_rollback
+  )
 
+  // Green: Clean report
+  // Yellow: Report exists with flags
+  // No badge: No report
+  
   return (
     <>
       <Badge
-        variant={isVerifiedClean ? 'default' : 'secondary'}
+        variant="secondary"
         className={cn(
-          "cursor-pointer transition-all hover:scale-105",
-          isVerifiedClean 
-            ? "bg-green-600 hover:bg-green-700" 
-            : "bg-muted text-muted-foreground hover:bg-muted/80",
+          "cursor-pointer transition-all hover:scale-105 gap-1",
+          isVerifiedClean && !hasFlags
+            ? "bg-green-600 text-white hover:bg-green-700" 
+            : "bg-amber-500 text-white hover:bg-amber-600",
+          size === 'sm' ? "text-xs px-2 py-0.5" : "text-sm px-3 py-1",
           className
         )}
         onClick={(e) => {
@@ -63,25 +78,33 @@ export function VinBadge({
           setShowModal(true)
         }}
       >
-        {isVerifiedClean ? (
+        {isVerifiedClean && !hasFlags ? (
           <>
-            <Shield className="mr-1 h-3 w-3" />
+            <Shield className={cn(size === 'sm' ? "h-3 w-3" : "h-4 w-4")} />
             History Verified
           </>
         ) : (
           <>
-            <FileText className="mr-1 h-3 w-3" />
+            <AlertTriangle className={cn(size === 'sm' ? "h-3 w-3" : "h-4 w-4")} />
             Report Available
           </>
         )}
       </Badge>
 
-      {showModal && reportSummary && (
+      {showModal && (
         <VinReportModal
           isOpen={showModal}
           onClose={() => setShowModal(false)}
           vehicleId={vehicleId}
-          summary={reportSummary}
+          summary={reportSummary || {
+            is_clean: isVerifiedClean,
+            accident_count: 0,
+            title_status: 'clean',
+            odometer_rollback: false,
+            last_reported_mileage: null,
+            owner_count: null,
+            recall_count: 0,
+          }}
         />
       )}
     </>
