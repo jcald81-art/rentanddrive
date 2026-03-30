@@ -2,9 +2,7 @@
 
 /**
  * Universal Concierge Component
- * Supports both R&D (beta) and RAD (production) personas
- * CLIENT COMPONENT ONLY - NO SERVER IMPORTS ALLOWED
- * Updated: 2026-03-30
+ * CLIENT COMPONENT ONLY - NO SERVER IMPORTS
  */
 
 import { useState, useRef, useEffect } from 'react'
@@ -57,7 +55,7 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
 
   const handlePersonaSwitch = (newPersona: AIPersona) => {
     setPersona(newPersona)
-    setMessages([]) // Clear chat on persona switch
+    setMessages([])
   }
 
   const getMessageText = (message: typeof messages[0]) => {
@@ -74,7 +72,6 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
 
   return (
     <>
-      {/* Chat Toggle Button */}
       <Button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
@@ -95,10 +92,8 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
         )}
       </Button>
 
-      {/* Chat Window */}
       {isOpen && (
         <Card className="fixed bottom-24 right-6 z-50 flex h-[500px] w-[380px] flex-col overflow-hidden shadow-2xl border-0">
-          {/* Header */}
           <div 
             className="flex items-center gap-3 px-4 py-3 text-white"
             style={{
@@ -122,7 +117,6 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
               <p className="text-xs text-white/80">{config.tagline}</p>
             </div>
             
-            {/* Persona Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 h-8 w-8">
@@ -150,7 +144,6 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
             <div className="flex h-2 w-2 rounded-full bg-green-400 animate-pulse" />
           </div>
 
-          {/* Messages */}
           <ScrollArea 
             className="flex-1 p-4" 
             ref={scrollRef}
@@ -237,7 +230,6 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
             </div>
           </ScrollArea>
 
-          {/* Input */}
           <form onSubmit={handleSubmit} className="border-t p-3 bg-white">
             <div className="flex gap-2">
               <Input
@@ -262,7 +254,7 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
               </Button>
             </div>
             <p className="text-[10px] text-center text-muted-foreground mt-2">
-              {isRAD ? 'Hang 10 and drive 55 🤙' : 'Powered by R&D Intelligence'}
+              {isRAD ? 'Hang 10 and drive 55' : 'Powered by R&D Intelligence'}
             </p>
           </form>
         </Card>
