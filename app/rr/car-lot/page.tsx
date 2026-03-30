@@ -31,7 +31,7 @@ export default function RenterCarLotPage() {
         // Fetch listings
         const listingsRes = await fetch('/api/car-lot/listings')
         const listingsData = await listingsRes.json()
-        setListings(listingsData)
+        setListings(Array.isArray(listingsData) ? listingsData : [])
 
         // Fetch renter's rental history for these vehicles
         const historyRes = await fetch('/api/renter/rental-history')
