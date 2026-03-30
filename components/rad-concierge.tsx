@@ -61,9 +61,9 @@ export function RADConcierge() {
 
       {/* Chat Window - Surfer Theme */}
       {isOpen && (
-        <Card className="fixed bottom-24 right-6 z-50 w-[380px] max-h-[500px] flex flex-col overflow-hidden shadow-2xl border-0">
+        <Card className="fixed bottom-24 right-6 z-50 w-[380px] h-[500px] shadow-2xl border-0 flex flex-col overflow-hidden">
           {/* Header - Ocean Gradient - Fixed height */}
-          <div className="flex-shrink-0 flex items-center gap-3 bg-gradient-to-r from-[#00B4D8] to-[#0077B6] px-4 py-3 text-white">
+          <div className="h-[72px] flex items-center gap-3 bg-gradient-to-r from-[#00B4D8] to-[#0077B6] px-4 py-3 text-white">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur">
               <span className="text-2xl">🏄</span>
             </div>
@@ -71,18 +71,18 @@ export function RADConcierge() {
               <h3 className="font-semibold flex items-center gap-2">
                 RAD
                 <span className="text-xs font-normal bg-white/20 px-2 py-0.5 rounded-full">
-                  Hang 10!
+                  Chill Mode
                 </span>
               </h3>
-              <p className="text-xs text-white/80">Your chill ride concierge</p>
+              <p className="text-xs text-white/80">Ride And Drive, Dude!</p>
             </div>
             <div className="flex h-2 w-2 rounded-full bg-green-400 animate-pulse" title="Vibin'" />
           </div>
 
-          {/* Messages - Scrollable area with fixed boundaries */}
-          <div className="flex-1 min-h-0 overflow-y-auto p-4 bg-gradient-to-b from-[#00B4D8]/5 to-white">
+          {/* Messages - Fixed height scrollable area: 500 - 72 (header) - 88 (input) = 340px */}
+          <div className="h-[340px] overflow-y-auto p-4 bg-gradient-to-b from-[#00B4D8]/5 to-white">
             {messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full min-h-[280px] text-center px-4">
+              <div className="flex flex-col items-center justify-center h-full text-center px-2">
                 <div className="text-6xl mb-4">🏄‍♂️</div>
                 <h4 className="font-semibold text-lg mb-2">Yo! RAD here!</h4>
                 <p className="text-sm text-muted-foreground mb-4">
@@ -155,8 +155,8 @@ export function RADConcierge() {
             )}
           </div>
 
-          {/* Input - Fixed at bottom */}
-          <form onSubmit={handleSubmit} className="flex-shrink-0 border-t p-3 bg-white">
+          {/* Input - Fixed height at bottom */}
+          <form onSubmit={handleSubmit} className="h-[88px] border-t p-3 bg-white">
             <div className="flex gap-2">
               <Input
                 value={input}
@@ -169,13 +169,13 @@ export function RADConcierge() {
                 type="submit"
                 size="icon"
                 disabled={isLoading || !input.trim()}
-                className="flex-shrink-0 bg-gradient-to-br from-[#00B4D8] to-[#0077B6] hover:from-[#0096C7] hover:to-[#005F8A]"
+                className="bg-gradient-to-br from-[#00B4D8] to-[#0077B6] hover:from-[#0096C7] hover:to-[#005F8A]"
               >
                 <Send className="h-4 w-4" />
               </Button>
             </div>
             <p className="text-[10px] text-center text-muted-foreground mt-2">
-              Hang 10 and drive 55 🤙
+              Hang 10 and drive 55
             </p>
           </form>
         </Card>
