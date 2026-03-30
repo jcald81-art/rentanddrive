@@ -27,6 +27,7 @@ import {
 import { HeroSearchBar } from "@/components/hero-search-bar"
 import { FeaturedVehicles } from "@/components/featured-vehicles"
 import { CustomerReviewsCarousel } from "@/components/customer-reviews-carousel"
+import { UpcomingEvents } from "@/components/upcoming-events"
 
 export default function HomePage() {
   return (
@@ -228,6 +229,24 @@ export default function HomePage() {
               </CardContent>
             </Card>
           </div>
+        </div>
+      </section>
+
+      {/* Upcoming Events Section */}
+      <section className="border-t bg-slate-900 py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="mb-8 text-center">
+            <Badge className="mb-4 bg-orange-500/10 text-orange-400 border-orange-500/20">
+              Real-Time Data
+            </Badge>
+            <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl text-white">
+              Plan Around Local Events
+            </h2>
+            <p className="mx-auto max-w-2xl text-slate-400">
+              See what&apos;s happening in Reno-Sparks-Tahoe and how it affects vehicle availability. Book ahead for major events!
+            </p>
+          </div>
+          <UpcomingEvents variant="full" maxEvents={4} showMarketOutlook={true} />
         </div>
       </section>
 

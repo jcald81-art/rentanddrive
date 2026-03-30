@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { NavHeader } from '@/components/nav-header'
+import { UpcomingEvents } from '@/components/upcoming-events'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -259,6 +260,9 @@ export default function RenterSuitePage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Upcoming Events - helps renters plan */}
+            <UpcomingEvents variant="compact" maxEvents={3} showMarketOutlook={true} />
+
             {/* Switch to Host Suite */}
             <Card>
               <CardContent className="p-6">

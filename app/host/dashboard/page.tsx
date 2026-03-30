@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { UpcomingEvents } from '@/components/upcoming-events'
 import { 
   Car as CarIcon, 
   DollarSign, 
@@ -221,6 +222,13 @@ export default async function HostDashboardPage() {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Upcoming Events & Market Demand */}
+      <section className="border-t border-white/10 bg-[#0d1220]">
+        <div className="container mx-auto px-4 py-12">
+          <UpcomingEvents variant="full" maxEvents={6} showMarketOutlook={true} />
         </div>
       </section>
 
