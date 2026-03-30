@@ -143,6 +143,47 @@ async function handleTripData(device: { id: string; vehicle_id: string }, data: 
     heading: number
   }
 
+  // Check if there's an active booking for this vehicle to get renter info
+  const { data: activeBooking } = await supabase
+    .from('bookings')
+    .select('id, renter_id')
+    .eq('vehicle_id', device.vehicle_id)
+    .eq('status', 'active')
+    .lte('start_date', new Date().toISOString())
+    .gte('end_date', new Date().toISOString())
+    .single()
+
+  // Fire weather and traffic monitors in parallel for active rentals
+  if (activeBooking) {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    
+    await Promise.all([
+      fetch(`${baseUrl}/api/weather/monitor`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          rentalId: activeBooking.id,
+          renterId: activeBooking.renter_id,
+          lat: locationData.location.lat,
+          lng: locationData.location.lon,
+          timestamp: locationData.timestamp
+        })
+      }).catch(err => console.error('[Bouncie] Weather monitor failed:', err)),
+      fetch(`${baseUrl}/api/traffic/monitor`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          rentalId: activeBooking.id,
+          vehicleId: device.vehicle_id,
+          renterId: activeBooking.renter_id,
+          lat: locationData.location.lat,
+          lng: locationData.location.lon,
+          timestamp: locationData.timestamp
+        })
+      }).catch(err => console.error('[Bouncie] Traffic monitor failed:', err))
+    ])
+  }
+
   // Store location
   await supabase.from('bouncie_locations').insert({
     device_id: device.id,
