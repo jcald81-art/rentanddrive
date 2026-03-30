@@ -16,6 +16,25 @@ interface BookingCreationParams {
   stripePaymentIntentId: string
 }
 
+// Rental agreement clauses - auto-included with every booking
+export const RENTAL_AGREEMENT_CLAUSES = {
+  BLACK_ROCK_DESERT: {
+    title: 'Black Rock Desert / Burning Man Prohibition',
+    text: 'Vehicles are strictly prohibited from the Black Rock Desert playa and Burning Man event. Violation results in immediate security deposit forfeiture and additional damage restoration fees. All vehicles are GPS monitored and violations will be detected automatically.',
+    effective: true,
+  },
+  GPS_MONITORING: {
+    title: 'GPS Monitoring Consent',
+    text: 'This vehicle is equipped with GPS tracking (Eagle monitoring system) for security and fleet management purposes. By proceeding with this rental, you consent to location tracking during your rental period.',
+    effective: true,
+  },
+  RESTRICTED_ZONES: {
+    title: 'Restricted Zone Policy',
+    text: 'Certain geographic areas are restricted and vehicle entry is prohibited. Violations may result in penalties including security deposit forfeiture.',
+    effective: true,
+  },
+} as const
+
 interface BookingResult {
   success: boolean
   bookingId?: string
@@ -144,6 +163,24 @@ export async function createCompleteBooking(params: BookingCreationParams): Prom
         })
       })
     }
+
+    // 7. Generate rental agreement with all clauses (including Black Rock prohibition)
+    const agreementClauses = Object.values(RENTAL_AGREEMENT_CLAUSES)
+      .filter(clause => clause.effective)
+      .map(clause => ({
+        title: clause.title,
+        text: clause.text,
+        agreed_at: new Date().toISOString(),
+      }))
+
+    await supabase.from('rental_agreements').insert({
+      booking_id: booking.id,
+      renter_id: params.renterId,
+      vehicle_id: params.vehicleId,
+      clauses: agreementClauses,
+      agreed_at: new Date().toISOString(),
+      ip_address: null, // Would be captured in the API route
+    })
     
     return {
       success: true,

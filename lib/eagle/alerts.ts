@@ -8,6 +8,49 @@ import { createClient } from '@/lib/supabase/server'
 // Alert severity levels
 export type AlertSeverity = 'critical' | 'high' | 'medium' | 'low' | 'info'
 
+// Restricted zones - vehicles are strictly prohibited from entering
+export const RESTRICTED_ZONES = {
+  BLACK_ROCK_DESERT: {
+    name: 'Black Rock Desert Playa',
+    centerLat: 40.7864,
+    centerLng: -119.2065,
+    radiusMiles: 15,
+    reason: 'Burning Man / Black Rock Desert prohibited zone',
+    consequence: 'Immediate security deposit forfeiture and additional damage restoration fees',
+  },
+} as const
+
+/**
+ * Check if a location is within a restricted zone
+ */
+export function isInRestrictedZone(lat: number, lng: number): { 
+  isRestricted: boolean; 
+  zone?: typeof RESTRICTED_ZONES.BLACK_ROCK_DESERT 
+} {
+  for (const zone of Object.values(RESTRICTED_ZONES)) {
+    const distance = calculateDistance(lat, lng, zone.centerLat, zone.centerLng)
+    if (distance <= zone.radiusMiles) {
+      return { isRestricted: true, zone }
+    }
+  }
+  return { isRestricted: false }
+}
+
+/**
+ * Calculate distance between two coordinates in miles (Haversine formula)
+ */
+function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 3959 // Earth's radius in miles
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLng = (lng2 - lng1) * Math.PI / 180
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng / 2) * Math.sin(dLng / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return R * c
+}
+
 // Bouncie event types we handle
 export type BouncieEventType = 
   | 'trip-start'
@@ -227,6 +270,15 @@ export async function processBouncieEvent(payload: BouncieWebhookPayload): Promi
       .eq('vehicle_id', vehicle.id)
       .eq('status', 'active')
       .single()
+
+    // CHECK FOR BLACK ROCK DESERT / BURNING MAN RESTRICTED ZONE
+    if (payload.data.lat && payload.data.lon) {
+      const restrictedCheck = isInRestrictedZone(payload.data.lat, payload.data.lon)
+      if (restrictedCheck.isRestricted && restrictedCheck.zone) {
+        // CRITICAL: Vehicle entered Black Rock Desert
+        await handleBlackRockViolation(vehicle, activeBooking, payload, restrictedCheck.zone)
+      }
+    }
 
     // Classify severity
     const severity = classifySeverity(payload.eventType, payload.data)
@@ -451,6 +503,123 @@ export async function resolveAlert(
     .eq('id', alertId)
 
   return !error
+}
+
+/**
+ * Handle Black Rock Desert / Burning Man violation
+ * This is a critical breach requiring immediate action
+ */
+async function handleBlackRockViolation(
+  vehicle: { id: string; make: string; model: string; year: number; license_plate: string; host_id: string },
+  activeBooking: { id: string; renter_id: string } | null,
+  payload: BouncieWebhookPayload,
+  zone: typeof RESTRICTED_ZONES.BLACK_ROCK_DESERT
+): Promise<void> {
+  const supabase = await createClient()
+  const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model} (${vehicle.license_plate})`
+
+  // Create critical alert
+  const { data: alert } = await supabase
+    .from('fleet_alerts')
+    .insert({
+      vehicle_id: vehicle.id,
+      booking_id: activeBooking?.id || null,
+      alert_type: 'restricted_zone_violation',
+      severity: 'critical',
+      title: `CRITICAL: ${vehicleName} ENTERED BLACK ROCK DESERT`,
+      description: `Vehicle has entered the ${zone.name}. This is a prohibited zone. ${zone.consequence}`,
+      location_lat: payload.data.lat,
+      location_lng: payload.data.lon,
+      location_address: 'Black Rock Desert, Nevada',
+      raw_data: { ...payload.data, zone_name: zone.name, zone_reason: zone.reason },
+      requires_action: true,
+      is_resolved: false,
+      is_acknowledged: false,
+    })
+    .select('id')
+    .single()
+
+  // Get renter info
+  let renter = null
+  if (activeBooking) {
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, phone, email, full_name')
+      .eq('id', activeBooking.renter_id)
+      .single()
+    renter = data
+  }
+
+  // Get host info
+  const { data: host } = await supabase
+    .from('profiles')
+    .select('id, phone, email, full_name')
+    .eq('id', vehicle.host_id)
+    .single()
+
+  // 1. IMMEDIATELY CONTACT RENTER via SecureLink
+  if (renter) {
+    const renterMessage = `URGENT: Your rental vehicle is not authorized for the Black Rock Desert playa. This constitutes a breach of your rental agreement. Please exit the area immediately. Full security deposit forfeiture applies. Contact us immediately: 775-555-0100`
+    
+    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/agents/securelink`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'send_urgent_alert',
+        recipientPhone: renter.phone,
+        recipientEmail: renter.email,
+        subject: 'URGENT: Unauthorized Location - Exit Immediately',
+        message: renterMessage,
+        priority: 'critical',
+      }),
+    })
+  }
+
+  // 2. ALERT HOST immediately
+  if (host) {
+    const hostMessage = `ALERT: Your vehicle ${vehicleName} has entered the Black Rock Desert / Burning Man prohibited zone. The renter has been notified to exit immediately. Security deposit forfeiture process initiated. Booking ID: ${activeBooking?.id || 'N/A'}`
+    
+    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/agents/securelink`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'send_urgent_alert',
+        recipientPhone: host.phone,
+        recipientEmail: host.email,
+        subject: 'ALERT: Vehicle in Prohibited Zone',
+        message: hostMessage,
+        priority: 'critical',
+      }),
+    })
+  }
+
+  // 3. ALERT ADMIN
+  await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/agents/securelink`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'send_urgent_alert',
+      to_admin: true,
+      subject: `CRITICAL: BLACK ROCK DESERT VIOLATION - ${vehicleName}`,
+      message: `Vehicle ${vehicleName} entered Black Rock Desert at ${new Date().toISOString()}. Renter: ${renter?.full_name || 'Unknown'}. Host: ${host?.full_name}. Booking ID: ${activeBooking?.id || 'N/A'}. Security deposit forfeiture process should be initiated.`,
+      priority: 'critical',
+    }),
+  })
+
+  // 4. Flag booking for deposit forfeiture
+  if (activeBooking) {
+    await supabase
+      .from('bookings')
+      .update({
+        has_violation: true,
+        violation_type: 'black_rock_desert_entry',
+        violation_notes: `Vehicle entered Black Rock Desert prohibited zone at ${new Date().toISOString()}. Full security deposit forfeiture applies per rental agreement.`,
+        violation_detected_at: new Date().toISOString(),
+      })
+      .eq('id', activeBooking.id)
+  }
+
+  console.log(`[Eagle] CRITICAL: Black Rock Desert violation processed for vehicle ${vehicle.id}`)
 }
 
 export type { BouncieWebhookPayload, ProcessedAlert }

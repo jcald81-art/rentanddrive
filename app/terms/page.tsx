@@ -157,8 +157,35 @@ export default function TermsOfServicePage() {
             </p>
           </section>
 
+          <section className="border-l-4 border-[#CC0000] pl-4 bg-red-50 dark:bg-red-950/20 p-4 rounded-r">
+            <h2 className="text-2xl font-semibold mb-4 text-[#CC0000]">10. Black Rock Desert / Burning Man Prohibition</h2>
+            <p className="font-semibold mb-4">
+              VEHICLES ARE STRICTLY PROHIBITED FROM THE BLACK ROCK DESERT PLAYA AND BURNING MAN EVENT.
+            </p>
+            <p className="mb-4">
+              All vehicles listed on the Rent and Drive platform are GPS-monitored via our Eagle System. 
+              Entry into the Black Rock Desert area (coordinates: 40.7864°N, 119.2065°W, 15-mile radius) 
+              will trigger an immediate critical alert.
+            </p>
+            <p className="font-semibold">
+              Violation consequences include:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li><strong>Immediate and full security deposit forfeiture</strong></li>
+              <li>Additional damage restoration fees assessed at actual cost</li>
+              <li>Permanent ban from the Rent and Drive platform</li>
+              <li>Potential legal action for breach of contract</li>
+            </ul>
+            <p className="text-sm">
+              No &quot;Playa Package&quot; or special permission is available. This prohibition is absolute and 
+              without exception. The extreme conditions of the Black Rock Desert environment cause 
+              significant damage to vehicles including alkaline dust infiltration, brake damage, and 
+              corrosion that is expensive and time-consuming to remediate.
+            </p>
+          </section>
+
           <section>
-            <h2 className="text-2xl font-semibold mb-4">10. Prohibited Uses</h2>
+            <h2 className="text-2xl font-semibold mb-4">11. Other Prohibited Uses</h2>
             <p>Vehicles may not be used for:</p>
             <ul className="list-disc pl-6 space-y-2">
               <li>Any illegal activity</li>
@@ -174,7 +201,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">11. Dispute Resolution</h2>
+            <h2 className="text-2xl font-semibold mb-4">12. Dispute Resolution</h2>
             <p>
               Disputes between Hosts and Renters will first be mediated by our support team. If resolution 
               cannot be reached, disputes will be submitted to binding arbitration in accordance with the 
@@ -186,7 +213,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">12. Limitation of Liability</h2>
+            <h2 className="text-2xl font-semibold mb-4">13. Limitation of Liability</h2>
             <p>
               To the maximum extent permitted by law, Rent and Drive LLC shall not be liable for any 
               indirect, incidental, special, consequential, or punitive damages arising from your use of 
@@ -196,7 +223,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">13. Governing Law</h2>
+            <h2 className="text-2xl font-semibold mb-4">14. Governing Law</h2>
             <p>
               These Terms of Service shall be governed by and construed in accordance with the laws of the 
               State of Nevada, without regard to its conflict of law provisions. Any legal action arising 
@@ -206,7 +233,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">14. Changes to Terms</h2>
+            <h2 className="text-2xl font-semibold mb-4">15. Changes to Terms</h2>
             <p>
               We reserve the right to modify these terms at any time. Material changes will be communicated 
               via email and platform notification at least 30 days before taking effect. Continued use of 
@@ -215,7 +242,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">15. Contact Information</h2>
+            <h2 className="text-2xl font-semibold mb-4">16. Contact Information</h2>
             <p>
               For questions about these Terms of Service, please contact us at:
             </p>
