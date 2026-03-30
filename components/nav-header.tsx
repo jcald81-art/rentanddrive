@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X, User, LogOut } from 'lucide-react'
+import { Menu, X, User, LogOut, Car, Home as HomeIcon, ChevronDown } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -83,15 +83,25 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
                     Account
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem asChild>
+                    <Link href="/renter/suite" className="flex items-center">
+                      <Car className="h-4 w-4 mr-2" />
+                      Renter Suite
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/host/dashboard" className="flex items-center">
+                      <HomeIcon className="h-4 w-4 mr-2" />
+                      Host Suite
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link href="/profile">My Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/bookings">My Bookings</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard">Dashboard</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
@@ -102,16 +112,52 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
               </DropdownMenu>
             ) : (
               <>
-                <Link href="/login">
-                  <Button variant="ghost" size="sm" className={mutedClass}>
-                    Sign In
-                  </Button>
-                </Link>
-                <Link href="/signup">
-                  <Button size="sm" className="bg-[#CC0000] hover:bg-[#aa0000] text-white">
-                    Sign Up
-                  </Button>
-                </Link>
+                {/* Sign In Dropdown with Renter/Host options */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className={mutedClass}>
+                      Sign In
+                      <ChevronDown className="h-4 w-4 ml-1" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem asChild>
+                      <Link href="/login?role=renter" className="flex items-center">
+                        <Car className="h-4 w-4 mr-2" />
+                        As Renter
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/login?role=host" className="flex items-center">
+                        <HomeIcon className="h-4 w-4 mr-2" />
+                        As Host
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                {/* Sign Up Dropdown with Renter/Host options */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button size="sm" className="bg-[#CC0000] hover:bg-[#aa0000] text-white">
+                      Sign Up
+                      <ChevronDown className="h-4 w-4 ml-1" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem asChild>
+                      <Link href="/signup?role=renter" className="flex items-center">
+                        <Car className="h-4 w-4 mr-2" />
+                        As Renter
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/signup?role=host" className="flex items-center">
+                        <HomeIcon className="h-4 w-4 mr-2" />
+                        As Host
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </>
             )}
           </div>
@@ -147,24 +193,37 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
             </Link>
             {showAuth && !user && (
               <>
-                <Link href="/login" className={`text-sm ${mutedClass}`} onClick={() => setMobileMenuOpen(false)}>
-                  Sign In
+                <div className={`text-xs font-semibold uppercase tracking-wider ${mutedClass} mt-2`}>Sign In</div>
+                <Link href="/login?role=renter" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
+                  <Car className="h-4 w-4" /> As Renter
                 </Link>
-                <Link href="/signup" className={`text-sm ${mutedClass}`} onClick={() => setMobileMenuOpen(false)}>
-                  Sign Up
+                <Link href="/login?role=host" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
+                  <HomeIcon className="h-4 w-4" /> As Host
+                </Link>
+                <div className={`text-xs font-semibold uppercase tracking-wider ${mutedClass} mt-2`}>Sign Up</div>
+                <Link href="/signup?role=renter" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
+                  <Car className="h-4 w-4" /> As Renter
+                </Link>
+                <Link href="/signup?role=host" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
+                  <HomeIcon className="h-4 w-4" /> As Host
                 </Link>
               </>
             )}
             {showAuth && user && (
               <>
+                <div className={`text-xs font-semibold uppercase tracking-wider ${mutedClass} mt-2`}>My Suites</div>
+                <Link href="/renter/suite" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
+                  <Car className="h-4 w-4" /> Renter Suite
+                </Link>
+                <Link href="/host/dashboard" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
+                  <HomeIcon className="h-4 w-4" /> Host Suite
+                </Link>
+                <div className={`text-xs font-semibold uppercase tracking-wider ${mutedClass} mt-2`}>Account</div>
                 <Link href="/profile" className={`text-sm ${mutedClass}`} onClick={() => setMobileMenuOpen(false)}>
                   My Profile
                 </Link>
                 <Link href="/bookings" className={`text-sm ${mutedClass}`} onClick={() => setMobileMenuOpen(false)}>
                   My Bookings
-                </Link>
-                <Link href="/dashboard" className={`text-sm ${mutedClass}`} onClick={() => setMobileMenuOpen(false)}>
-                  Dashboard
                 </Link>
                 <button className={`text-sm ${mutedClass} text-left`} onClick={handleSignOut}>
                   Sign Out

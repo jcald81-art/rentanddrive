@@ -1,14 +1,16 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import { Car as CarIcon } from 'lucide-react'
 
 export default async function HostDashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login')
+    redirect('/login?role=host')
   }
 
   const handleSignOut = async () => {
@@ -22,32 +24,32 @@ export default async function HostDashboardPage() {
     <div className="min-h-svh bg-background">
       <header className="border-b bg-[#0D0D0D] text-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#D62828] rounded-lg flex items-center justify-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-5 h-5"
-              >
-                <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
-                <circle cx="7" cy="17" r="2" />
-                <path d="M9 17h6" />
-                <circle cx="17" cy="17" r="2" />
-              </svg>
-            </div>
-            <span className="font-semibold">Rent and Drive</span>
-            <span className="text-xs bg-[#D62828] px-2 py-0.5 rounded">HOST</span>
+          <div className="flex items-center gap-4">
+            <Link href="/" className="hover:opacity-80 transition-opacity">
+              <Image 
+                src="/images/logo.jpg" 
+                alt="Rent and Drive" 
+                width={160}
+                height={40}
+                className="h-8 w-auto object-contain"
+              />
+            </Link>
+            <span className="text-xs bg-[#D62828] px-2 py-0.5 rounded font-medium">HOST SUITE</span>
           </div>
-          <form action={handleSignOut}>
-            <Button variant="outline" size="sm" type="submit" className="border-white/20 text-white hover:bg-white/10">
-              Sign out
-            </Button>
-          </form>
+          <div className="flex items-center gap-3">
+            {/* Switch to Renter Suite */}
+            <Link href="/renter/suite">
+              <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/10 gap-2">
+                <CarIcon className="h-4 w-4" />
+                Renter Suite
+              </Button>
+            </Link>
+            <form action={handleSignOut}>
+              <Button variant="outline" size="sm" type="submit" className="border-white/20 text-white hover:bg-white/10">
+                Sign out
+              </Button>
+            </form>
+          </div>
         </div>
       </header>
 

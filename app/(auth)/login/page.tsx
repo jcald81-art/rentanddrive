@@ -17,6 +17,7 @@ function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirect')
+  const role = searchParams.get('role') || 'renter' // Default to renter
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,8 +32,14 @@ function LoginForm() {
       })
       if (error) throw error
       
-      // Redirect to intended destination or portal
-      router.push(redirectTo || '/portal')
+      // Update user role if needed
+      if (role && data.user) {
+        await supabase.auth.updateUser({ data: { role } })
+      }
+      
+      // Redirect to intended destination or appropriate suite based on role
+      const defaultRedirect = role === 'host' ? '/host/dashboard' : '/renter/suite'
+      router.push(redirectTo || defaultRedirect)
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred')
     } finally {
@@ -46,8 +53,8 @@ function LoginForm() {
     setError(null)
 
     try {
-      // Use current origin for redirect to work in all environments
-      const redirectUrl = `${window.location.origin}/callback`
+      // Use current origin for redirect, include role for post-login redirect
+      const redirectUrl = `${window.location.origin}/callback?role=${role}`
       
       const { error } = await supabase.auth.signInWithOAuth({
         provider,

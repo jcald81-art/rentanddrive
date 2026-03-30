@@ -5,7 +5,7 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   const role = searchParams.get('role') || 'renter'
-  const next = searchParams.get('next') ?? '/'
+  const next = searchParams.get('next')
 
   if (code) {
     const supabase = await createClient()
@@ -19,9 +19,14 @@ export async function GET(request: Request) {
         })
       }
 
-      // Determine redirect based on role (hosts to /dashboard, renters to /vehicles)
+      // If there's a specific next URL, use that
+      if (next) {
+        return NextResponse.redirect(`${origin}${next}`)
+      }
+
+      // Determine redirect based on role - direct to appropriate suite
       const userRole = data.user.user_metadata?.role || role
-      const redirectPath = userRole === 'host' ? '/dashboard' : '/vehicles'
+      const redirectPath = userRole === 'host' ? '/host/dashboard' : '/renter/suite'
       
       return NextResponse.redirect(`${origin}${redirectPath}`)
     }
