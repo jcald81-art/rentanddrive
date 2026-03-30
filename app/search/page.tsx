@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Car, Star, Zap, Bluetooth, PawPrint, Baby, Users, SlidersHorizontal, X, MapPin, Calendar, Search } from 'lucide-react'
 import { VerificationBadge } from '@/components/verification-badge'
+import { NavHeader } from '@/components/nav-header'
 
 // Mock vehicle data
 const mockVehicles = [
@@ -144,28 +145,7 @@ export default function SearchPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
-      {/* Header Navigation */}
-      <header className="bg-[#111111] border-b border-[#222]">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#CC0000]">
-              <Car className="h-5 w-5 text-white" />
-            </div>
-            <span className="font-bold text-lg">Rent & Drive</span>
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/vehicles" className="text-sm text-gray-400 hover:text-white transition-colors">
-              Browse All
-            </Link>
-            <Link href="/host" className="text-sm text-gray-400 hover:text-white transition-colors">
-              List Your Car
-            </Link>
-            <Link href="/login" className="px-4 py-2 bg-[#FFD84D] text-black text-sm font-semibold rounded-lg hover:bg-[#e6c344] transition-colors">
-              Sign In
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <NavHeader variant="dark" />
 
       {/* Sticky Search Bar */}
       <div className="sticky top-0 z-50 bg-[#111111] border-b border-[#222] shadow-lg">

@@ -16,7 +16,9 @@ import {
   ChevronRight,
   Key,
   AlertCircle,
+  Home,
 } from 'lucide-react'
+import { NavHeader } from '@/components/nav-header'
 
 interface Booking {
   id: string
@@ -192,9 +194,19 @@ export default function BookingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="flex items-center justify-between mb-8">
+  <div className="min-h-screen bg-background">
+  <NavHeader />
+  <div className="container mx-auto px-4 py-8 max-w-4xl">
+  {/* Breadcrumb */}
+  <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+    <Link href="/" className="hover:text-foreground transition-colors flex items-center gap-1">
+      <Home className="h-4 w-4" />
+      Home
+    </Link>
+    <ChevronRight className="h-4 w-4" />
+    <span className="text-foreground">My Bookings</span>
+  </nav>
+  <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold text-foreground">My Bookings</h1>
           <Link href="/vehicles">
             <Button className="bg-[#CC0000] hover:bg-[#CC0000]/90">

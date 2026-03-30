@@ -20,9 +20,12 @@ import {
   CheckCircle, 
   AlertCircle,
   Loader2,
-  Save
+  Save,
+  Home,
+  ChevronRight
 } from 'lucide-react'
 import Link from 'next/link'
+import { NavHeader } from '@/components/nav-header'
 
 interface Profile {
   id: string
@@ -237,8 +240,18 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <div className="container max-w-4xl py-8 px-4">
+  <div className="min-h-screen bg-muted/30">
+  <NavHeader />
+  <div className="container max-w-4xl py-8 px-4">
+    {/* Breadcrumb */}
+    <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+      <Link href="/" className="hover:text-foreground transition-colors flex items-center gap-1">
+        <Home className="h-4 w-4" />
+        Home
+      </Link>
+      <ChevronRight className="h-4 w-4" />
+      <span className="text-foreground">My Profile</span>
+    </nav>
         <h1 className="text-3xl font-bold mb-8">My Profile</h1>
 
         <div className="grid gap-6 md:grid-cols-3">

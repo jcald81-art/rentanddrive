@@ -118,7 +118,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* PWA Meta Tags */}
         <meta name="application-name" content="Rent and Drive" />
@@ -153,7 +153,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body className="font-sans antialiased">
+      <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <ErrorBoundary>
           {children}
         </ErrorBoundary>

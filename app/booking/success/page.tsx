@@ -3,7 +3,8 @@
 import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Check, Calendar, MapPin, Phone, Copy, CheckCircle, ExternalLink } from 'lucide-react'
+import { Check, Calendar, MapPin, Phone, Copy, CheckCircle, ExternalLink, Home, ChevronRight } from 'lucide-react'
+import { NavHeader } from '@/components/nav-header'
 
 function BookingSuccessContent() {
   const searchParams = useSearchParams()
@@ -41,7 +42,9 @@ function BookingSuccessContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      <NavHeader variant="dark" />
+      <div className="flex items-center justify-center p-4 min-h-[calc(100vh-64px)]">
       <div className="w-full max-w-lg">
         {/* Success Animation */}
         <div className="text-center mb-8">
@@ -166,6 +169,18 @@ function BookingSuccessContent() {
             View receipt <ExternalLink className="h-3 w-3" />
           </a>
         </p>
+
+        {/* Navigation Links */}
+        <div className="flex justify-center gap-4 mt-8">
+          <Link href="/bookings" className="text-sm text-[#FFD84D] hover:underline">
+            View My Bookings
+          </Link>
+          <span className="text-gray-600">|</span>
+          <Link href="/" className="text-sm text-gray-400 hover:text-white">
+            Back to Home
+          </Link>
+        </div>
+      </div>
       </div>
     </div>
   )
