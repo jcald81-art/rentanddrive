@@ -22,9 +22,11 @@ import {
 import { 
   Car, Shield, Radar, DollarSign, Gauge, Calendar, MapPin,
   CheckCircle2, Snowflake, FileText, MessageSquare, ExternalLink,
-  ChevronLeft, ChevronRight, User, Star, Phone
+  ChevronLeft, ChevronRight, User, Star, Phone, Truck
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { TestDriveModal } from '@/components/car-lot/test-drive-modal'
+import { DeliveryChoice } from '@/components/car-lot/delivery-choice'
 
 export default function CarLotListingPage() {
   const params = useParams()
@@ -36,6 +38,8 @@ export default function CarLotListingPage() {
   const [inquiryMessage, setInquiryMessage] = useState('')
   const [offerAmount, setOfferAmount] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [testDriveOpen, setTestDriveOpen] = useState(false)
+  const [showDeliveryChoice, setShowDeliveryChoice] = useState(false)
 
   useEffect(() => {
     async function fetchListing() {
@@ -384,11 +388,29 @@ export default function CarLotListingPage() {
                       </DialogContent>
                     </Dialog>
 
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-[#CC0000] text-[#CC0000] hover:bg-[#CC0000]/10"
+                      onClick={() => setTestDriveOpen(true)}
+                    >
+                      <Car className="h-4 w-4 mr-2" />
+                      Schedule Test Drive
+                    </Button>
+
                     <Button variant="outline" className="w-full" asChild>
                       <Link href={`/vehicles/${vehicle?.id}`}>
-                        <Car className="h-4 w-4 mr-2" />
+                        <Calendar className="h-4 w-4 mr-2" />
                         Rent This Vehicle First
                       </Link>
+                    </Button>
+
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => setShowDeliveryChoice(true)}
+                    >
+                      <Truck className="h-4 w-4 mr-2" />
+                      Shipping Options
                     </Button>
 
                     <Button variant="outline" className="w-full" asChild>
@@ -440,8 +462,38 @@ export default function CarLotListingPage() {
               </Card>
             </div>
           </div>
+
+          {/* Delivery Choice Section - shown when offer accepted */}
+          {showDeliveryChoice && (
+            <div className="mt-8 pt-8 border-t">
+              <h2 className="text-2xl font-bold mb-6">How would you like to receive this vehicle?</h2>
+              <DeliveryChoice
+                listingId={listing.id}
+                vehicleName={`${vehicle?.year} ${vehicle?.make} ${vehicle?.model}`}
+                vehicleAddress={vehicle?.location_address || 'Reno, NV'}
+                onComplete={(choice, data) => {
+                  if (choice === 'pickup') {
+                    setTestDriveOpen(true)
+                    setShowDeliveryChoice(false)
+                  } else {
+                    toast.success('Shipment booked! Check your email for tracking details.')
+                    router.push(`/rr/my-trips/shipment/${(data as any)?.shipment?.id}`)
+                  }
+                }}
+              />
+            </div>
+          )}
         </div>
       </section>
+
+      {/* Test Drive Modal */}
+      <TestDriveModal
+        open={testDriveOpen}
+        onOpenChange={setTestDriveOpen}
+        listingId={listing.id}
+        vehicleName={`${vehicle?.year} ${vehicle?.make} ${vehicle?.model}`}
+        vehicleImage={images[0]}
+      />
     </div>
   )
 }
