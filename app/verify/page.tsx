@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { 
   Upload, 
   CheckCircle, 
@@ -15,9 +15,15 @@ import {
   Loader2,
   Camera,
   FileCheck,
-  Clock
+  Clock,
+  Smartphone,
+  QrCode,
+  Mail,
+  MessageSquare,
+  X
 } from 'lucide-react'
 import Image from 'next/image'
+import QRCode from 'qrcode'
 
 type Step = 1 | 2 | 3 | 4
 
@@ -27,7 +33,14 @@ export default function VerifyPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [existingVerification, setExistingVerification] = useState<string | null>(null)
+  const [showMobileHandoff, setShowMobileHandoff] = useState(false)
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('')
+  const [sendingLink, setSendingLink] = useState(false)
+  const [linkSent, setLinkSent] = useState<'email' | 'sms' | null>(null)
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [userId, setUserId] = useState<string | null>(null)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const [licenseData, setLicenseData] = useState({
     frontImage: null as File | null,
@@ -46,6 +59,35 @@ export default function VerifyPage() {
     checkExistingVerification()
   }, [])
 
+  useEffect(() => {
+    // Check if this is a mobile continuation
+    const token = searchParams.get('token')
+    if (token) {
+      validateMobileToken(token)
+    }
+  }, [searchParams])
+
+  async function validateMobileToken(token: string) {
+    const supabase = createClient()
+    
+    // Validate the token and get user session
+    const { data, error } = await supabase
+      .from('verification_tokens')
+      .select('user_id, expires_at')
+      .eq('token', token)
+      .single()
+    
+    if (error || !data || new Date(data.expires_at) < new Date()) {
+      setError('This link has expired. Please request a new one from your computer.')
+      setLoading(false)
+      return
+    }
+    
+    // Token is valid, user can continue on phone
+    setUserId(data.user_id)
+    setLoading(false)
+  }
+
   async function checkExistingVerification() {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -54,6 +96,8 @@ export default function VerifyPage() {
       router.push('/login')
       return
     }
+
+    setUserId(user.id)
 
     const { data } = await supabase
       .from('driver_verifications')
@@ -70,6 +114,95 @@ export default function VerifyPage() {
       }
     }
     setLoading(false)
+  }
+
+  async function generateMobileLink() {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (!user) return
+
+    // Generate a unique token
+    const token = crypto.randomUUID()
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000) // 30 minutes
+
+    // Store token in database
+    await supabase.from('verification_tokens').insert({
+      token,
+      user_id: user.id,
+      expires_at: expiresAt.toISOString(),
+    })
+
+    // Generate QR code
+    const mobileUrl = `https://rentanddrive.net/verify?token=${token}`
+    const qrCode = await QRCode.toDataURL(mobileUrl, {
+      width: 200,
+      margin: 2,
+      color: { dark: '#0f172a', light: '#ffffff' }
+    })
+    
+    setQrCodeUrl(qrCode)
+    setShowMobileHandoff(true)
+    
+    return { token, mobileUrl }
+  }
+
+  async function sendLinkToEmail() {
+    setSendingLink(true)
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (!user?.email) {
+      setError('No email address found')
+      setSendingLink(false)
+      return
+    }
+
+    const linkData = await generateMobileLink()
+    if (!linkData) {
+      setSendingLink(false)
+      return
+    }
+
+    // Send email via API
+    await fetch('/api/notifications/mobile-verify-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: user.email,
+        link: linkData.mobileUrl,
+      }),
+    })
+
+    setLinkSent('email')
+    setSendingLink(false)
+  }
+
+  async function sendLinkToSMS() {
+    if (!phoneNumber || phoneNumber.length < 10) {
+      setError('Please enter a valid phone number')
+      return
+    }
+
+    setSendingLink(true)
+    const linkData = await generateMobileLink()
+    if (!linkData) {
+      setSendingLink(false)
+      return
+    }
+
+    // Send SMS via API
+    await fetch('/api/notifications/mobile-verify-sms', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phone: phoneNumber,
+        link: linkData.mobileUrl,
+      }),
+    })
+
+    setLinkSent('sms')
+    setSendingLink(false)
   }
 
   function handleFrontUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -99,9 +232,9 @@ export default function VerifyPage() {
     setError(null)
 
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const currentUserId = userId
     
-    if (!user) {
+    if (!currentUserId) {
       router.push('/login')
       return
     }
@@ -109,7 +242,7 @@ export default function VerifyPage() {
     try {
       // Upload front image
       const frontExt = licenseData.frontImage?.name.split('.').pop()
-      const frontPath = `${user.id}/license-front-${Date.now()}.${frontExt}`
+      const frontPath = `${currentUserId}/license-front-${Date.now()}.${frontExt}`
       
       const { error: frontError } = await supabase.storage
         .from('verifications')
@@ -119,7 +252,7 @@ export default function VerifyPage() {
 
       // Upload back image
       const backExt = licenseData.backImage?.name.split('.').pop()
-      const backPath = `${user.id}/license-back-${Date.now()}.${backExt}`
+      const backPath = `${currentUserId}/license-back-${Date.now()}.${backExt}`
       
       const { error: backError } = await supabase.storage
         .from('verifications')
@@ -140,7 +273,7 @@ export default function VerifyPage() {
       const { error: insertError } = await supabase
         .from('driver_verifications')
         .insert({
-          user_id: user.id,
+          user_id: currentUserId,
           license_front_url: frontUrl,
           license_back_url: backUrl,
           license_number: licenseData.licenseNumber,
@@ -151,15 +284,11 @@ export default function VerifyPage() {
 
       if (insertError) throw new Error('Failed to submit verification')
 
-      // Send notification email to admin via API
-      await fetch('/api/notifications/verification', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: user.id,
-          user_email: user.email,
-        }),
-      })
+      // Clean up used token if any
+      const token = searchParams.get('token')
+      if (token) {
+        await supabase.from('verification_tokens').delete().eq('token', token)
+      }
 
       setStep(4)
     } catch (err) {
@@ -169,10 +298,13 @@ export default function VerifyPage() {
     }
   }
 
+  // Detect if user is on mobile
+  const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#CC0000]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#f97316]" />
       </div>
     )
   }
@@ -192,7 +324,7 @@ export default function VerifyPage() {
               </p>
               <Button 
                 onClick={() => router.push('/dashboard')}
-                className="bg-[#CC0000] hover:bg-[#CC0000]/90"
+                className="bg-[#f97316] hover:bg-[#ea580c]"
               >
                 Go to Dashboard
               </Button>
@@ -204,7 +336,7 @@ export default function VerifyPage() {
   }
 
   if (existingVerification === 'rejected') {
-    setExistingVerification(null) // Allow resubmission
+    setExistingVerification(null)
   }
 
   return (
@@ -217,6 +349,133 @@ export default function VerifyPage() {
           </p>
         </div>
 
+        {/* Continue on Phone Option - Show on desktop */}
+        {!isMobile && step === 1 && !showMobileHandoff && (
+          <Card className="mb-6 border-[#f97316]/20 bg-[#f97316]/5">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-[#f97316]/10 rounded-full">
+                  <Smartphone className="h-6 w-6 text-[#f97316]" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold">Continue on your phone?</h3>
+                  <p className="text-sm text-muted-foreground">
+                    It&apos;s easier to take photos with your phone camera
+                  </p>
+                </div>
+                <Button
+                  onClick={generateMobileLink}
+                  variant="outline"
+                  className="border-[#f97316] text-[#f97316] hover:bg-[#f97316]/10"
+                >
+                  <QrCode className="mr-2 h-4 w-4" />
+                  Get QR Code
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Mobile Handoff Modal */}
+        {showMobileHandoff && (
+          <Card className="mb-6">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Smartphone className="h-5 w-5 text-[#f97316]" />
+                  Continue on Phone
+                </CardTitle>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setShowMobileHandoff(false)
+                    setLinkSent(null)
+                  }}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <CardDescription>
+                Scan the QR code or get a link sent to you
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {linkSent ? (
+                <div className="text-center py-4 space-y-4">
+                  <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-8 h-8 text-green-600" />
+                  </div>
+                  <h3 className="font-semibold">
+                    {linkSent === 'email' ? 'Check your email!' : 'Check your phone!'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    We sent a link to continue on your phone. The link expires in 30 minutes.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* QR Code */}
+                  <div className="text-center space-y-3">
+                    <p className="text-sm font-medium">Scan with your phone</p>
+                    {qrCodeUrl && (
+                      <div className="inline-block p-4 bg-white rounded-lg shadow-sm">
+                        <Image
+                          src={qrCodeUrl}
+                          alt="QR Code"
+                          width={200}
+                          height={200}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Send Link Options */}
+                  <div className="space-y-4">
+                    <p className="text-sm font-medium">Or send a link</p>
+                    
+                    <Button
+                      onClick={sendLinkToEmail}
+                      disabled={sendingLink}
+                      variant="outline"
+                      className="w-full justify-start"
+                    >
+                      {sendingLink ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Mail className="mr-2 h-4 w-4" />
+                      )}
+                      Send to my email
+                    </Button>
+
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Phone number"
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          type="tel"
+                        />
+                        <Button
+                          onClick={sendLinkToSMS}
+                          disabled={sendingLink || !phoneNumber}
+                          variant="outline"
+                        >
+                          {sendingLink ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <MessageSquare className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Progress Steps */}
         <div className="flex items-center justify-center gap-2 mb-8">
           {[1, 2, 3, 4].map((s) => (
@@ -224,7 +483,7 @@ export default function VerifyPage() {
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                   step >= s
-                    ? 'bg-[#CC0000] text-white'
+                    ? 'bg-[#f97316] text-white'
                     : 'bg-muted text-muted-foreground'
                 }`}
               >
@@ -233,7 +492,7 @@ export default function VerifyPage() {
               {s < 4 && (
                 <div
                   className={`w-12 h-1 ${
-                    step > s ? 'bg-[#CC0000]' : 'bg-muted'
+                    step > s ? 'bg-[#f97316]' : 'bg-muted'
                   }`}
                 />
               )}
@@ -270,8 +529,8 @@ export default function VerifyPage() {
                   onClick={() => frontInputRef.current?.click()}
                   className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
                     licenseData.frontPreview
-                      ? 'border-[#CC0000] bg-[#CC0000]/5'
-                      : 'border-muted-foreground/25 hover:border-[#CC0000]'
+                      ? 'border-[#f97316] bg-[#f97316]/5'
+                      : 'border-muted-foreground/25 hover:border-[#f97316]'
                   }`}
                 >
                   {licenseData.frontPreview ? (
@@ -287,7 +546,7 @@ export default function VerifyPage() {
                     <div className="space-y-2">
                       <Camera className="h-12 w-12 mx-auto text-muted-foreground" />
                       <p className="text-muted-foreground">
-                        Click to upload or take a photo
+                        {isMobile ? 'Tap to take a photo' : 'Click to upload or take a photo'}
                       </p>
                     </div>
                   )}
@@ -303,7 +562,7 @@ export default function VerifyPage() {
                 <Button
                   onClick={() => setStep(2)}
                   disabled={!licenseData.frontImage}
-                  className="w-full bg-[#CC0000] hover:bg-[#CC0000]/90"
+                  className="w-full bg-[#f97316] hover:bg-[#ea580c]"
                 >
                   Continue
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -318,8 +577,8 @@ export default function VerifyPage() {
                   onClick={() => backInputRef.current?.click()}
                   className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
                     licenseData.backPreview
-                      ? 'border-[#CC0000] bg-[#CC0000]/5'
-                      : 'border-muted-foreground/25 hover:border-[#CC0000]'
+                      ? 'border-[#f97316] bg-[#f97316]/5'
+                      : 'border-muted-foreground/25 hover:border-[#f97316]'
                   }`}
                 >
                   {licenseData.backPreview ? (
@@ -335,7 +594,7 @@ export default function VerifyPage() {
                     <div className="space-y-2">
                       <Camera className="h-12 w-12 mx-auto text-muted-foreground" />
                       <p className="text-muted-foreground">
-                        Click to upload or take a photo
+                        {isMobile ? 'Tap to take a photo' : 'Click to upload or take a photo'}
                       </p>
                     </div>
                   )}
@@ -360,7 +619,7 @@ export default function VerifyPage() {
                   <Button
                     onClick={() => setStep(3)}
                     disabled={!licenseData.backImage}
-                    className="flex-1 bg-[#CC0000] hover:bg-[#CC0000]/90"
+                    className="flex-1 bg-[#f97316] hover:bg-[#ea580c]"
                   >
                     Continue
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -425,7 +684,7 @@ export default function VerifyPage() {
                       !licenseData.state ||
                       !licenseData.expiryDate
                     }
-                    className="flex-1 bg-[#CC0000] hover:bg-[#CC0000]/90"
+                    className="flex-1 bg-[#f97316] hover:bg-[#ea580c]"
                   >
                     {submitting ? (
                       <>
@@ -456,7 +715,7 @@ export default function VerifyPage() {
                 </p>
                 <Button
                   onClick={() => router.push('/dashboard')}
-                  className="bg-[#CC0000] hover:bg-[#CC0000]/90"
+                  className="bg-[#f97316] hover:bg-[#ea580c]"
                 >
                   Go to Dashboard
                 </Button>
