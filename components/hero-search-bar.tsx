@@ -11,6 +11,7 @@ import { MapPin, CalendarDays, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function HeroSearchBar() {
+  console.log("[v0] HeroSearchBar rendering")
   const router = useRouter()
   const [location, setLocation] = useState("Reno, NV")
   const [mounted, setMounted] = useState(false)
@@ -36,7 +37,7 @@ export function HeroSearchBar() {
 
   return (
     <div className="mx-auto w-full max-w-3xl">
-      <div className="flex flex-col gap-2 rounded-2xl bg-white p-2 shadow-2xl md:flex-row md:items-center md:gap-0 md:rounded-full">
+      <div className="flex flex-col gap-2 rounded-2xl bg-white p-2 shadow-2xl border-2 border-gray-200 md:flex-row md:items-center md:gap-0 md:rounded-full">
         {/* Location */}
         <div className="flex flex-1 items-center gap-3 rounded-xl px-4 py-3 md:rounded-full md:border-r md:border-gray-200">
           <MapPin className="h-5 w-5 shrink-0 text-primary" />
