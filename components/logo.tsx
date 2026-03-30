@@ -37,7 +37,8 @@ export function Logo({ className, size = 'md', variant = 'simple', linkTo = '/' 
         alt="Rent and Drive - Reno Sparks Lake Tahoe"
         width={sizeClasses[size].width}
         height={sizeClasses[size].height}
-        className="object-contain w-auto h-auto"
+        className="object-contain"
+        style={{ width: 'auto', height: 'auto' }}
         priority
       />
     </div>

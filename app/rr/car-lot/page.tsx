@@ -52,7 +52,7 @@ export default function RenterCarLotPage() {
     fetchData()
   }, [])
 
-  const filteredListings = listings.filter((listing) => {
+  const filteredListings = (Array.isArray(listings) ? listings : []).filter((listing) => {
     const vehicle = listing.vehicle
     const searchTerm = filters.search.toLowerCase()
     
