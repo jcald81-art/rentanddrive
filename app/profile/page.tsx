@@ -29,6 +29,7 @@ import { NavHeader } from '@/components/nav-header'
 
 interface Profile {
   id: string
+  email: string
   full_name: string | null
   phone: string | null
   avatar_url: string | null
@@ -94,6 +95,7 @@ export default function ProfilePage() {
 
     const profile: Profile = {
       id: user.id,
+      email: user.email || '',
       full_name: profileData?.full_name || user.user_metadata?.full_name || null,
       phone: profileData?.phone || user.user_metadata?.phone || null,
       avatar_url: profileData?.avatar_url || user.user_metadata?.avatar_url || null,
@@ -391,13 +393,13 @@ export default function ProfilePage() {
                     <Mail className="inline h-4 w-4 mr-2" />
                     Email Address
                   </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={profile.id ? 'Loading...' : ''}
-                    disabled
-                    className="bg-muted"
-                  />
+  <Input
+id="email"
+type="email"
+value={profile.email}
+disabled
+className="bg-muted"
+/>
                   <p className="text-xs text-muted-foreground">
                     Email cannot be changed. Contact support if needed.
                   </p>
