@@ -1,5 +1,5 @@
 'use client'
-
+// Vehicle filters with hydration-safe date handling
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { format } from 'date-fns'
@@ -22,6 +22,16 @@ const categories = [
   { value: 'rv', label: 'RVs', icon: Caravan },
   { value: 'atv', label: 'ATVs', icon: Bike },
 ]
+
+// Helper to format date range - only called on client after mount
+function formatDateRangeDisplay(dateRange: DateRange | undefined, mounted: boolean): string {
+  if (!mounted) return 'Pick dates'
+  if (!dateRange?.from) return 'Pick dates'
+  if (dateRange.to) {
+    return `${format(dateRange.from, 'MMM d')} - ${format(dateRange.to, 'MMM d')}`
+  }
+  return format(dateRange.from, 'MMM d, yyyy')
+}
 
 function VehicleFiltersInner() {
   const router = useRouter()
@@ -108,29 +118,19 @@ function VehicleFiltersInner() {
                 )}
               >
                 <CalendarIcon className="mr-2 size-4" />
-                {!mounted ? (
-                  'Pick dates'
-                ) : dateRange?.from ? (
-                  dateRange.to ? (
-                    <>
-                      {format(dateRange.from, 'MMM d')} - {format(dateRange.to, 'MMM d')}
-                    </>
-                  ) : (
-                    format(dateRange.from, 'MMM d, yyyy')
-                  )
-                ) : (
-                  'Pick dates'
-                )}
+                {formatDateRangeDisplay(dateRange, mounted)}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="range"
-                selected={dateRange}
-                onSelect={setDateRange}
-                numberOfMonths={2}
-                disabled={mounted ? { before: new Date() } : undefined}
-              />
+              {mounted && (
+                <Calendar
+                  mode="range"
+                  selected={dateRange}
+                  onSelect={setDateRange}
+                  numberOfMonths={2}
+                  disabled={{ before: new Date() }}
+                />
+              )}
             </PopoverContent>
           </Popover>
         </div>
