@@ -591,8 +591,9 @@ export function getAgentLoadingMessage(task: AgentTaskType): string {
 }
 
 // ============================================================================
-// BACKWARD COMPATIBILITY EXPORTS
+// BACKWARD COMPATIBILITY EXPORTS  
 // These aliases maintain compatibility with existing agent files
+// Updated: 2026-03-30 - Ensuring exports are available for all agent files
 // ============================================================================
 
 /**
