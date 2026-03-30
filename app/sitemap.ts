@@ -4,14 +4,16 @@ import { createClient } from '@/lib/supabase/server'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rentanddrive.net'
 
-  // Static pages
+  // Static pages - priority 0.5 for info pages
   const staticPages: MetadataRoute.Sitemap = [
+    // Homepage - highest priority
     {
       url: baseUrl,
       lastModified: new Date(),
       changeFrequency: 'daily',
-      priority: 1,
+      priority: 1.0,
     },
+    // Main vehicle browsing
     {
       url: `${baseUrl}/vehicles`,
       lastModified: new Date(),
@@ -43,46 +45,82 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly',
       priority: 0.8,
     },
+    // Car Lot main page
+    {
+      url: `${baseUrl}/car-lot`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    },
+    // Info pages - priority 0.5
+    {
+      url: `${baseUrl}/about`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/faq`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/terms`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/insurance-disclosure`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.3,
+    },
     // Auth pages
     {
       url: `${baseUrl}/login`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
-      priority: 0.5,
+      priority: 0.4,
     },
     {
       url: `${baseUrl}/signup`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
-      priority: 0.5,
+      priority: 0.4,
     },
-    // Info pages
+    // Rewards page
     {
       url: `${baseUrl}/rewards`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.6,
     },
-    // HostsLab pages (for SEO on host acquisition)
-    {
-      url: `${baseUrl}/hostslab/lobby`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/hostslab/academy`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.6,
-    },
   ]
 
-  // Dynamic vehicle pages
+  // Dynamic vehicle pages from vehicles table
   let vehiclePages: MetadataRoute.Sitemap = []
+  
+  // Dynamic Car Lot listings from vehicle_listings table
+  let carLotPages: MetadataRoute.Sitemap = []
   
   try {
     const supabase = await createClient()
+    
+    // Fetch active vehicle rentals
     const { data: vehicles } = await supabase
       .from('vehicles')
       .select('id, updated_at')
@@ -93,13 +131,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       vehiclePages = vehicles.map((vehicle) => ({
         url: `${baseUrl}/vehicles/${vehicle.id}`,
         lastModified: new Date(vehicle.updated_at || new Date()),
-        changeFrequency: 'weekly' as const,
+        changeFrequency: 'daily' as const,
+        priority: 0.8,
+      }))
+    }
+
+    // Fetch active Car Lot listings
+    const { data: listings } = await supabase
+      .from('vehicle_listings')
+      .select('id, updated_at')
+      .eq('status', 'active')
+
+    if (listings) {
+      carLotPages = listings.map((listing) => ({
+        url: `${baseUrl}/car-lot/${listing.id}`,
+        lastModified: new Date(listing.updated_at || new Date()),
+        changeFrequency: 'daily' as const,
         priority: 0.8,
       }))
     }
   } catch (error) {
-    console.error('Error fetching vehicles for sitemap:', error)
+    console.error('Error fetching data for sitemap:', error)
   }
 
-  return [...staticPages, ...vehiclePages]
+  return [...staticPages, ...vehiclePages, ...carLotPages]
 }

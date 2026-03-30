@@ -26,9 +26,14 @@ export const metadata: Metadata = {
     'Subaru rental Tahoe',
     'ski trip car rental',
     'peer to peer car rental',
+    'P2P car rental',
     'Turo alternative',
     'truck rental Reno',
     'SUV rental Nevada',
+    'P2PCR',
+    'car sharing Reno',
+    'private car rental Nevada',
+    'contactless car rental',
   ],
   authors: [{ name: 'Rent and Drive LLC' }],
   creator: 'Rent and Drive LLC',
@@ -117,9 +122,19 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#CC0000" />
         <meta name="msapplication-tap-highlight" content="no" />
         
-        {/* Preconnect to external domains */}
+        {/* Google Search Console Verification */}
+        {process.env.GOOGLE_SITE_VERIFICATION && (
+          <meta name="google-site-verification" content={process.env.GOOGLE_SITE_VERIFICATION} />
+        )}
+        
+        {/* Preconnect to external domains for Core Web Vitals */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://cqajtlycmxqbpxvmjzey.supabase.co" />
+        <link rel="preconnect" href="https://js.stripe.com" />
+        <link rel="preconnect" href="https://api.twilio.com" />
+        <link rel="dns-prefetch" href="https://cqajtlycmxqbpxvmjzey.supabase.co" />
+        <link rel="dns-prefetch" href="https://js.stripe.com" />
         
         {/* Cloudflare Web Analytics */}
         {process.env.CF_ANALYTICS_TOKEN && (

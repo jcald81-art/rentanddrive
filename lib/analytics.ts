@@ -14,6 +14,12 @@ type EventName =
   | 'login_completed'
   | 'signup_completed'
   | 'vin_check_purchased'
+  | 'inspection_started'
+  | 'inspection_completed'
+  | 'car_lot_viewed'
+  | 'fast_lane_requested'
+  | 'test_drive_scheduled'
+  | 'shipping_quote_requested'
 
 interface EventProperties {
   // Search
@@ -39,6 +45,18 @@ interface EventProperties {
 
   // Review
   review_rating?: number
+
+  // Inspection
+  inspection_type?: 'pre' | 'post'
+  inspection_score?: number
+
+  // Car Lot
+  listing_id?: string
+  asking_price?: number
+  
+  // Shipping
+  destination?: string
+  carrier?: string
 
   // General
   page_path?: string
@@ -125,5 +143,45 @@ export function trackReviewSubmitted(bookingId: string, rating: number) {
   trackEvent('review_submitted', {
     booking_id: bookingId,
     review_rating: rating,
+  })
+}
+
+export function trackInspectionStarted(bookingId: string, type: 'pre' | 'post') {
+  trackEvent('inspection_started', {
+    booking_id: bookingId,
+    inspection_type: type,
+  })
+}
+
+export function trackInspectionCompleted(bookingId: string, score: number) {
+  trackEvent('inspection_completed', {
+    booking_id: bookingId,
+    inspection_score: score,
+  })
+}
+
+export function trackCarLotViewed(listingId: string, askingPrice?: number) {
+  trackEvent('car_lot_viewed', {
+    listing_id: listingId,
+    asking_price: askingPrice,
+  })
+}
+
+export function trackFastLaneRequested(vehicleId: string) {
+  trackEvent('fast_lane_requested', {
+    vehicle_id: vehicleId,
+  })
+}
+
+export function trackTestDriveScheduled(listingId: string) {
+  trackEvent('test_drive_scheduled', {
+    listing_id: listingId,
+  })
+}
+
+export function trackShippingQuoteRequested(listingId: string, destination: string) {
+  trackEvent('shipping_quote_requested', {
+    listing_id: listingId,
+    destination,
   })
 }
