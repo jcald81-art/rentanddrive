@@ -26,7 +26,6 @@ import {
 import { HeroSearchBar } from "@/components/hero-search-bar"
 import { FeaturedVehicles } from "@/components/featured-vehicles"
 import { CustomerReviewsCarousel } from "@/components/customer-reviews-carousel"
-import { Logo } from "@/components/logo"
 
 export default function HomePage() {
   return (
@@ -51,7 +50,12 @@ export default function HomePage() {
       {/* Navigation */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Logo size="md" />
+          <Link href="/" className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#CC0000]">
+              <Car className="h-5 w-5 text-white" />
+            </div>
+            <span className="font-bold text-lg">Rent & Drive</span>
+          </Link>
           
           <nav className="hidden items-center gap-6 md:flex">
             <Link href="/vehicles" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">

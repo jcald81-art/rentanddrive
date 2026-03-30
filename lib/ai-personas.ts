@@ -1,7 +1,10 @@
-// AI Persona System - R&D vs RAD
-// R&D = Beta tester, cutting-edge features, technical/professional tone
-// RAD = Production-ready, chill surfer vibe, laid-back and fun
-// NOTE: This file is CLIENT-SAFE - no server imports allowed
+/**
+ * AI Persona System - R&D vs RAD
+ * R&D = Beta tester, cutting-edge features, technical/professional tone
+ * RAD = Production-ready, chill surfer vibe, laid-back and fun
+ * 
+ * CLIENT-SAFE: This file contains NO server imports
+ */
 
 export type AIPersona = 'R&D' | 'RAD'
 
