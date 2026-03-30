@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/securelink",
-      "schedule": "0 * * * *"
+      "schedule": "0 8 * * *"
     },
     {
       "path": "/api/cron/dollar",
@@ -18,7 +18,7 @@
     },
     {
       "path": "/api/cron/pulse",
-      "schedule": "0 6 * * *"
+      "schedule": "0 7 * * *"
     },
     {
       "path": "/api/cron/funtime",
@@ -34,7 +34,7 @@
     },
     {
       "path": "/api/cron/model-health",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 3 * * *"
     }
   ]
 }
