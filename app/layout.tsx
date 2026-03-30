@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import Script from 'next/script'
 import { RDConcierge } from '@/components/rd-concierge'
 import { ErrorBoundary } from '@/components/error-boundary'
+import { CookieConsent } from '@/components/cookie-consent'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -134,8 +135,9 @@ export default function RootLayout({
         <ErrorBoundary>
           {children}
         </ErrorBoundary>
-        <RDConcierge />
-        <Analytics />
+<RDConcierge />
+<CookieConsent />
+<Analytics />
         
         {/* Service Worker Registration */}
         <Script id="sw-register" strategy="afterInteractive">

@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { AlertTriangle, RefreshCw, Home, ArrowLeft } from 'lucide-react'
+import { Shield, RefreshCw, Home, ArrowLeft, MessageSquare } from 'lucide-react'
 
 export default function Error({
   error,
@@ -18,17 +18,17 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center">
+    <div className="min-h-[60vh] flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       <div className="text-center px-4 max-w-lg">
         <div className="mb-6">
-          <div className="mx-auto w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
-            <AlertTriangle className="h-8 w-8 text-red-600" />
+          <div className="mx-auto w-20 h-20 rounded-full bg-[#CC0000]/10 flex items-center justify-center">
+            <Shield className="h-10 w-10 text-[#CC0000]" />
           </div>
         </div>
         
-        <h2 className="text-2xl font-bold mb-2">Something went wrong</h2>
+        <h2 className="text-2xl font-bold mb-2">SecureLink is on it</h2>
         <p className="text-muted-foreground mb-6">
-          We encountered an error while loading this page. Please try again.
+          We hit an unexpected bump in the road. Our team has been notified and is working on it.
         </p>
         
         {error.digest && (
@@ -53,6 +53,14 @@ export default function Error({
             </Link>
           </Button>
         </div>
+
+        <p className="text-sm text-muted-foreground mt-8">
+          Still having trouble?{' '}
+          <Link href="/contact" className="text-[#CC0000] hover:underline inline-flex items-center gap-1">
+            <MessageSquare className="h-3 w-3" />
+            Contact Support
+          </Link>
+        </p>
       </div>
     </div>
   )
