@@ -149,40 +149,79 @@ export default function ProfilePage() {
     const file = e.target.files?.[0]
     if (!file || !profile) return
 
-    setUploadingAvatar(true)
-    setError(null)
-
-    const supabase = createClient()
-    const fileExt = file.name.split('.').pop()
-    const fileName = `${profile.id}-${Date.now()}.${fileExt}`
-
-    // Upload to Supabase Storage
-    const { error: uploadError } = await supabase.storage
-      .from('avatars')
-      .upload(fileName, file, { upsert: true })
-
-    if (uploadError) {
-      setError('Failed to upload avatar. Please try again.')
-      setUploadingAvatar(false)
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+    if (!validTypes.includes(file.type)) {
+      setError('Please upload a valid image file (JPEG, PNG, GIF, or WebP)')
       return
     }
 
-    // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('avatars')
-      .getPublicUrl(fileName)
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image must be less than 5MB')
+      return
+    }
 
-    // Update profile
-    await supabase
-      .from('profiles')
-      .upsert({
-        id: profile.id,
-        avatar_url: publicUrl,
-        updated_at: new Date().toISOString(),
-      })
+    setUploadingAvatar(true)
+    setError(null)
 
-    setProfile({ ...profile, avatar_url: publicUrl })
-    setUploadingAvatar(false)
+    try {
+      const supabase = createClient()
+      const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg'
+      // Store in user's folder for RLS policy compliance
+      const fileName = `${profile.id}/avatar-${Date.now()}.${fileExt}`
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { 
+          upsert: true,
+          contentType: file.type,
+        })
+
+      if (uploadError) {
+        console.error('[v0] Avatar upload error:', uploadError)
+        // Check if it's a bucket not found error
+        if (uploadError.message?.includes('Bucket not found') || uploadError.message?.includes('not found')) {
+          setError('Avatar storage is not configured. Please contact support.')
+        } else if (uploadError.message?.includes('policy')) {
+          setError('Permission denied. Please try logging out and back in.')
+        } else {
+          setError(`Failed to upload avatar: ${uploadError.message}`)
+        }
+        setUploadingAvatar(false)
+        return
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName)
+
+      // Update profile with new avatar URL
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: profile.id,
+          avatar_url: publicUrl,
+          updated_at: new Date().toISOString(),
+        })
+
+      if (updateError) {
+        console.error('[v0] Profile update error:', updateError)
+        setError('Avatar uploaded but failed to update profile.')
+        setUploadingAvatar(false)
+        return
+      }
+
+      setProfile({ ...profile, avatar_url: publicUrl })
+      setSuccess('Avatar updated successfully!')
+    } catch (err) {
+      console.error('[v0] Unexpected error:', err)
+      setError('An unexpected error occurred. Please try again.')
+    } finally {
+      setUploadingAvatar(false)
+    }
   }
 
   if (loading) {
