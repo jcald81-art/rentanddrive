@@ -82,12 +82,12 @@ interface FuntimeActivity {
 }
 
 const LAB_LEVELS: LabLevel[] = [
-  { level: 1, name: 'Lab Intern', minXp: 0, maxXp: 499, color: 'bg-slate-500', perks: ['Basic Dashboard'] },
-  { level: 2, name: 'Lab Assistant', minXp: 500, maxXp: 1999, color: 'bg-green-500', perks: ['Eagle Map', 'Break Room Access'] },
-  { level: 3, name: 'Lab Technician', minXp: 2000, maxXp: 4999, color: 'bg-blue-500', perks: ['Dollar Suggestions', 'Shield Reviews'] },
-  { level: 4, name: 'Lab Scientist', minXp: 5000, maxXp: 9999, color: 'bg-purple-500', perks: ['Auto-Dollar', 'Priority Support'] },
-  { level: 5, name: 'Lab Director', minXp: 10000, maxXp: 24999, color: 'bg-amber-500', perks: ['Custom Agent Names', 'Weekly Spin'] },
-  { level: 6, name: 'Lab Legend', minXp: 25000, maxXp: 999999, color: 'bg-red-500', perks: ['All Features', 'Beta Access', 'Founder Badge'] },
+  { level: 1, name: 'Rookie', minXp: 0, maxXp: 499, color: 'bg-slate-500', perks: ['Basic Dashboard'] },
+  { level: 2, name: 'Apprentice', minXp: 500, maxXp: 1999, color: 'bg-green-500', perks: ['Eagle Map', 'Break Room Access'] },
+  { level: 3, name: 'Pro', minXp: 2000, maxXp: 4999, color: 'bg-blue-500', perks: ['Dollar Suggestions', 'Shield Reviews'] },
+  { level: 4, name: 'Expert', minXp: 5000, maxXp: 9999, color: 'bg-purple-500', perks: ['Auto-Dollar', 'Priority Support'] },
+  { level: 5, name: 'Elite', minXp: 10000, maxXp: 24999, color: 'bg-amber-500', perks: ['Custom Agent Names', 'Weekly Spin'] },
+  { level: 6, name: 'Legend', minXp: 25000, maxXp: 999999, color: 'bg-[#CC0000]', perks: ['All Features', 'Beta Access', 'Founder Badge'] },
 ]
 
 const BADGE_ICONS: Record<string, React.ReactNode> = {
@@ -168,12 +168,12 @@ export default function GameRoomPage() {
   }
 
   const displayBadges = badges.length > 0 ? badges : [
-    { id: '1', name: 'First Trip', description: 'Complete your first rental', icon: 'first_trip', earned: true, earned_at: '2024-01-01', rarity: 'common' as const },
-    { id: '2', name: '5-Star Host', description: 'Receive 10 five-star reviews', icon: 'five_star', earned: true, earned_at: '2024-01-10', rarity: 'rare' as const },
-    { id: '3', name: 'Perfect Driver', description: 'Renter score above 95', icon: 'perfect_driver', earned: false, rarity: 'epic' as const },
-    { id: '4', name: 'Road Warrior', description: 'Host 50 trips', icon: 'road_warrior', earned: false, rarity: 'rare' as const },
-    { id: '5', name: 'Early Adopter', description: 'Join during beta', icon: 'early_adopter', earned: true, earned_at: '2023-12-01', rarity: 'epic' as const },
-    { id: '6', name: 'Superhost', description: 'Reach Lab Legend status', icon: 'superhost', earned: false, rarity: 'legendary' as const },
+    { id: '1', name: 'Eagle Eye', description: 'All vehicles GPS tracked with Bouncie', icon: 'eagle_eye', earned: true, earned_at: '2024-01-01', rarity: 'rare' as const },
+    { id: '2', name: 'Century Club', description: 'Complete 100 rentals', icon: 'century_club', earned: false, rarity: 'epic' as const },
+    { id: '3', name: '5-Star Lab', description: 'Maintain 5.0 rating for 30 days', icon: 'five_star_lab', earned: true, earned_at: '2024-01-10', rarity: 'rare' as const },
+    { id: '4', name: 'Car Lot Closer', description: 'Sell a vehicle through The Car Lot', icon: 'car_lot_closer', earned: false, rarity: 'epic' as const },
+    { id: '5', name: 'Speed Demon Stopper', description: 'Resolve 10 speed alerts with renters', icon: 'speed_stopper', earned: true, earned_at: '2024-01-15', rarity: 'rare' as const },
+    { id: '6', name: 'Legend', description: 'Reach Legend status', icon: 'legend', earned: false, rarity: 'legendary' as const },
   ]
 
   const displayChallenges = challenges.length > 0 ? challenges : [

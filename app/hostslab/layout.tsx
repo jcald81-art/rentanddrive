@@ -44,12 +44,12 @@ const NAV_ITEMS = [
 ]
 
 const LAB_LEVELS = [
-  { level: 1, name: 'Lab Intern', minXp: 0, color: 'bg-slate-500' },
-  { level: 2, name: 'Lab Assistant', minXp: 500, color: 'bg-green-500' },
-  { level: 3, name: 'Lab Technician', minXp: 2000, color: 'bg-blue-500' },
-  { level: 4, name: 'Lab Scientist', minXp: 5000, color: 'bg-purple-500' },
-  { level: 5, name: 'Lab Director', minXp: 10000, color: 'bg-amber-500' },
-  { level: 6, name: 'Lab Legend', minXp: 25000, color: 'bg-red-500' },
+  { level: 1, name: 'Rookie', minXp: 0, color: 'bg-slate-500' },
+  { level: 2, name: 'Apprentice', minXp: 500, color: 'bg-green-500' },
+  { level: 3, name: 'Pro', minXp: 2000, color: 'bg-blue-500' },
+  { level: 4, name: 'Expert', minXp: 5000, color: 'bg-purple-500' },
+  { level: 5, name: 'Elite', minXp: 10000, color: 'bg-amber-500' },
+  { level: 6, name: 'Legend', minXp: 25000, color: 'bg-[#CC0000]' },
 ]
 
 interface HostData {
