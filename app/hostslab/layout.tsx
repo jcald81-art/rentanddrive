@@ -33,18 +33,18 @@ import {
 import { PortalSwitcher } from '@/components/portal-switcher'
 
 const NAV_ITEMS = [
-  { href: '/hostslab/lobby', label: 'The Lobby', icon: Home },
-  { href: '/hostslab/workshop', label: 'The Garage', icon: Wrench },
-  { href: '/hostslab/eagle-command', label: 'Eagle Command Center', icon: Radar },
-  { href: '/hostslab/rd-navigator', label: 'R&D Navigator', icon: Compass },
-  { href: '/hostslab/briefing-room', label: 'The Briefing Room', icon: FileText },
+  { href: '/hostslab/lobby', label: 'Command Center', icon: Home },
+  { href: '/hostslab/workshop', label: 'The Workshop', icon: Wrench },
+  { href: '/hostslab/eagle-command', label: 'Eagle Command', icon: Radar },
+  { href: '/hostslab/rd-navigator', label: 'Mission Control', icon: Compass },
+  { href: '/hostslab/briefing-room', label: 'Intel Hub', icon: FileText },
   { href: '/hostslab/vault', label: 'The Vault', icon: Vault },
-  { href: '/hostslab/filing-cabinet', label: 'The Filing Cabinet', icon: FolderArchive },
-  { href: '/hostslab/game-room', label: 'The Game Room', icon: Gamepad2 },
-  { href: '/hostslab/break-room', label: 'The Break Room', icon: Coffee },
+  { href: '/hostslab/filing-cabinet', label: 'The Archive', icon: FolderArchive },
+  { href: '/hostslab/game-room', label: 'Achievement Hall', icon: Gamepad2 },
+  { href: '/hostslab/break-room', label: 'Crew Lounge', icon: Coffee },
   { href: '/hostslab/academy', label: 'The Academy', icon: GraduationCap },
-  { href: '/hostslab/lab-controls', label: 'Lab Controls', icon: Settings },
-  { href: '/hostslab/rev-share', label: 'Rev Share', icon: TrendingUp },
+  { href: '/hostslab/lab-controls', label: 'Suite Settings', icon: Settings },
+  { href: '/hostslab/rev-share', label: 'Earnings Hub', icon: TrendingUp },
 ]
 
 const LAB_LEVELS = [
@@ -99,7 +99,7 @@ function Sidebar({
         </div>
         {!collapsed && (
           <div>
-            <h1 className="font-bold text-lg">HostsLab</h1>
+            <h1 className="font-bold text-lg">Hosts Suite</h1>
             <p className="text-xs text-slate-400">Command Center</p>
           </div>
         )}
@@ -220,14 +220,14 @@ function Sidebar({
           </Link>
         )}
 
-        {/* Switch to Renter's Road */}
+        {/* Switch to Renters Suite */}
         {!collapsed && (
           <Link 
             href="/rr/lounge"
             className="flex items-center gap-2 p-3 mb-3 bg-slate-700/50 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors"
           >
             <Route className="h-4 w-4 text-[#CC0000]" />
-            <span className="text-sm">Switch to Renter&apos;s Road</span>
+            <span className="text-sm">Switch to Renters Suite</span>
           </Link>
         )}
 
@@ -262,7 +262,7 @@ function MobileNav({ host, alertCount }: { host: HostData | null; alertCount: nu
             <FlaskConical className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-lg">HostsLab</h1>
+            <h1 className="font-bold text-lg">Hosts Suite</h1>
             <p className="text-xs text-slate-400">Command Center</p>
           </div>
         </div>
@@ -323,7 +323,7 @@ function MobileNav({ host, alertCount }: { host: HostData | null; alertCount: nu
   )
 }
 
-export default function HostsLabLayout({ children }: { children: React.ReactNode }) {
+export default function Hosts SuiteLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
   const [host, setHost] = useState<HostData | null>(null)
   const [alertCount, setAlertCount] = useState(0)
@@ -358,7 +358,7 @@ export default function HostsLabLayout({ children }: { children: React.ReactNode
           <MobileNav host={host} alertCount={alertCount} />
           <div className="flex items-center gap-2">
             <FlaskConical className="h-6 w-6 text-[#CC0000]" />
-            <span className="font-bold">HostsLab</span>
+            <span className="font-bold">Hosts Suite</span>
           </div>
           <div className="w-10" /> {/* Spacer */}
         </header>

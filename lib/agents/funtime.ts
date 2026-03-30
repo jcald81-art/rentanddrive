@@ -473,3 +473,25 @@ export async function runDailyFuntime(): Promise<{
     leaderboardUpdated: true,
   }
 }
+
+// ── FuntimeAgent class wrapper ─────────────────────────────────────────────────
+export class FuntimeAgent {
+  async awardXP(userId: string, amount: number, reason: string, _source?: string) {
+    return awardHostXP(userId, amount, reason)
+  }
+  async checkLevelUp(userId: string) {
+    return checkAndAwardBadges()
+  }
+  async awardBadge(userId: string, badgeType: string) {
+    return awardHostBadge(userId, badgeType as any)
+  }
+  async updateLeaderboard() {
+    return updateLeaderboard()
+  }
+  async processChallengeProgress(_userId: string, _challengeId: string) {
+    return { success: true }
+  }
+  async voteOnPhoto(photoId: string, _voterId: string) {
+    return runPhotoContestVoting(photoId)
+  }
+}

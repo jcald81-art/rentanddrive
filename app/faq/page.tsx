@@ -45,8 +45,8 @@ const FAQ_CATEGORIES = [
         a: 'During active rentals, our Tint insurance provides $1M liability coverage. Your personal insurance remains active when the vehicle isn\'t rented. We recommend notifying your personal insurer about P2P sharing.'
       },
       {
-        q: 'What is HostsLab?',
-        a: 'HostsLab is your AI-powered command center for managing your fleet. Access real-time GPS tracking, pricing recommendations, morning briefs, and gamified rewards for being a great host.'
+        q: 'What is Hosts Suite?',
+        a: 'Hosts Suite is your AI-powered command center for managing your fleet. Access real-time GPS tracking, pricing recommendations, morning briefs, and gamified rewards for being a great host.'
       },
     ]
   },

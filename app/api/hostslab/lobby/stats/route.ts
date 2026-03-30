@@ -105,7 +105,7 @@ export async function GET() {
       recentActivity: agentLogs || [],
     })
   } catch (error) {
-    console.error('HostsLab lobby stats error:', error)
+    console.error('Hosts Suite lobby stats error:', error)
     return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 })
   }
 }

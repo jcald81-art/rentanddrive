@@ -452,7 +452,7 @@ export default function BreakRoomPage() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-green-700 dark:text-green-300 mb-4">
-                New to HostsLab? Introduce yourself and connect with experienced hosts who can help you get started.
+                New to Hosts Suite? Introduce yourself and connect with experienced hosts who can help you get started.
               </p>
               <Button variant="outline" className="w-full border-green-300 text-green-700 hover:bg-green-200">
                 Say Hello

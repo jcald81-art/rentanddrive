@@ -30,17 +30,27 @@ export function Logo({ className, size = 'md', variant = 'simple', linkTo = '/' 
     xl: { width: 300, height: 120 },
   }
 
+  const textSizeClasses = {
+    sm: 'text-sm',
+    md: 'text-base',
+    lg: 'text-xl',
+    xl: 'text-3xl',
+  }
+
   const LogoContent = (
-    <div className={cn('flex items-center', className)}>
+    <div className={cn('flex items-center gap-2', className)}>
       <Image
         src={logoSources[variant]}
         alt="Rent and Drive - Reno Sparks Lake Tahoe"
         width={sizeClasses[size].width}
         height={sizeClasses[size].height}
         className="object-contain"
-        style={{ width: 'auto', height: 'auto' }}
+        style={{ width: 'auto', maxHeight: sizeClasses[size].height }}
         priority
       />
+      <span className={cn('font-bold tracking-tight leading-tight whitespace-nowrap', textSizeClasses[size])}>
+        Rent<span className="text-[#CC0000]"> and </span>Drive
+      </span>
     </div>
   )
 

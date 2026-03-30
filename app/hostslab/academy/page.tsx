@@ -96,8 +96,8 @@ export default function AcademyPage() {
   const displayCourses = courses.length > 0 ? courses : [
     {
       id: '1',
-      title: 'Welcome to HostsLab',
-      description: 'Learn the basics of the HostsLab platform and set up your first vehicle listing.',
+      title: 'Welcome to Hosts Suite',
+      description: 'Learn the basics of the Hosts Suite platform and set up your first vehicle listing.',
       category: 'getting-started',
       lessons_count: 5,
       completed_lessons: 5,

@@ -129,14 +129,14 @@ export default function PortalPage() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* HostsLab Portal */}
+          {/* Hosts Suite Portal */}
           <Card className="bg-slate-900/50 border-slate-700 hover:border-[#CC0000] transition-all cursor-pointer group">
             <Link href="/hostslab/lobby">
               <CardHeader className="text-center pb-4">
                 <div className="w-20 h-20 bg-[#CC0000]/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-[#CC0000]/30 transition-colors">
                   <FlaskConical className="h-10 w-10 text-[#CC0000]" />
                 </div>
-                <CardTitle className="text-white text-2xl">HostsLab</CardTitle>
+                <CardTitle className="text-white text-2xl">Hosts Suite</CardTitle>
                 <CardDescription className="text-slate-400">
                   Your host command center
                 </CardDescription>
@@ -149,20 +149,20 @@ export default function PortalPage() {
                   <li>Earn XP and badges in The Game Room</li>
                 </ul>
                 <Button className="w-full bg-[#CC0000] hover:bg-[#AA0000]">
-                  Enter HostsLab
+                  Enter Hosts Suite
                 </Button>
               </CardContent>
             </Link>
           </Card>
 
-          {/* Renter's Road Portal */}
+          {/* Renters Suite Portal */}
           <Card className="bg-slate-900/50 border-slate-700 hover:border-[#CC0000] transition-all cursor-pointer group">
             <Link href="/rr/lounge">
               <CardHeader className="text-center pb-4">
                 <div className="w-20 h-20 bg-[#CC0000]/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-[#CC0000]/30 transition-colors">
                   <Route className="h-10 w-10 text-[#CC0000]" />
                 </div>
-                <CardTitle className="text-white text-2xl">Renter&apos;s Road</CardTitle>
+                <CardTitle className="text-white text-2xl">Renters Suite</CardTitle>
                 <CardDescription className="text-slate-400">
                   Your renter experience hub
                 </CardDescription>
@@ -175,7 +175,7 @@ export default function PortalPage() {
                   <li>Get 24/7 support from our team</li>
                 </ul>
                 <Button className="w-full bg-[#CC0000] hover:bg-[#AA0000]">
-                  Enter Renter&apos;s Road
+                  Enter Renters Suite
                 </Button>
               </CardContent>
             </Link>

@@ -446,3 +446,47 @@ export async function quickConnect(options: {
     return { success: false, error: (error as Error).message }
   }
 }
+
+// ── SecureLink class wrapper (used in book/route.ts and test-drive/route.ts) ──
+// These routes use SecureLink directly to send SMS/email notifications.
+export class SecureLink {
+  async sendSMS({ to, message }: { to: string; message: string }) {
+    return sendMessage({
+      userId: to,
+      type: 'custom' as const,
+      customMessage: message,
+      channels: ['sms'],
+    })
+  }
+  async sendEmail({ to, subject, template, data }: { to: string; subject: string; template: string; data: Record<string, unknown> }) {
+    return sendMessage({
+      userId: to,
+      type: 'custom' as const,
+      customMessage: `${subject}\n\n${JSON.stringify(data)}`,
+      channels: ['email'],
+    })
+  }
+}
+
+// ── SecureLinkAgent class wrapper (used in agents/securelink/route.ts) ─────────
+export class SecureLinkAgent {
+  async sendBookingConfirmation(bookingId: string) {
+    return sendMessage({ userId: bookingId, type: 'booking_confirmation' })
+  }
+  async sendReminder(bookingId: string, type: string) {
+    const t = type === '24h' ? 'pickup_reminder_24h' : type === '2h' ? 'pickup_reminder_2h' : 'return_reminder_4h'
+    return sendMessage({ userId: bookingId, type: t as MessageOptions['type'] })
+  }
+  async sendReviewRequest(bookingId: string) {
+    return sendMessage({ userId: bookingId, type: 'post_trip_review' })
+  }
+  async sendUrgentAlert(userId: string, message: string, _priority?: string) {
+    return sendMessage({ userId, type: 'urgent_alert', customMessage: message, channels: ['email', 'sms'] })
+  }
+  async sendCustomMessage(userId: string, subject: string, body: string, channels?: ('email' | 'sms')[]) {
+    return sendMessage({ userId, type: 'custom', customMessage: `${subject}\n\n${body}`, channels })
+  }
+}
+
+// Re-export MessageOptions for downstream use
+export type { MessageOptions }

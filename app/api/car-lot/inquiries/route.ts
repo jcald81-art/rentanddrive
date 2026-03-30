@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         action: 'send_sms',
         user_id: listing.host_id,
-        message: `New inquiry on your ${listing.vehicle?.year} ${listing.vehicle?.make} ${listing.vehicle?.model}! ${offer_amount ? `Offer: $${offer_amount.toLocaleString()}` : 'Check HostsLab for details.'}`,
+        message: `New inquiry on your ${listing.vehicle?.year} ${listing.vehicle?.make} ${listing.vehicle?.model}! ${offer_amount ? `Offer: $${offer_amount.toLocaleString()}` : 'Check Hosts Suite for details.'}`,
       }),
     })
   } catch (e) {

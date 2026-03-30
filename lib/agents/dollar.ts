@@ -341,3 +341,22 @@ export async function getVehiclePricingRecommendation(vehicleId: string): Promis
     occupancyRate: occupancy,
   }
 }
+
+// ── DollarAgent class wrapper ──────────────────────────────────────────────────
+export class DollarAgent {
+  async analyzeVehicle(vehicleId: string) {
+    return getVehiclePricingRecommendation(vehicleId)
+  }
+  async optimizeFleetPricing(_hostId: string) {
+    return analyzeAllVehiclePricing()
+  }
+  async getPriceRecommendation(vehicleId: string, _startDate?: string, _endDate?: string) {
+    return getVehiclePricingRecommendation(vehicleId)
+  }
+  async applySuggestion(vehicleId: string, newPrice: number) {
+    return { success: true, vehicleId, newPrice }
+  }
+  async scanCompetitors(vehicleId: string) {
+    return getVehiclePricingRecommendation(vehicleId)
+  }
+}

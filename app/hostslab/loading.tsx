@@ -1,7 +1,7 @@
-import { HostsLabCardSkeleton } from '@/components/skeletons'
+import { Hosts SuiteCardSkeleton } from '@/components/skeletons'
 import { Skeleton } from '@/components/ui/skeleton'
 
-export default function HostsLabLoading() {
+export default function Hosts SuiteLoading() {
   return (
     <div className="min-h-screen bg-slate-900">
       {/* Header */}
@@ -32,10 +32,10 @@ export default function HostsLabLoading() {
               <Skeleton className="h-8 w-48 bg-slate-700" />
               <Skeleton className="h-6 w-32 bg-slate-700" />
             </div>
-            <HostsLabCardSkeleton />
+            <Hosts SuiteCardSkeleton />
             <div className="grid gap-6 md:grid-cols-2">
-              <HostsLabCardSkeleton />
-              <HostsLabCardSkeleton />
+              <Hosts SuiteCardSkeleton />
+              <Hosts SuiteCardSkeleton />
             </div>
           </div>
         </main>

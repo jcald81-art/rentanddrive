@@ -179,7 +179,7 @@ export default function LabControlsPage() {
         </div>
         <div>
           <h1 className="text-2xl font-bold">Lab Controls</h1>
-          <p className="text-muted-foreground">Customize your HostsLab experience</p>
+          <p className="text-muted-foreground">Customize your Hosts Suite experience</p>
         </div>
       </div>
 
@@ -283,7 +283,7 @@ export default function LabControlsPage() {
             <CardHeader>
               <CardTitle>Notification Preferences</CardTitle>
               <CardDescription>
-                Control how and when you receive updates from HostsLab.
+                Control how and when you receive updates from Hosts Suite.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -499,7 +499,7 @@ export default function LabControlsPage() {
               {[
                 { key: 'show_leaderboard', label: 'Show on leaderboard', desc: 'Display your profile on the Break Room leaderboard' },
                 { key: 'allow_spotlight', label: 'Allow Host Spotlight', desc: 'Be featured as Host of the Week' },
-                { key: 'share_stats', label: 'Share anonymous stats', desc: 'Help improve HostsLab with anonymous usage data' },
+                { key: 'share_stats', label: 'Share anonymous stats', desc: 'Help improve Hosts Suite with anonymous usage data' },
               ].map((item) => (
                 <div key={item.key} className="flex items-center justify-between">
                   <div>
@@ -526,7 +526,7 @@ export default function LabControlsPage() {
             <CardHeader>
               <CardTitle>Lab Theme</CardTitle>
               <CardDescription>
-                Customize the appearance of your HostsLab dashboard.
+                Customize the appearance of your Hosts Suite dashboard.
               </CardDescription>
             </CardHeader>
             <CardContent>

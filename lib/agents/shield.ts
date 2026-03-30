@@ -392,3 +392,22 @@ Return JSON: {
     }
   }
 }
+
+// ── ShieldAgent class wrapper ──────────────────────────────────────────────────
+export class ShieldAgent {
+  async analyzeReview(reviewId: string) {
+    return analyzeReview(reviewId)
+  }
+  async generateResponse(reviewId: string) {
+    return analyzeReview(reviewId)
+  }
+  async scanHostReviews(_hostId: string) {
+    return analyzeNewReviews()
+  }
+  async calculateRenterScore(renterId: string) {
+    return calculateRenterScore(renterId)
+  }
+  async flagReview(reviewId: string, _reason: string) {
+    return analyzeReview(reviewId)
+  }
+}

@@ -14,24 +14,24 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
 
 const MOBILE_TABS = [
-  { href: '/rr/lounge', icon: Home, label: 'Lounge' },
-  { href: '/rr/garage', icon: Car, label: 'Garage' },
+  { href: '/rr/lounge', icon: Home, label: 'Home Base' },
+  { href: '/rr/garage', icon: Car, label: 'My Fleet' },
   { href: '/rr/trips', icon: Calendar, label: 'Trips' },
-  { href: '/rr/gameroom', icon: Gamepad2, label: 'Game' },
+  { href: '/rr/gameroom', icon: Gamepad2, label: 'Rewards' },
   { href: '/rr/profile', icon: User, label: 'Profile' },
 ]
 
 const FULL_NAV = [
-  { href: '/rr/lounge', icon: Home, label: 'The Lounge' },
-  { href: '/rr/garage', icon: Car, label: 'The Garage' },
+  { href: '/rr/lounge', icon: Home, label: 'Home Base' },
+  { href: '/rr/garage', icon: Car, label: 'My Fleet' },
   { href: '/rr/trips', icon: Calendar, label: 'My Trips' },
-  { href: '/rr/map', icon: Map, label: 'The Map Room' },
-  { href: '/rr/gameroom', icon: Gamepad2, label: 'The Game Room' },
+  { href: '/rr/map', icon: Map, label: 'Live Map' },
+  { href: '/rr/gameroom', icon: Gamepad2, label: 'Rewards Arena' },
   { href: '/rr/reputation', icon: Trophy, label: 'My Reputation' },
   { href: '/rr/coverage', icon: Shield, label: 'My Coverage' },
-  { href: '/rr/rewards', icon: Gift, label: 'The Rewards Desk' },
+  { href: '/rr/rewards', icon: Gift, label: 'Rewards Vault' },
   { href: '/rr/gallery', icon: Camera, label: 'Trip Gallery' },
-  { href: '/rr/support', icon: HelpCircle, label: 'Renter Support' },
+  { href: '/rr/support', icon: HelpCircle, label: 'Help Desk' },
   { href: '/rr/car-lot', icon: ShoppingCart, label: 'The Car Lot' },
 ]
 
@@ -67,7 +67,7 @@ export default function RRLayout({ children }: { children: React.ReactNode }) {
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#CC0000]">
             <Route className="h-6 w-6 text-white" />
           </div>
-          <span className="font-bold text-xl">RR</span>
+          <span className="font-bold text-xl">Renters Suite</span>
         </Link>
 
         {/* Desktop Nav Links */}
@@ -122,7 +122,7 @@ export default function RRLayout({ children }: { children: React.ReactNode }) {
                   <Route className="h-7 w-7 text-white" />
                 </div>
                 <div>
-                  <p className="font-bold text-lg">Renter&apos;s Road</p>
+                  <p className="font-bold text-lg">Renters Suite</p>
                   <p className="text-sm text-slate-400">Your adventure awaits</p>
                 </div>
               </div>
@@ -144,7 +144,7 @@ export default function RRLayout({ children }: { children: React.ReactNode }) {
                   </Link>
                 ))}
                 
-                {/* Switch to HostsLab */}
+                {/* Switch to Hosts Suite */}
                 <div className="pt-4 mt-4 border-t border-slate-800">
                   <Link
                     href="/hostslab/lobby"
@@ -152,7 +152,7 @@ export default function RRLayout({ children }: { children: React.ReactNode }) {
                     className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800"
                   >
                     <FlaskConical className="h-5 w-5 text-[#CC0000]" />
-                    Switch to HostsLab
+                    Switch to Hosts Suite
                   </Link>
                 </div>
               </nav>
@@ -173,7 +173,7 @@ export default function RRLayout({ children }: { children: React.ReactNode }) {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#CC0000]">
             <Route className="h-5 w-5 text-white" />
           </div>
-          <span className="font-bold">RR</span>
+          <span className="font-bold">Renters Suite</span>
         </Link>
 
         {/* Road Score */}

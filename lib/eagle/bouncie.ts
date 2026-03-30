@@ -65,7 +65,7 @@ interface GeofenceConfig {
   type: 'circle'
 }
 
-class BouncieClient {
+export class BouncieClient {
   private apiKey: string
   private authorizationToken: string | null = null
 

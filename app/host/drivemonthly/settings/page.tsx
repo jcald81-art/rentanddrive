@@ -79,7 +79,7 @@ export default function HostDriveMonthlySettingsPage() {
           <div className="flex items-center justify-between">
             <Link href="/hostslab/lobby" className="inline-flex items-center text-zinc-400 hover:text-white">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to HostsLab
+              Back to Hosts Suite
             </Link>
             <Button 
               onClick={handleSave}

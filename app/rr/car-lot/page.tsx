@@ -87,7 +87,7 @@ export default function RenterCarLotPage() {
           <div className="max-w-3xl">
             <Badge className="mb-4 bg-blue-500/20 text-blue-300 border-blue-500/30">
               <Tag className="h-3 w-3 mr-1" />
-              Renter&apos;s Road - Car Lot
+              Renters Suite - Car Lot
             </Badge>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">
               Rent Before You Buy

@@ -159,7 +159,7 @@ export default function AboutPage() {
                 <div>
                   <h3 className="text-xl font-semibold">Community Driven</h3>
                   <p className="text-muted-foreground">
-                    HostsLab and Renter&apos;s Road create engaged communities. We gamify the 
+                    Hosts Suite and Renters Suite create engaged communities. We gamify the 
                     experience because rentals should be rewarding for everyone.
                   </p>
                 </div>

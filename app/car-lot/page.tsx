@@ -264,7 +264,7 @@ export default async function CarLotPage({
           </p>
           <Button asChild className="bg-[#CC0000] hover:bg-[#AA0000]">
             <Link href="/hostslab/workshop">
-              Open HostsLab Garage
+              Open Hosts Suite Garage
             </Link>
           </Button>
         </div>
