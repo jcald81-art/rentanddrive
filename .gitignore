@@ -14,3 +14,7 @@ next.user-config.*
 node_modules
 .next/
 .DS_Store
+
+# Prevent old middleware file from being committed (use proxy.ts instead)
+middleware.ts
+middleware.js
