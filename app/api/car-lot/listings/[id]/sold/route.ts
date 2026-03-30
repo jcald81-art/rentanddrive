@@ -68,7 +68,18 @@ export async function POST(
           .update({ status: 'cancelled', cancellation_reason: 'Vehicle sold' })
           .eq('id', booking.id)
         
-        // TODO: Process refund via Stripe
+        // Process full refund via Stripe
+        if (booking.stripe_payment_intent_id) {
+          try {
+            const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
+            await stripe.refunds.create({
+              payment_intent: booking.stripe_payment_intent_id,
+              reason: 'requested_by_customer',
+            })
+          } catch (refundError) {
+            console.error('[Car Lot] Refund failed:', refundError)
+          }
+        }
         
         // Notify renter via SecureLink
         try {

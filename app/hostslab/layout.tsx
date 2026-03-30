@@ -28,6 +28,7 @@ import {
   ChevronRight,
   Shield,
   Route,
+  TrendingUp,
 } from 'lucide-react'
 import { PortalSwitcher } from '@/components/portal-switcher'
 
@@ -43,6 +44,7 @@ const NAV_ITEMS = [
   { href: '/hostslab/break-room', label: 'The Break Room', icon: Coffee },
   { href: '/hostslab/academy', label: 'The Academy', icon: GraduationCap },
   { href: '/hostslab/lab-controls', label: 'Lab Controls', icon: Settings },
+  { href: '/hostslab/rev-share', label: 'Rev Share', icon: TrendingUp },
 ]
 
 const LAB_LEVELS = [
