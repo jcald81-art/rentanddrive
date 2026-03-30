@@ -1,5 +1,5 @@
 'use client'
-
+// Renter Car Lot - Browse available vehicles
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
