@@ -11,6 +11,8 @@ const nextConfig = {
       },
     ],
   },
+  // Exclude jspdf from server-side bundling (uses Node.js-specific modules)
+  serverExternalPackages: ['jspdf'],
 }
 
 export default nextConfig

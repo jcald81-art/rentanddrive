@@ -405,6 +405,7 @@ class BouncieClient {
   }
 }
 
-// Export singleton instance
+// Export singleton instance and class
+export { BouncieClient }
 export const bouncie = new BouncieClient()
 export type { BouncieVehicle, BouncieTrip, BouncieLocation }

@@ -327,9 +327,13 @@ export default function CartegrityInspectionPage() {
   }
 
   async function downloadPDF() {
+    if (typeof window === 'undefined') return
+    
     try {
-      // Dynamically import jsPDF
-      const { default: jsPDF } = await import('jspdf')
+      // Dynamically import jsPDF only on client side
+      // @ts-ignore - dynamic import
+      const jsPDFModule = await import('jspdf')
+      const jsPDF = jsPDFModule.jsPDF || jsPDFModule.default
       const doc = new jsPDF()
       
       // Header

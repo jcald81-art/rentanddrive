@@ -446,3 +446,30 @@ export async function quickConnect(options: {
     return { success: false, error: (error as Error).message }
   }
 }
+
+// Alias for backward compatibility
+export const SecureLink = {
+  quickConnect,
+  sendMessage,
+  sendUrgentAlert,
+  offerConnection,
+}
+
+// Class wrapper for API routes
+export class SecureLinkAgent {
+  async sendBookingConfirmation(bookingId: string) {
+    return sendMessage({ userId: '', type: 'booking_confirmation', bookingId })
+  }
+  async sendReminder(bookingId: string, type: 'pickup_reminder_24h' | 'pickup_reminder_2h' | 'return_reminder_4h') {
+    return sendMessage({ userId: '', type, bookingId })
+  }
+  async sendReviewRequest(bookingId: string) {
+    return sendMessage({ userId: '', type: 'post_trip_review', bookingId })
+  }
+  async sendUrgentAlert(userId: string, message: string) {
+    return sendUrgentAlert(userId, message)
+  }
+  async quickConnect(bookingId: string, reason: string) {
+    return quickConnect({ bookingId, agentName: 'SecureLink', reason })
+  }
+}

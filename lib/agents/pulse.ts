@@ -373,3 +373,21 @@ Upcoming maintenance items: ${allMaintenancePredictions.length}`,
 export async function getVehicleHealth(vehicleId: string): Promise<VehicleHealth> {
   return analyzeVehicleTelemetry(vehicleId)
 }
+
+// Class wrapper for API routes
+export class PulseAgent {
+  async analyzeVehicleHealth(vehicleId: string) {
+    return getVehicleHealth(vehicleId)
+  }
+  async analyzeFleetHealth(hostId?: string) {
+    return runFleetHealthCheck()
+  }
+  async predictMaintenance(vehicleId: string) {
+    const health = await getVehicleHealth(vehicleId)
+    return health.maintenancePredictions
+  }
+  async getEfficiency(vehicleId: string) {
+    const health = await getVehicleHealth(vehicleId)
+    return health.fuelEfficiency
+  }
+}

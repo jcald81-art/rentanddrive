@@ -305,3 +305,20 @@ export async function getRealTimeConditions(): Promise<{
     }
   }
 }
+
+// Class wrapper for API routes
+export class CommandControlAgent {
+  async scanMarket(region: string = 'reno') {
+    return runWeeklyMarketScan()
+  }
+  async scanUpcomingEvents() {
+    const snapshot = await getLatestMarketSnapshot()
+    return snapshot?.upcomingDemandEvents || []
+  }
+  async scanCompetitorPricing(category?: string) {
+    return getLatestMarketSnapshot()
+  }
+  async generateReport() {
+    return runWeeklyMarketScan()
+  }
+}

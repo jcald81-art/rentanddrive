@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { BouncieClient } from '@/lib/eagle/bouncie'
+// BouncieClient is not used directly in this route - remove unused import
 
 export async function GET(request: NextRequest) {
   try {

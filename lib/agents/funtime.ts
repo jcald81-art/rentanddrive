@@ -473,3 +473,22 @@ export async function runDailyFuntime(): Promise<{
     leaderboardUpdated: true,
   }
 }
+
+// Class wrapper for API routes
+export class FuntimeAgent {
+  async awardXP(userId: string, amount: number, reason: string, source?: object) {
+    return awardHostXP(userId, amount, reason, source)
+  }
+  async checkLevelUp(userId: string) {
+    return { leveledUp: false, currentLevel: 1 }
+  }
+  async awardBadge(userId: string, badgeType: string) {
+    return awardHostBadge(userId, badgeType as keyof typeof BADGES)
+  }
+  async updateLeaderboard() {
+    return updateLeaderboard()
+  }
+  async runDaily() {
+    return runDailyFuntime()
+  }
+}
