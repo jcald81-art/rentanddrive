@@ -153,7 +153,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body className={`${geistSans.className} font-sans antialiased`}>
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <ErrorBoundary>
           {children}
         </ErrorBoundary>
