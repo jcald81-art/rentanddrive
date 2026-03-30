@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { Car, Menu, X, User, LogOut } from 'lucide-react'
+import Image from 'next/image'
+import { Menu, X, User, LogOut } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -44,11 +45,15 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
     <header className={`${bgClass} border-b sticky top-0 z-50`}>
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className={`flex items-center gap-2 hover:opacity-80 transition-opacity ${textClass}`}>
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#CC0000]">
-            <Car className="h-5 w-5 text-white" />
-          </div>
-          <span className="font-bold text-lg">Rent & Drive</span>
+        <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+          <Image 
+            src="/images/logo.jpg" 
+            alt="Rent and Drive - Reno Sparks Lake Tahoe" 
+            width={200}
+            height={50}
+            className="h-10 w-auto object-contain"
+            priority
+          />
         </Link>
 
         {/* Desktop Navigation */}

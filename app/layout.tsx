@@ -10,11 +10,11 @@ import './globals.css'
 
 const geistSans = Geist({ 
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  display: "swap",
 });
 const geistMono = Geist_Mono({ 
   subsets: ["latin"],
-  variable: "--font-geist-mono",
+  display: "swap",
 });
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rentanddrive.net'
@@ -153,7 +153,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
+      <body className={`${geistSans.className} font-sans antialiased`}>
         <ErrorBoundary>
           {children}
         </ErrorBoundary>
