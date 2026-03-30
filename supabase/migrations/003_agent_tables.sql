@@ -154,3 +154,28 @@ CREATE INDEX IF NOT EXISTS idx_pricing_history_vehicle_date ON pricing_history(v
 CREATE INDEX IF NOT EXISTS idx_competitor_snapshots_vehicle ON competitor_snapshots(vehicle_id);
 CREATE INDEX IF NOT EXISTS idx_renter_messages_booking ON renter_messages(booking_id);
 CREATE INDEX IF NOT EXISTS idx_review_analysis_review ON review_analysis(review_id);
+
+-- Function to create default R&D agents for new users
+CREATE OR REPLACE FUNCTION create_default_rd_agents()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO rd_agents 
+    (user_id, agent_type, default_name, custom_name, is_active)
+  VALUES
+    (NEW.id, 'communications', 'SecureLink', 'SecureLink', true),
+    (NEW.id, 'pricing', 'Dollar', 'Dollar', true),
+    (NEW.id, 'reputation', 'Shield', 'Shield', true),
+    (NEW.id, 'intel', 'Command&Control', 'Command&Control', true),
+    (NEW.id, 'fleet', 'Pulse', 'Pulse', true),
+    (NEW.id, 'engagement', 'Funtime', 'Funtime', true);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger to auto-create agents when a new profile is created
+-- Note: This triggers on profiles table (not auth.users) since rd_agents references profiles
+DROP TRIGGER IF EXISTS on_profile_created_agents ON profiles;
+CREATE TRIGGER on_profile_created_agents
+  AFTER INSERT ON profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION create_default_rd_agents();
