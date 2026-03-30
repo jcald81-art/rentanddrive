@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import Link from 'next/link'
 import {
   GraduationCap,
   Play,
@@ -377,27 +378,32 @@ export default function AcademyPage() {
                       className="w-full"
                       variant={course.is_locked ? 'secondary' : isComplete ? 'outline' : 'default'}
                       disabled={course.is_locked}
+                      asChild={!course.is_locked}
                     >
                       {course.is_locked ? (
-                        <>
+                        <span>
                           <Lock className="h-4 w-4 mr-2" />
                           Unlock at Level 4
-                        </>
-                      ) : isComplete ? (
-                        <>
-                          <CheckCircle className="h-4 w-4 mr-2" />
-                          Review Course
-                        </>
-                      ) : course.completed_lessons > 0 ? (
-                        <>
-                          Continue
-                          <ChevronRight className="h-4 w-4 ml-2" />
-                        </>
+                        </span>
                       ) : (
-                        <>
-                          <Play className="h-4 w-4 mr-2" />
-                          Start Course
-                        </>
+                        <Link href={`/hostslab/academy/course/${course.id}`}>
+                          {isComplete ? (
+                            <>
+                              <CheckCircle className="h-4 w-4 mr-2" />
+                              Review Course
+                            </>
+                          ) : course.completed_lessons > 0 ? (
+                            <>
+                              Continue
+                              <ChevronRight className="h-4 w-4 ml-2" />
+                            </>
+                          ) : (
+                            <>
+                              <Play className="h-4 w-4 mr-2" />
+                              Start Course
+                            </>
+                          )}
+                        </Link>
                       )}
                     </Button>
                   </CardContent>
