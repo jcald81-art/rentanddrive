@@ -616,17 +616,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* HostsLab CTA */}
+      {/* Host Suite CTA */}
       <section className="border-t py-16 md:py-24 bg-gradient-to-br from-slate-900 to-slate-800">
         <div className="container mx-auto px-4">
           <div className="grid items-center gap-8 md:grid-cols-2">
             <div className="text-white">
               <Badge className="mb-4 bg-[#CC0000]/20 text-[#CC0000] border-[#CC0000]/30">For Vehicle Owners</Badge>
               <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
-                Open Your Lab
+                Your Command Center
               </h2>
               <p className="mb-2 text-2xl font-semibold text-[#CC0000]">
-                Welcome to HostsLab
+                Welcome to Host Suite
               </p>
               <p className="mb-6 text-slate-300">
                 Your AI-powered command center for fleet management. Eagle GPS tracking, 
@@ -654,8 +654,8 @@ export default function HomePage() {
                   </Link>
                 </Button>
                 <Button asChild className="bg-slate-700 hover:bg-slate-600">
-                  <Link href="/hostslab/lobby">
-                    Enter HostsLab
+                  <Link href="/host/dashboard">
+                    Enter Host Suite
                   </Link>
                 </Button>
                 <Button variant="outline" asChild className="border-slate-600 text-white hover:bg-slate-700">
@@ -817,10 +817,10 @@ export default function HomePage() {
               <h4 className="mb-4 font-semibold">Hosts</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link href="/list-vehicle" className="hover:text-foreground font-semibold text-[#f97316]">List Your Vehicle — It&apos;s Free</Link></li>
-                <li><Link href="/hostslab/lobby" className="hover:text-foreground">HostsLab Dashboard</Link></li>
+                <li><Link href="/host/dashboard" className="hover:text-foreground">Host Suite Dashboard</Link></li>
                 <li><Link href="/signup?role=host" className="hover:text-foreground">Become a Host</Link></li>
                 <li><Link href="/hostslab/academy" className="hover:text-foreground">Host Academy</Link></li>
-                <li><Link href="/hostslab/eagle-command" className="hover:text-foreground">Eagle GPS System</Link></li>
+                <li><Link href="/hostslab/eagle-eye" className="hover:text-foreground">Eagle GPS System</Link></li>
               </ul>
             </div>
             <div>
