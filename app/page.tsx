@@ -56,14 +56,11 @@ export default function HomePage() {
             <Link href="/vehicles" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
               Browse Vehicles
             </Link>
-            <Link href="/dashboard/vehicles/new" className="text-sm font-medium text-[#CC0000] transition-colors hover:text-[#AA0000]">
-              List Your Vehicle
-            </Link>
-            <Link href="/login" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+            <Link href="/sign-in" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
               Sign In
             </Link>
-            <Button asChild>
-              <Link href="/signup">Get Started</Link>
+            <Button asChild className="bg-[#f97316] hover:bg-[#ea580c]">
+              <Link href="/list-vehicle">List Your Vehicle</Link>
             </Button>
           </nav>
 
@@ -504,9 +501,9 @@ export default function HomePage() {
                 ))}
               </ul>
               <div className="flex flex-wrap gap-3">
-                <Button asChild className="bg-[#CC0000] hover:bg-[#AA0000]">
-                  <Link href="/dashboard/vehicles/new">
-                    List Your Vehicle Free
+                <Button asChild className="bg-[#f97316] hover:bg-[#ea580c]">
+                  <Link href="/list-vehicle">
+                    List Your Vehicle — It&apos;s Free
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -673,7 +670,7 @@ export default function HomePage() {
             <div>
               <h4 className="mb-4 font-semibold">Hosts</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/dashboard/vehicles/new" className="hover:text-foreground font-semibold text-[#CC0000]">List Your Vehicle - It&apos;s Free</Link></li>
+                <li><Link href="/list-vehicle" className="hover:text-foreground font-semibold text-[#f97316]">List Your Vehicle — It&apos;s Free</Link></li>
                 <li><Link href="/hostslab/lobby" className="hover:text-foreground">HostsLab Dashboard</Link></li>
                 <li><Link href="/signup?role=host" className="hover:text-foreground">Become a Host</Link></li>
                 <li><Link href="/hostslab/academy" className="hover:text-foreground">Host Academy</Link></li>
