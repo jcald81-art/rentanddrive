@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { Check, Calendar, MapPin, User, Phone, Copy, CheckCircle, ExternalLink } from 'lucide-react'
+import { Check, Calendar, MapPin, Phone, Copy, CheckCircle, ExternalLink } from 'lucide-react'
 
-export default function BookingSuccessPage() {
+function BookingSuccessContent() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
   const [copied, setCopied] = useState(false)
@@ -168,5 +168,20 @@ export default function BookingSuccessPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function BookingSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-[#FFD84D] border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-gray-400">Loading your booking...</p>
+        </div>
+      </div>
+    }>
+      <BookingSuccessContent />
+    </Suspense>
   )
 }
