@@ -149,6 +149,14 @@ export default async function VehicleDetailPage({ params }: PageProps) {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-8">
+        {/* Breadcrumb Navigation */}
+        <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+          <a href="/" className="hover:text-foreground transition-colors">Home</a>
+          <span>/</span>
+          <a href="/vehicles" className="hover:text-foreground transition-colors">Vehicles</a>
+          <span>/</span>
+          <span className="text-foreground">{vehicle.year} {vehicle.make} {vehicle.model}</span>
+        </nav>
         {/* Photo Gallery */}
         <PhotoGallery
           images={vehicle.images || [vehicle.thumbnail_url]}
