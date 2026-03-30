@@ -4,8 +4,8 @@
  * R&D = Beta tester, cutting-edge features, technical/professional tone
  * RAD = Production-ready, chill surfer vibe, laid-back and fun
  * 
- * THIS FILE IS CLIENT-SAFE
- * NO SERVER IMPORTS - DO NOT ADD ANY
+ * THIS FILE IS CLIENT-SAFE - NO SERVER IMPORTS ALLOWED
+ * Build timestamp: 2026-03-30
  * 
  * @packageDocumentation
  */

@@ -3,7 +3,8 @@
 /**
  * Universal Concierge Component
  * Supports both R&D (beta) and RAD (production) personas
- * CLIENT COMPONENT - no server imports
+ * CLIENT COMPONENT ONLY - NO SERVER IMPORTS ALLOWED
+ * Updated: 2026-03-30
  */
 
 import { useState, useRef, useEffect } from 'react'
