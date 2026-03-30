@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { NavHeader } from '@/components/nav-header'
 import { 
   Car, Shield, Radar, DollarSign, Gauge, Calendar,
   Search, SlidersHorizontal, Tag, CheckCircle2, Snowflake
@@ -76,10 +77,11 @@ export default async function CarLotPage({
   const params = await searchParams
   const listings = await getListings(params)
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-slate-900 to-black text-white py-16">
+return (
+  <div className="min-h-screen bg-background">
+  <NavHeader variant="dark" />
+  {/* Hero */}
+  <section className="bg-gradient-to-br from-slate-900 to-black text-white py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl">
             <Badge className="mb-4 bg-[#CC0000]/20 text-[#CC0000] border-[#CC0000]/30">
