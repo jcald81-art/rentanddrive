@@ -46,10 +46,13 @@ function LoginForm() {
     setError(null)
 
     try {
+      // Use current origin for redirect to work in all environments
+      const redirectUrl = `${window.location.origin}/callback`
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `https://rentanddrive.net/callback`,
+          redirectTo: redirectUrl,
         },
       })
       if (error) throw error

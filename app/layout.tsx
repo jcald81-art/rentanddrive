@@ -8,8 +8,14 @@ import { ErrorBoundary } from '@/components/error-boundary'
 import { CookieConsent } from '@/components/cookie-consent'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const geistSans = Geist({ 
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+});
+const geistMono = Geist_Mono({ 
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+});
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rentanddrive.net'
 
@@ -112,7 +118,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <head>
         {/* PWA Meta Tags */}
         <meta name="application-name" content="Rent and Drive" />
