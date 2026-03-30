@@ -40,7 +40,7 @@ export default function TermsOfServicePage() {
               <li>Provide accurate and complete information about your vehicle, including make, model, year, mileage, and condition</li>
               <li>Maintain valid vehicle registration, insurance, and any required inspections</li>
               <li>Ensure your vehicle is safe, clean, and roadworthy for each rental</li>
-              <li>Complete pre-trip and post-trip Cartegrity inspections as required</li>
+              <li>Complete pre-trip and post-trip carfidelity.ai inspections as required</li>
               <li>Install and maintain an active Bouncie GPS device (Eagle System) on all listed vehicles</li>
               <li>Respond to booking requests within 24 hours</li>
               <li>Disclose any known mechanical issues or limitations</li>
@@ -56,7 +56,7 @@ export default function TermsOfServicePage() {
             <ul className="list-disc pl-6 space-y-2">
               <li>Provide a valid driver&apos;s license and meet minimum age requirements (21 years for standard vehicles, 25 years for luxury/specialty vehicles)</li>
               <li>Maintain a clean driving record with no major violations in the past 3 years</li>
-              <li>Complete pre-trip and post-trip Cartegrity inspections honestly and accurately</li>
+              <li>Complete pre-trip and post-trip carfidelity.ai inspections honestly and accurately</li>
               <li>Return the vehicle on time, in the same condition as received</li>
               <li>Report any accidents, damage, or mechanical issues immediately</li>
               <li>Not smoke, vape, or allow pets in vehicles unless explicitly permitted</li>
@@ -68,11 +68,11 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">4. Cartegrity Inspection Requirement</h2>
+            <h2 className="text-2xl font-semibold mb-4">4. carfidelity.ai Inspection Requirement</h2>
             <p>
-              All rentals require completion of our Cartegrity inspection process. Both Hosts and Renters 
-              must complete photographic inspections at the start and end of each rental period. These 
-              inspections document the vehicle&apos;s condition and are used to resolve any damage disputes.
+              All rentals require completion of our carfidelity.ai inspection process (powered by Inspector Cartegrity AI). 
+              Both Hosts and Renters must complete photographic inspections at the start and end of each rental period. 
+              These inspections document the vehicle&apos;s condition and are used to resolve any damage disputes.
             </p>
             <p>
               Failure to complete inspections may result in assumption of liability for any undocumented 

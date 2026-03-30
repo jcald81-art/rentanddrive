@@ -47,7 +47,7 @@ interface BookingResult {
  * 1. Create booking record
  * 2. Trigger SecureLink confirmation (SMS + Email)
  * 3. Generate igloo PIN
- * 4. Schedule Cartegrity pre-inspection reminder
+ * 4. Schedule carfidelity.ai pre-inspection reminder
  * 5. Save insurance selection
  * 6. Register Eagle geofence
  */
@@ -122,7 +122,7 @@ export async function createCompleteBooking(params: BookingCreationParams): Prom
         .eq('id', booking.id)
     }
     
-    // 4. Schedule Cartegrity pre-inspection reminder (1 hour before pickup)
+    // 4. Schedule carfidelity.ai pre-inspection reminder (1 hour before pickup)
     const reminderTime = new Date(params.startDate)
     reminderTime.setHours(reminderTime.getHours() - 1)
     
@@ -130,7 +130,7 @@ export async function createCompleteBooking(params: BookingCreationParams): Prom
       user_id: params.renterId,
       type: 'inspection_reminder',
       title: 'Pre-Rental Inspection Required',
-      message: `Please complete your Cartegrity pre-rental inspection before driving. Open: ${process.env.NEXT_PUBLIC_APP_URL}/inspect/${booking.id}`,
+      message: `Please complete your carfidelity.ai pre-rental inspection before driving. Open: ${process.env.NEXT_PUBLIC_APP_URL}/inspect/${booking.id}`,
       scheduled_for: reminderTime.toISOString(),
       metadata: { booking_id: booking.id, inspection_type: 'pre' }
     })

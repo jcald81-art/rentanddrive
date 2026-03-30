@@ -9,13 +9,14 @@
  * - Eagle: GPS fleet tracking system
  * - Shield: Reputation management AI
  * - SecureLink: Guest communications automation
+ * - Inspector Cartegrity: Vehicle inspection AI (carfidelity.ai mobile app)
  */
 
 // Main conversational personas
 export type AIPersona = 'R&D' | 'RAD'
 
 // Host AI Agents (non-conversational, service-based)
-export type HostAIAgent = 'Dollar' | 'Eagle' | 'Shield' | 'SecureLink'
+export type HostAIAgent = 'Dollar' | 'Eagle' | 'Shield' | 'SecureLink' | 'InspectorCartegrity'
 
 export const PERSONAS: Record<AIPersona, {
   name: string
@@ -147,6 +148,22 @@ export const HOST_AI_AGENTS: Record<HostAIAgent, {
       'Smart response suggestions',
       'Privacy-protected messaging',
       'Multi-language support'
+    ],
+    status: 'active'
+  },
+  'InspectorCartegrity': {
+    name: 'Inspector Cartegrity',
+    fullName: 'Inspector Cartegrity AI',
+    tagline: 'Vehicle Inspection AI',
+    description: 'AI-powered vehicle inspection system via carfidelity.ai mobile app. Detects damage, documents condition, and generates detailed reports for dispute resolution.',
+    color: '#CC0000',
+    icon: 'camera',
+    capabilities: [
+      'AI damage detection',
+      'Photo-based inspections',
+      'Pre & post-trip reports',
+      'Dispute documentation',
+      'Mobile app integration'
     ],
     status: 'active'
   }

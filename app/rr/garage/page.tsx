@@ -32,7 +32,7 @@ interface Vehicle {
   rating: number
   review_count: number
   has_bouncie: boolean
-  has_cartegrity: boolean
+  has_carfidelity: boolean
   sell_while_renting: boolean
   category: string
   seats: number
@@ -92,12 +92,12 @@ function GarageContent() {
     } catch (e) {
       // Mock data
       setVehicles([
-        { id: '1', make: 'Toyota', model: '4Runner', year: 2023, daily_rate: 89, images: ['/placeholder.svg'], rating: 4.9, review_count: 47, has_bouncie: true, has_cartegrity: true, sell_while_renting: false, category: 'suv', seats: 5, is_awd: true, has_ski_rack: true, instant_book: true },
-        { id: '2', make: 'Jeep', model: 'Wrangler', year: 2024, daily_rate: 95, images: ['/placeholder.svg'], rating: 4.8, review_count: 32, has_bouncie: true, has_cartegrity: false, sell_while_renting: true, category: 'suv', seats: 4, is_awd: true, has_ski_rack: false, instant_book: true },
-        { id: '3', make: 'Ford', model: 'Bronco', year: 2023, daily_rate: 99, images: ['/placeholder.svg'], rating: 4.7, review_count: 28, has_bouncie: true, has_cartegrity: true, sell_while_renting: false, category: 'suv', seats: 5, is_awd: true, has_ski_rack: true, instant_book: false },
-        { id: '4', make: 'Subaru', model: 'Outback', year: 2024, daily_rate: 65, images: ['/placeholder.svg'], rating: 4.9, review_count: 53, has_bouncie: true, has_cartegrity: true, sell_while_renting: false, category: 'wagon', seats: 5, is_awd: true, has_ski_rack: false, instant_book: true },
-        { id: '5', make: 'Tesla', model: 'Model Y', year: 2024, daily_rate: 110, images: ['/placeholder.svg'], rating: 4.6, review_count: 19, has_bouncie: true, has_cartegrity: false, sell_while_renting: false, category: 'suv', seats: 5, is_awd: true, has_ski_rack: false, instant_book: true },
-        { id: '6', make: 'Honda', model: 'CR-V', year: 2023, daily_rate: 55, images: ['/placeholder.svg'], rating: 4.8, review_count: 61, has_bouncie: true, has_cartegrity: true, sell_while_renting: true, category: 'suv', seats: 5, is_awd: true, has_ski_rack: true, instant_book: true },
+        { id: '1', make: 'Toyota', model: '4Runner', year: 2023, daily_rate: 89, images: ['/placeholder.svg'], rating: 4.9, review_count: 47, has_bouncie: true, has_carfidelity: true, sell_while_renting: false, category: 'suv', seats: 5, is_awd: true, has_ski_rack: true, instant_book: true },
+        { id: '2', make: 'Jeep', model: 'Wrangler', year: 2024, daily_rate: 95, images: ['/placeholder.svg'], rating: 4.8, review_count: 32, has_bouncie: true, has_carfidelity: false, sell_while_renting: true, category: 'suv', seats: 4, is_awd: true, has_ski_rack: false, instant_book: true },
+        { id: '3', make: 'Ford', model: 'Bronco', year: 2023, daily_rate: 99, images: ['/placeholder.svg'], rating: 4.7, review_count: 28, has_bouncie: true, has_carfidelity: true, sell_while_renting: false, category: 'suv', seats: 5, is_awd: true, has_ski_rack: true, instant_book: false },
+        { id: '4', make: 'Subaru', model: 'Outback', year: 2024, daily_rate: 65, images: ['/placeholder.svg'], rating: 4.9, review_count: 53, has_bouncie: true, has_carfidelity: true, sell_while_renting: false, category: 'wagon', seats: 5, is_awd: true, has_ski_rack: false, instant_book: true },
+        { id: '5', make: 'Tesla', model: 'Model Y', year: 2024, daily_rate: 110, images: ['/placeholder.svg'], rating: 4.6, review_count: 19, has_bouncie: true, has_carfidelity: false, sell_while_renting: false, category: 'suv', seats: 5, is_awd: true, has_ski_rack: false, instant_book: true },
+        { id: '6', make: 'Honda', model: 'CR-V', year: 2023, daily_rate: 55, images: ['/placeholder.svg'], rating: 4.8, review_count: 61, has_bouncie: true, has_carfidelity: true, sell_while_renting: true, category: 'suv', seats: 5, is_awd: true, has_ski_rack: true, instant_book: true },
       ])
     }
     setLoading(false)
@@ -424,9 +424,9 @@ function GarageContent() {
                             Eagle
                           </Badge>
                         )}
-                        {vehicle.has_cartegrity && (
-                          <Badge className="bg-green-600/90">
-                            <Shield className="h-3 w-3 mr-1" />
+{vehicle.has_carfidelity && (
+  <Badge className="bg-green-600/90">
+  <Shield className="h-3 w-3 mr-1" />
                             Verified
                           </Badge>
                         )}

@@ -207,7 +207,7 @@ export default function InsuranceDisclosurePage() {
             <ol className="list-decimal pl-6 space-y-3">
               <li>
                 <strong>Document the incident:</strong> Take photos and videos of all damage immediately. 
-                Complete the post-trip Cartegrity inspection.
+                Complete the post-trip carfidelity.ai inspection.
               </li>
               <li>
                 <strong>Report within 24 hours:</strong> Contact our support team or file through the app. 
