@@ -64,8 +64,11 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
           <Link href="/search" className={`text-sm ${mutedClass} transition-colors`}>
             Search
           </Link>
-          <Link href="/host" className={`text-sm ${mutedClass} transition-colors`}>
-            List Your Car
+          <Link href="/renter/suite" className={`text-sm ${mutedClass} transition-colors`}>
+            Renter Suite
+          </Link>
+          <Link href="/host/dashboard" className={`text-sm ${mutedClass} transition-colors`}>
+            Host Suite
           </Link>
           <Link href="/help" className={`text-sm ${mutedClass} transition-colors`}>
             Help
@@ -185,8 +188,11 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
             <Link href="/search" className={`text-sm ${mutedClass}`} onClick={() => setMobileMenuOpen(false)}>
               Search
             </Link>
-            <Link href="/host" className={`text-sm ${mutedClass}`} onClick={() => setMobileMenuOpen(false)}>
-              List Your Car
+            <Link href="/renter/suite" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
+              <Car className="h-4 w-4" /> Renter Suite
+            </Link>
+            <Link href="/host/dashboard" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
+              <HomeIcon className="h-4 w-4" /> Host Suite
             </Link>
             <Link href="/help" className={`text-sm ${mutedClass}`} onClick={() => setMobileMenuOpen(false)}>
               Help
