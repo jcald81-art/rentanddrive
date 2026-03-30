@@ -506,16 +506,21 @@ export default function HomePage() {
                   </li>
                 ))}
               </ul>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 <Button asChild className="bg-[#CC0000] hover:bg-[#AA0000]">
+                  <Link href="/dashboard/vehicles/new">
+                    List Your Vehicle Free
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button asChild className="bg-slate-700 hover:bg-slate-600">
                   <Link href="/hostslab/lobby">
                     Enter HostsLab
-                    <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
                 <Button variant="outline" asChild className="border-slate-600 text-white hover:bg-slate-700">
                   <Link href="/signup?role=host">
-                    Become a Host
+                    Sign Up as Host
                   </Link>
                 </Button>
               </div>
@@ -671,6 +676,7 @@ export default function HomePage() {
             <div>
               <h4 className="mb-4 font-semibold">Hosts</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><Link href="/dashboard/vehicles/new" className="hover:text-foreground font-semibold text-[#CC0000]">List Your Vehicle - It&apos;s Free</Link></li>
                 <li><Link href="/hostslab/lobby" className="hover:text-foreground">HostsLab Dashboard</Link></li>
                 <li><Link href="/signup?role=host" className="hover:text-foreground">Become a Host</Link></li>
                 <li><Link href="/hostslab/academy" className="hover:text-foreground">Host Academy</Link></li>
@@ -680,10 +686,10 @@ export default function HomePage() {
             <div>
               <h4 className="mb-4 font-semibold">Company</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="#" className="hover:text-foreground">About Us</Link></li>
-                <li><Link href="#" className="hover:text-foreground">Contact</Link></li>
-                <li><Link href="#" className="hover:text-foreground">Privacy Policy</Link></li>
-                <li><Link href="#" className="hover:text-foreground">Terms of Service</Link></li>
+                <li><Link href="/about" className="hover:text-foreground">About Us</Link></li>
+                <li><Link href="/contact" className="hover:text-foreground">Contact</Link></li>
+                <li><Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="hover:text-foreground">Terms of Service</Link></li>
               </ul>
             </div>
           </div>

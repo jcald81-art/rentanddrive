@@ -5,16 +5,18 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useState, Suspense } from 'react'
 import { Logo } from '@/components/logo'
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirect')
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,8 +31,8 @@ export default function LoginPage() {
       })
       if (error) throw error
       
-      // Redirect to unified portal - it will route based on role
-      router.push('/portal')
+      // Redirect to intended destination or portal
+      router.push(redirectTo || '/portal')
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred')
     } finally {
@@ -59,6 +61,13 @@ export default function LoginPage() {
 
   return (
     <div className="w-full max-w-md">
+      {/* Show message if redirected */}
+      {redirectTo && (
+        <div className="mb-6 p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-700 dark:text-blue-300">
+          Please sign in to continue
+        </div>
+      )}
+      
       {/* Mobile branding */}
       <div className="lg:hidden mb-8 text-center">
         <div className="flex justify-center mb-4">
@@ -196,5 +205,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="w-full max-w-md animate-pulse"><div className="h-96 bg-muted rounded-lg" /></div>}>
+      <LoginForm />
+    </Suspense>
   )
 }
