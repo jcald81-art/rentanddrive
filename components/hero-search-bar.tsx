@@ -1,5 +1,7 @@
 "use client"
 
+// HeroSearchBar - FIXED 2026-03-29 - hydration-safe date handling
+
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
