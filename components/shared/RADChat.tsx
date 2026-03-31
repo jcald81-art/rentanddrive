@@ -226,6 +226,7 @@ export function RADChat({ isOpen, onClose }: RADChatProps) {
         <div
           style={{
             flexShrink: 0,
+            flexGrow: 0,
             display: "flex",
             alignItems: "center",
             gap: 10,
@@ -449,6 +450,7 @@ export function RADChat({ isOpen, onClose }: RADChatProps) {
         <div
           style={{
             flexShrink: 0,
+            flexGrow: 0,
             display: "flex",
             alignItems: "center",
             gap: 8,

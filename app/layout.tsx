@@ -3,7 +3,6 @@ import type { Metadata, Viewport } from 'next'
 import { DM_Sans, Instrument_Serif, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import Script from 'next/script'
-import { Concierge } from '@/components/concierge'
 import { ProactiveAgent } from '@/components/agents'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { CookieConsent } from '@/components/cookie-consent'
@@ -183,7 +182,6 @@ export default function RootLayout({
               {children}
             </ErrorBoundary>
           </main>
-          <Concierge />
           <ProactiveAgent />
           <CookieConsent />
           <Analytics />

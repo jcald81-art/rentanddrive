@@ -1,5 +1,6 @@
 "use client"
 
+// Navbar component for Rent and Drive
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'

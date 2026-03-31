@@ -8,7 +8,7 @@ import { UpcomingEvents } from '@/components/upcoming-events'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Concierge } from '@/components/concierge'
+
 import { 
   Car, 
   Calendar, 
@@ -323,8 +323,6 @@ export default function RenterSuitePage() {
         </div>
       </div>
 
-      {/* AI Concierge */}
-      <Concierge />
     </div>
   )
 }
