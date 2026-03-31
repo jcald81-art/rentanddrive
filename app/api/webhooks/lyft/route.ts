@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
     console.log(`Lyft webhook: ${event_type}`, ride_id)
 
-    // Update mobility request
+    // Update mobility request (legacy)
     if (ride_id) {
       await supabase
         .from('mobility_requests')
@@ -30,6 +30,15 @@ export async function POST(req: NextRequest) {
           ...(data?.driver && { courier_data: data.driver }),
         })
         .eq('external_id', ride_id)
+
+      // Also update ride_dispatches table (new system)
+      await supabase
+        .from('ride_dispatches')
+        .update({
+          status: data?.status,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('ride_id', ride_id)
     }
 
     switch (event_type) {
