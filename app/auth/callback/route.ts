@@ -3,9 +3,12 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const { searchParams, origin } = req.nextUrl;
+  const { searchParams } = req.nextUrl;
   const code = searchParams.get("code");
   const redirect = searchParams.get("redirect");
+
+  // Use custom domain for all redirects (not Supabase URL)
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.rentanddrive.net";
 
   // Validate redirect — internal paths only, no open redirect
   let safeRedirect = "/dashboard";
@@ -43,10 +46,10 @@ export async function GET(req: NextRequest) {
     if (error) {
       console.error("[auth/callback] Code exchange failed:", error.message);
       return NextResponse.redirect(
-        new URL(`/auth/signin?error=link_expired&redirect=${encodeURIComponent(safeRedirect)}`, origin)
+        new URL(`/auth/signin?error=link_expired&redirect=${encodeURIComponent(safeRedirect)}`, siteUrl)
       );
     }
   }
 
-  return NextResponse.redirect(new URL(safeRedirect, origin));
+  return NextResponse.redirect(new URL(safeRedirect, siteUrl));
 }
