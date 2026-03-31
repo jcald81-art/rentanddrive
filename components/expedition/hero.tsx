@@ -48,9 +48,9 @@ export function ExpeditionHero() {
   }
 
   return (
-    <section className="relative min-h-screen bg-[#1C1F1A] overflow-hidden">
+    <section className="relative min-h-screen bg-card dark:bg-[#1C1F1A] overflow-hidden">
       {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1C1F1A] via-[#252923] to-[#1C1F1A]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-card via-muted to-card dark:from-[#1C1F1A] dark:via-[#252923] dark:to-[#1C1F1A]" />
       <div className="absolute inset-0 grain-overlay" />
       
       {/* Hero Vehicle Image - positioned on right side */}
@@ -71,25 +71,25 @@ export function ExpeditionHero() {
         <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[60vh]">
           {/* Text Content */}
           <div className="animate-fade-up">
-            <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl xl:text-[84px] text-[#F5F2EC] leading-[0.95] tracking-tight mb-8">
+            <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl xl:text-[84px] text-foreground leading-[0.95] tracking-tight mb-8">
               The vehicle<br />
               your adventure<br />
               <span className="italic">deserves.</span>
             </h1>
             
-            <p className="text-lg sm:text-xl text-[#9A9589] max-w-lg mb-12 font-light leading-relaxed animate-fade-up-delay-1">
-              Rent directly from local hosts in Reno, Tahoe, Moab, and Bozeman. 
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-lg mb-12 font-light leading-relaxed animate-fade-up-delay-1">
+              Rent directly from local hosts in Reno, Sparks, and Tahoe. 
               More vehicle. Less commission.
             </p>
 
             {/* Search Bar */}
             <div className="animate-fade-up-delay-2">
-              <div className="flex flex-col sm:flex-row bg-white rounded-full p-2 shadow-2xl max-w-2xl">
+              <div className="flex flex-col sm:flex-row bg-card rounded-full p-2 shadow-2xl max-w-2xl border border-border">
                 {/* Location */}
-                <div className="flex-1 flex items-center gap-3 px-4 py-3 border-b sm:border-b-0 sm:border-r border-[#1C1F1A]/10">
-                  <MapPin className="h-5 w-5 text-[#9A9589]" />
+                <div className="flex-1 flex items-center gap-3 px-4 py-3 border-b sm:border-b-0 sm:border-r border-border">
+                  <MapPin className="h-5 w-5 text-muted-foreground" />
                   <Select value={location} onValueChange={setLocation}>
-                    <SelectTrigger className="border-0 p-0 h-auto shadow-none focus:ring-0 text-[#1C1F1A] font-medium">
+                    <SelectTrigger className="border-0 p-0 h-auto shadow-none focus:ring-0 text-foreground font-medium">
                       <SelectValue placeholder="Select location" />
                     </SelectTrigger>
                     <SelectContent>
@@ -103,31 +103,31 @@ export function ExpeditionHero() {
                 </div>
 
                 {/* Pickup Date */}
-                <div className="flex-1 flex items-center gap-3 px-4 py-3 border-b sm:border-b-0 sm:border-r border-[#1C1F1A]/10">
-                  <Calendar className="h-5 w-5 text-[#9A9589]" />
+                <div className="flex-1 flex items-center gap-3 px-4 py-3 border-b sm:border-b-0 sm:border-r border-border">
+                  <Calendar className="h-5 w-5 text-muted-foreground" />
                   <input
                     type="date"
                     value={pickupDate}
                     onChange={(e) => setPickupDate(e.target.value)}
-                    className="w-full bg-transparent text-[#1C1F1A] font-medium focus:outline-none"
+                    className="w-full bg-transparent text-foreground font-medium focus:outline-none"
                   />
                 </div>
 
                 {/* Return Date */}
-                <div className="flex-1 flex items-center gap-3 px-4 py-3 sm:border-r border-[#1C1F1A]/10">
-                  <Calendar className="h-5 w-5 text-[#9A9589]" />
+                <div className="flex-1 flex items-center gap-3 px-4 py-3 sm:border-r border-border">
+                  <Calendar className="h-5 w-5 text-muted-foreground" />
                   <input
                     type="date"
                     value={returnDate}
                     onChange={(e) => setReturnDate(e.target.value)}
-                    className="w-full bg-transparent text-[#1C1F1A] font-medium focus:outline-none"
+                    className="w-full bg-transparent text-foreground font-medium focus:outline-none"
                   />
                 </div>
 
                 {/* Search Button */}
                 <Button
                   onClick={handleSearch}
-                  className="bg-[#C4813A] hover:bg-[#A66B2E] text-[#1C1F1A] font-medium px-8 py-6 rounded-full"
+                  className="bg-accent hover:bg-accent/90 text-accent-foreground font-medium px-8 py-6 rounded-full"
                 >
                   Search
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -139,8 +139,8 @@ export function ExpeditionHero() {
 
         {/* Scroll Indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
-          <span className="text-sm text-[#9A9589] font-medium">Explore vehicles</span>
-          <ChevronDown className="h-5 w-5 text-[#9A9589]" />
+          <span className="text-sm text-muted-foreground font-medium">Explore vehicles</span>
+          <ChevronDown className="h-5 w-5 text-muted-foreground" />
         </div>
       </div>
     </section>

@@ -32,18 +32,18 @@ const FOOTER_LINKS = {
 
 export function ExpeditionFooter() {
   return (
-    <footer className="bg-[#1C1F1A] pt-20 pb-8">
+    <footer className="bg-sidebar pt-20 pb-8">
       <div className="mx-auto max-w-[1280px] px-6 lg:px-20">
         {/* Main Footer */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-12 pb-16 border-b border-[#F5F2EC]/10">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-12 pb-16 border-b border-sidebar-border">
           {/* Brand Column */}
           <div>
             <Link href="/" className="inline-block mb-6">
-              <span className="font-serif text-2xl text-[#F5F2EC]">
+              <span className="font-serif text-2xl text-sidebar-foreground">
                 Rent and Drive
               </span>
             </Link>
-            <p className="text-sm text-[#9A9589] mb-4">
+            <p className="text-sm text-muted-foreground mb-4">
               Rent and Drive LLC<br />
               Reno, Nevada
             </p>
@@ -52,7 +52,7 @@ export function ExpeditionFooter() {
                 href="https://instagram.com/rentanddrive" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-[#9A9589] hover:text-[#F5F2EC] transition-colors"
+                className="text-muted-foreground hover:text-sidebar-foreground transition-colors"
                 aria-label="Instagram"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -63,7 +63,7 @@ export function ExpeditionFooter() {
                 href="https://twitter.com/rentanddrive" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-[#9A9589] hover:text-[#F5F2EC] transition-colors"
+                className="text-muted-foreground hover:text-sidebar-foreground transition-colors"
                 aria-label="Twitter"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -76,7 +76,7 @@ export function ExpeditionFooter() {
           {/* Link Columns */}
           {Object.entries(FOOTER_LINKS).map(([key, section]) => (
             <div key={key}>
-              <h4 className="text-sm font-medium text-[#F5F2EC] mb-4">
+              <h4 className="text-sm font-medium text-sidebar-foreground mb-4">
                 {section.title}
               </h4>
               <ul className="space-y-3">
@@ -84,7 +84,7 @@ export function ExpeditionFooter() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-[#9A9589] hover:text-[#F5F2EC] transition-colors"
+                      className="text-sm text-muted-foreground hover:text-sidebar-foreground transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -97,10 +97,10 @@ export function ExpeditionFooter() {
 
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-[#9A9589]">
+          <p className="text-sm text-muted-foreground">
             2026 Rent and Drive LLC. rentanddrive.net
           </p>
-          <p className="text-sm text-[#9A9589]">
+          <p className="text-sm text-muted-foreground">
             Built for adventure travel.
           </p>
         </div>

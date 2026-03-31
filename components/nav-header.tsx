@@ -47,14 +47,16 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
-          <Image 
-            src="/images/rad-brand-logo.png" 
-            alt="Rent and Drive - Reno Sparks Lake Tahoe" 
-            width={120}
-            height={60}
-            className="h-12 w-auto object-contain"
-            priority
-          />
+          <div className="bg-[#1C1F1A] dark:bg-transparent rounded-lg px-2 py-1">
+            <Image 
+              src="/images/rad-brand-logo.png" 
+              alt="Rent and Drive - Reno Sparks Lake Tahoe" 
+              width={120}
+              height={60}
+              className="h-10 w-auto object-contain"
+              priority
+            />
+          </div>
         </Link>
 
         {/* Desktop Navigation */}

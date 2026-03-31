@@ -71,14 +71,16 @@ export function ExpeditionNavbar() {
             
             {/* Left: Logo */}
             <Link href="/" className="flex-shrink-0 hover:opacity-90 transition-opacity">
-              <Image 
-                src="/images/rad-brand-logo.png" 
-                alt="Rent and Drive" 
-                width={100}
-                height={50}
-                className="h-10 lg:h-12 w-auto object-contain"
-                priority
-              />
+              <div className="bg-[#1C1F1A] dark:bg-transparent rounded-lg px-2 py-1">
+                <Image 
+                  src="/images/rad-brand-logo.png" 
+                  alt="Rent and Drive" 
+                  width={100}
+                  height={50}
+                  className="h-10 lg:h-12 w-auto object-contain"
+                  priority
+                />
+              </div>
             </Link>
 
             {/* Center: Primary Nav Links (Desktop) */}

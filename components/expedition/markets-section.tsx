@@ -30,13 +30,13 @@ const MARKETS = [
 
 export function MarketsSection() {
   return (
-    <section className="bg-[#F5F2EC] py-24 lg:py-32">
+    <section className="bg-background py-24 lg:py-32">
       <div className="mx-auto max-w-[1280px] px-6 lg:px-20">
         {/* Header */}
-        <h2 className="font-serif italic text-4xl lg:text-5xl text-[#1C1F1A] mb-4">
+        <h2 className="font-serif italic text-4xl lg:text-5xl text-foreground mb-4">
           Serving Reno-Sparks-Tahoe
         </h2>
-        <p className="text-lg text-[#6B6B6B] mb-12 max-w-2xl">
+        <p className="text-lg text-muted-foreground mb-12 max-w-2xl">
           Peer-to-peer vehicle rentals in Northern Nevada and the Sierra. More markets coming soon.
         </p>
 
