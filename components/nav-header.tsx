@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { ThemeSwitcher } from '@/components/theme-switcher'
+import { AuthModal } from '@/components/auth'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +24,8 @@ interface NavHeaderProps {
 export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [user, setUser] = useState<{ email?: string } | null>(null)
+  const [authModalOpen, setAuthModalOpen] = useState(false)
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
   
   const isDark = variant === 'dark'
   const bgClass = isDark ? 'bg-[#111111] border-[#222]' : 'bg-background border-border'
@@ -119,52 +122,29 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
               </DropdownMenu>
             ) : (
               <>
-                {/* Sign In Dropdown with Renter/Host options */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className={mutedClass}>
-                      Sign In
-                      <ChevronDown className="h-4 w-4 ml-1" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem asChild>
-                      <Link href="/login?role=renter" className="flex items-center">
-                        <Car className="h-4 w-4 mr-2" />
-                        As Renter
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/login?role=host" className="flex items-center">
-                        <HomeIcon className="h-4 w-4 mr-2" />
-                        As Host
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                {/* Go RAD Dropdown with Renter/Host options */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button size="sm" className="bg-[#2D4A2D] hover:bg-[#4A7C59] text-[#F5F2EC] rounded-full px-5">
-                      Go RAD
-                      <ChevronDown className="h-4 w-4 ml-1" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem asChild>
-                      <Link href="/signup?role=renter" className="flex items-center">
-                        <Car className="h-4 w-4 mr-2" />
-                        As Renter
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/signup?role=host" className="flex items-center">
-                        <HomeIcon className="h-4 w-4 mr-2" />
-                        As Host
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {/* Sign In Button - Opens Modal */}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className={mutedClass}
+                  onClick={() => {
+                    setAuthMode('signin')
+                    setAuthModalOpen(true)
+                  }}
+                >
+                  Sign In
+                </Button>
+                {/* Go RAD Button - Opens Modal in signup mode */}
+                <Button 
+                  size="sm" 
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-5"
+                  onClick={() => {
+                    setAuthMode('signup')
+                    setAuthModalOpen(true)
+                  }}
+                >
+                  Go RAD
+                </Button>
               </>
             )}
           </div>
@@ -208,20 +188,26 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
             </Link>
             {showAuth && !user && (
               <>
-                <div className={`text-xs font-semibold uppercase tracking-wider ${mutedClass} mt-2`}>Sign In</div>
-                <Link href="/login?role=renter" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
-                  <Car className="h-4 w-4" /> As Renter
-                </Link>
-                <Link href="/login?role=host" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
-                  <HomeIcon className="h-4 w-4" /> As Host
-                </Link>
-                <div className={`text-xs font-semibold uppercase tracking-wider ${mutedClass} mt-2`}>Sign Up</div>
-                <Link href="/signup?role=renter" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
-                  <Car className="h-4 w-4" /> As Renter
-                </Link>
-                <Link href="/signup?role=host" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
-                  <HomeIcon className="h-4 w-4" /> As Host
-                </Link>
+                <button 
+                  className={`text-sm ${mutedClass} text-left mt-2`} 
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    setAuthMode('signin')
+                    setAuthModalOpen(true)
+                  }}
+                >
+                  Sign In
+                </button>
+                <button 
+                  className="w-full text-center text-sm font-medium bg-primary text-primary-foreground px-4 py-2 rounded-full mt-2"
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    setAuthMode('signup')
+                    setAuthModalOpen(true)
+                  }}
+                >
+                  Go RAD - Create Account
+                </button>
               </>
             )}
             {showAuth && user && (
@@ -248,6 +234,13 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
           </nav>
         </div>
       )}
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={authModalOpen} 
+        onClose={() => setAuthModalOpen(false)} 
+        defaultMode={authMode}
+      />
     </header>
   )
 }

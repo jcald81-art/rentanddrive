@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -182,9 +183,12 @@ export function DeliveryChoice({
 
       {/* Shipping Quotes Dialog */}
       <Dialog open={showShipping} onOpenChange={setShowShipping}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl" aria-describedby="shipping-dialog-desc">
           <DialogHeader>
             <DialogTitle>Ship Your {vehicleName}</DialogTitle>
+            <DialogDescription id="shipping-dialog-desc">
+              Get instant quotes from verified carriers for door-to-door delivery.
+            </DialogDescription>
           </DialogHeader>
 
           {quotes.length === 0 ? (
