@@ -1,199 +1,77 @@
-/**
- * Unified Agent API Endpoint
- * POST /api/agent
- * 
- * Flow:
- * 1. Authenticate request (Supabase JWT)
- * 2. Run intent classifier if task not explicitly provided
- * 3. Look up system prompt from AGENT_PROMPTS
- * 4. Route to primary model via ai-router
- * 5. On failure, route to fallback
- * 6. Cross-validate if required
- * 7. Log to agent_logs table
- * 8. Return result (streaming or JSON)
- */
+import Anthropic from "@anthropic-ai/sdk"
+import { NextRequest } from "next/server"
 
-import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { 
-  routeAgentRequest, 
-  routeAgentStreamRequest,
-  AgentTaskType, 
-  AGENT_ROUTES,
-  getAgentLoadingMessage 
-} from '@/lib/ai-router'
-import { getAgentPrompt } from '@/lib/agent-prompts'
-import { classifyIntent } from '@/lib/intent-classifier'
+const client = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+})
 
-// ============================================
-// REQUEST/RESPONSE TYPES
-// ============================================
+const RAD_SYSTEM_PROMPT = `You are RAD, the AI concierge 
+for Rent and Drive (rentanddrive.net) — a peer-to-peer car 
+rental platform serving Reno, Sparks, and Lake Tahoe, Nevada.
 
-interface AgentRequest {
-  task?: AgentTaskType
-  message: string
-  context?: Record<string, unknown>
-  stream?: boolean
-  bookingId?: string
-  vehicleId?: string
-}
+You help renters find and book vehicles, help hosts list and 
+manage their fleet, and answer any questions about the platform.
 
-// ============================================
-// AUTHENTICATION
-// ============================================
+Keep responses concise — 2 to 4 sentences maximum unless 
+the user asks for detail. Be direct and helpful. 
+Never make up pricing, availability, or policies you don't know.
 
-async function authenticateRequest(request: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
-  
-  if (error || !user) {
-    return { user: null, error: 'Unauthorized' }
-  }
-  
-  return { user, error: null }
-}
+Key facts:
+- RAD takes 10% commission vs Turo's 25-35%
+- All vehicles have Bouncie GPS tracking (RADar)
+- CarFidelity inspection system verifies all vehicles
+- Markets: Reno, Sparks, Lake Tahoe only
+- Keyless access via igloohome on all vehicles
+- Support: help@rentanddrive.net`
 
-// ============================================
-// POST HANDLER
-// ============================================
-
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    // 1. Authenticate
-    const { user, error: authError } = await authenticateRequest(request)
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const body = await req.json()
+    const { message, conversationHistory = [] } = body
+
+    if (!message || typeof message !== "string") {
+      return Response.json(
+        { response: "Please send a message." },
+        { status: 200 }
+      )
     }
-    
-    // 2. Parse request body
-    const body: AgentRequest = await request.json()
-    
-    if (!body.message || body.message.trim().length === 0) {
-      return NextResponse.json({ error: 'Message is required' }, { status: 400 })
+
+    if (!process.env.ANTHROPIC_API_KEY) {
+      console.error("[/api/agent] ANTHROPIC_API_KEY missing")
+      return Response.json(
+        { response: "RAD is temporarily unavailable. Email help@rentanddrive.net." },
+        { status: 200 }
+      )
     }
-    
-    // 3. Classify intent if task not provided
-    let task = body.task
-    let classificationMethod: 'explicit' | 'keyword' | 'llm' = 'explicit'
-    
-    if (!task) {
-      const classification = await classifyIntent(body.message)
-      task = classification.task
-      classificationMethod = classification.method
-    }
-    
-    // Validate task type
-    if (!AGENT_ROUTES[task]) {
-      return NextResponse.json({ error: `Invalid task type: ${task}` }, { status: 400 })
-    }
-    
-    // 4. Get system prompt
-    const systemPrompt = getAgentPrompt(task)
-    const route = AGENT_ROUTES[task]
-    
-    // 5. Build context string
-    let contextString = ''
-    if (body.context) {
-      contextString = `\n\nContext:\n${JSON.stringify(body.context, null, 2)}`
-    }
-    
-    const fullPrompt = body.message + contextString
-    
-    // 6. Handle streaming requests
-    if (body.stream && route.streaming) {
-      const { stream, agent_name, model_used } = await routeAgentStreamRequest({
-        task,
-        prompt: fullPrompt,
-        systemPrompt,
-        userId: user.id,
-        bookingId: body.bookingId,
-        vehicleId: body.vehicleId,
-      })
-      
-      // Return streaming response with metadata headers
-      const response = stream.toDataStreamResponse()
-      response.headers.set('X-Agent-Name', agent_name)
-      response.headers.set('X-Model-Used', model_used)
-      response.headers.set('X-Task-Type', task)
-      response.headers.set('X-Classification-Method', classificationMethod)
-      
-      return response
-    }
-    
-    // 7. Non-streaming request
-    const result = await routeAgentRequest({
-      task,
-      prompt: fullPrompt,
-      systemPrompt,
-      userId: user.id,
-      bookingId: body.bookingId,
-      vehicleId: body.vehicleId,
+
+    const messages = [
+      ...conversationHistory
+        .filter((m: { role: string; content: string }) =>
+          m.role === "user" || m.role === "assistant"
+        )
+        .slice(-10), // keep last 10 messages for context
+      { role: "user" as const, content: message },
+    ]
+
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 512,
+      system: RAD_SYSTEM_PROMPT,
+      messages,
     })
-    
-    // 8. Return JSON response
-    return NextResponse.json({
-      success: true,
-      data: {
-        result: result.result,
-        agent_name: result.agent_name,
-        model_used: result.model_used,
-        task_type: task,
-        classification_method: classificationMethod,
-        cached: result.cached,
-        latency_ms: result.latency_ms,
-        cost_usd: result.cost_usd,
-        cross_validation: result.cross_validation,
-        requires_review: result.requires_review,
-      },
-    })
-    
+
+    const text =
+      response.content[0]?.type === "text"
+        ? response.content[0].text
+        : "RAD is unavailable right now."
+
+    return Response.json({ response: text }, { status: 200 })
+
   } catch (error) {
-    console.error('[v0] Agent API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error', message: (error as Error).message },
-      { status: 500 }
+    console.error("[/api/agent] Error:", error)
+    return Response.json(
+      { response: "RAD is temporarily unavailable. Email help@rentanddrive.net." },
+      { status: 200 } // always 200 so client never throws
     )
   }
-}
-
-// ============================================
-// GET HANDLER - Agent Info
-// ============================================
-
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const task = searchParams.get('task') as AgentTaskType | null
-  
-  if (task) {
-    // Return info for specific agent
-    const route = AGENT_ROUTES[task]
-    if (!route) {
-      return NextResponse.json({ error: 'Invalid task type' }, { status: 400 })
-    }
-    
-    return NextResponse.json({
-      task,
-      agent_name: route.agent_name,
-      former_name: route.former_name,
-      tagline: route.tagline,
-      icon: route.icon,
-      color: route.color,
-      streaming: route.streaming,
-      loading_message: getAgentLoadingMessage(task),
-    })
-  }
-  
-  // Return all agents
-  const agents = Object.entries(AGENT_ROUTES).map(([task, route]) => ({
-    task,
-    agent_name: route.agent_name,
-    former_name: route.former_name,
-    tagline: route.tagline,
-    icon: route.icon,
-    color: route.color,
-    streaming: route.streaming,
-    loading_message: getAgentLoadingMessage(task as AgentTaskType),
-  }))
-  
-  return NextResponse.json({ agents })
 }

@@ -3,12 +3,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { Menu, X, User, LogOut, Car, Home as HomeIcon, MessageCircle } from 'lucide-react'
+import { Menu, X, User, LogOut, Car, Home as HomeIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { ThemeSwitcher } from '@/components/theme-switcher'
 import { AuthModal } from '@/components/auth'
-import { RADChatDrawer } from '@/components/layout/RADChatDrawer'
+import { AskRADButton } from '@/components/shared/AskRADButton'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,10 +19,10 @@ import {
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  
   const [user, setUser] = useState<{ email?: string; user_metadata?: { avatar_url?: string; full_name?: string } } | null>(null)
   const [authModalOpen, setAuthModalOpen] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
-  const [radChatOpen, setRadChatOpen] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
@@ -62,13 +62,9 @@ export function Navbar() {
             </Link>
             
             {/* Ask RAD Button */}
-            <Button
-              onClick={() => setRadChatOpen(true)}
-              className="hidden sm:flex bg-[#CC0000] hover:bg-[#AA0000] text-white font-medium px-4 py-2 rounded-md h-9 gap-2"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Ask RAD
-            </Button>
+            <div className="hidden sm:block">
+              <AskRADButton />
+            </div>
           </div>
 
           {/* CENTER: Navigation Links (hidden on mobile) */}
@@ -181,16 +177,7 @@ export function Navbar() {
           <div className="md:hidden absolute top-16 left-0 right-0 bg-[#0a0f1e] border-b border-white/10 py-4 px-4 shadow-xl">
             <nav className="flex flex-col gap-4">
               {/* Ask RAD Button - Mobile */}
-              <Button
-                onClick={() => {
-                  setMobileMenuOpen(false)
-                  setRadChatOpen(true)
-                }}
-                className="w-full bg-[#CC0000] hover:bg-[#AA0000] text-white font-medium py-2 rounded-md gap-2"
-              >
-                <MessageCircle className="h-4 w-4" />
-                Ask RAD
-              </Button>
+              <AskRADButton />
               
               <Link 
                 href="/vehicles" 
@@ -288,12 +275,6 @@ export function Navbar() {
         isOpen={authModalOpen} 
         onClose={() => setAuthModalOpen(false)} 
         defaultMode={authMode}
-      />
-
-      {/* RAD Chat Drawer */}
-      <RADChatDrawer 
-        isOpen={radChatOpen} 
-        onClose={() => setRadChatOpen(false)} 
       />
     </>
   )
