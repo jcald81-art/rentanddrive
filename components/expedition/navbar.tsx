@@ -11,8 +11,8 @@ import { cn } from '@/lib/utils'
 const NAV_LINKS = [
   { href: '/vehicles', label: 'Browse Vehicles' },
   { href: '/how-it-works', label: 'How It Works' },
-  { href: '/renter/suite', label: 'Renter Suite' },
-  { href: '/host/dashboard', label: 'Host Suite' },
+  { href: '/renter/suite', label: 'RAD Renters' },
+  { href: '/host/dashboard', label: 'RAD Hosts' },
 ]
 
 export function ExpeditionNavbar() {
@@ -73,9 +73,9 @@ export function ExpeditionNavbar() {
             <div className="hidden lg:flex items-center gap-4">
               <Link
                 href="/list-vehicle"
-                className="text-sm font-medium text-[#C4813A] border border-[#C4813A] px-5 py-2.5 rounded-full hover:bg-[#C4813A] hover:text-[#1C1F1A] transition-colors"
+                className="text-sm font-medium bg-[#2D4A2D] text-[#F5F2EC] px-6 py-2.5 rounded-full hover:bg-[#4A7C59] transition-all duration-200 active:scale-95 tracking-wide"
               >
-                Become a Host
+                Go RAD
               </Link>
               <Link
                 href="/sign-in"
@@ -125,9 +125,9 @@ export function ExpeditionNavbar() {
               <Link
                 href="/list-vehicle"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center text-lg font-medium text-[#1C1F1A] bg-[#C4813A] px-6 py-4 rounded-full"
+                className="w-full text-center text-lg font-medium text-[#F5F2EC] bg-[#2D4A2D] px-6 py-4 rounded-full hover:bg-[#4A7C59] transition-all"
               >
-                Become a Host
+                Go RAD
               </Link>
               <Link
                 href="/sign-in"

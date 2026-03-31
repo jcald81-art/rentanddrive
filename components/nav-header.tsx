@@ -65,10 +65,10 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
             Search
           </Link>
           <Link href="/renter/suite" className={`text-sm ${mutedClass} transition-colors`}>
-            Renter Suite
+            RAD Renters
           </Link>
           <Link href="/host/dashboard" className={`text-sm ${mutedClass} transition-colors`}>
-            Host Suite
+            RAD Hosts
           </Link>
           <Link href="/help" className={`text-sm ${mutedClass} transition-colors`}>
             Help
@@ -90,13 +90,13 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
                   <DropdownMenuItem asChild>
                     <Link href="/renter/suite" className="flex items-center">
                       <Car className="h-4 w-4 mr-2" />
-                      Renter Suite
+                      RAD Renters
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/host/dashboard" className="flex items-center">
                       <HomeIcon className="h-4 w-4 mr-2" />
-                      Host Suite
+                      RAD Hosts
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -138,11 +138,11 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                {/* Sign Up Dropdown with Renter/Host options */}
+                {/* Go RAD Dropdown with Renter/Host options */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button size="sm" className="bg-[#CC0000] hover:bg-[#aa0000] text-white">
-                      Sign Up
+                    <Button size="sm" className="bg-[#2D4A2D] hover:bg-[#4A7C59] text-[#F5F2EC] rounded-full px-5">
+                      Go RAD
                       <ChevronDown className="h-4 w-4 ml-1" />
                     </Button>
                   </DropdownMenuTrigger>

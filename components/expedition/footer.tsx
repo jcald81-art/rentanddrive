@@ -2,20 +2,20 @@ import Link from 'next/link'
 
 const FOOTER_LINKS = {
   renters: {
-    title: 'Renters',
+    title: 'RAD Renters',
     links: [
       { href: '/vehicles', label: 'Browse Vehicles' },
       { href: '/how-it-works', label: 'How It Works' },
-      { href: '/help', label: 'Support' },
+      { href: '/help', label: 'RAD Support' },
       { href: '/trailside-assist', label: 'Trailside Assist' },
     ],
   },
   hosts: {
-    title: 'Hosts',
+    title: 'RAD Hosts',
     links: [
-      { href: '/list-vehicle', label: 'Become a Host' },
-      { href: '/host/dashboard', label: 'Host Suite' },
-      { href: '/hostslab/eagle-eye', label: 'Eagle Eye' },
+      { href: '/list-vehicle', label: 'Become a RAD Host' },
+      { href: '/host/dashboard', label: 'Base Camp' },
+      { href: '/hostslab/eagle-eye', label: 'Eagle Eye HQ' },
       { href: '/carfidelity', label: 'CarFidelity' },
     ],
   },
