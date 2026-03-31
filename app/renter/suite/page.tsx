@@ -118,13 +118,13 @@ export default function RenterSuitePage() {
       <NavHeader />
       
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-[#CC0000] to-[#990000] text-white py-12">
+      <div className="bg-gradient-to-r from-[#C4813A] to-[#A36A2E] text-white py-12">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl md:text-4xl font-bold mb-2">
             {getGreeting()}, {firstName}!
           </h1>
           <p className="text-white/80 text-lg">
-            Welcome to your Renter Suite. What would you like to do today?
+            Welcome to RAD Renters. What would you like to do today?
           </p>
         </div>
       </div>

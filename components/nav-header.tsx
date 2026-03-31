@@ -189,10 +189,10 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
               Search
             </Link>
             <Link href="/renter/suite" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
-              <Car className="h-4 w-4" /> Renter Suite
+              <Car className="h-4 w-4" /> RAD Renters
             </Link>
             <Link href="/host/dashboard" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
-              <HomeIcon className="h-4 w-4" /> Host Suite
+              <HomeIcon className="h-4 w-4" /> RAD Hosts
             </Link>
             <Link href="/help" className={`text-sm ${mutedClass}`} onClick={() => setMobileMenuOpen(false)}>
               Help
@@ -217,12 +217,12 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
             )}
             {showAuth && user && (
               <>
-                <div className={`text-xs font-semibold uppercase tracking-wider ${mutedClass} mt-2`}>My Suites</div>
+                <div className={`text-xs font-semibold uppercase tracking-wider ${mutedClass} mt-2`}>My Dashboards</div>
                 <Link href="/renter/suite" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
-                  <Car className="h-4 w-4" /> Renter Suite
+                  <Car className="h-4 w-4" /> RAD Renters
                 </Link>
                 <Link href="/host/dashboard" className={`text-sm ${mutedClass} flex items-center gap-2`} onClick={() => setMobileMenuOpen(false)}>
-                  <HomeIcon className="h-4 w-4" /> Host Suite
+                  <HomeIcon className="h-4 w-4" /> RAD Hosts
                 </Link>
                 <div className={`text-xs font-semibold uppercase tracking-wider ${mutedClass} mt-2`}>Account</div>
                 <Link href="/profile" className={`text-sm ${mutedClass}`} onClick={() => setMobileMenuOpen(false)}>

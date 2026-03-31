@@ -21,7 +21,7 @@ const MOBILE_TABS = [
 ]
 
 const FULL_NAV = [
-  { href: '/renter/suite', icon: Home, label: 'Renter Suite' },
+  { href: '/renter/suite', icon: Home, label: 'RAD Renters Home' },
   { href: '/renter/lounge', icon: Home, label: 'The Lounge' },
   { href: '/renter/garage', icon: Car, label: 'The Garage' },
   { href: '/renter/trips', icon: Calendar, label: 'My Trips' },
@@ -64,10 +64,10 @@ export default function RenterLayout({ children }: { children: React.ReactNode }
       <header className="hidden md:flex fixed top-0 left-0 right-0 z-50 h-16 bg-black/95 backdrop-blur border-b border-slate-800 items-center px-6">
         {/* Logo */}
         <Link href="/renter/suite" className="flex items-center gap-2 mr-8">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#CC0000]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#C4813A]">
             <Car className="h-6 w-6 text-white" />
           </div>
-          <span className="font-bold text-xl">Renter Suite</span>
+          <span className="font-bold text-xl">RAD Renters</span>
         </Link>
 
         {/* Desktop Nav Links */}
@@ -118,11 +118,11 @@ export default function RenterLayout({ children }: { children: React.ReactNode }
             </SheetTrigger>
             <SheetContent side="right" className="bg-black border-slate-800 w-80">
               <div className="flex items-center gap-3 mb-8 mt-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#CC0000]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#C4813A]">
                   <Car className="h-7 w-7 text-white" />
                 </div>
                 <div>
-                  <p className="font-bold text-lg">Renter Suite</p>
+                  <p className="font-bold text-lg">RAD Renters</p>
                   <p className="text-sm text-slate-400">Your adventure awaits</p>
                 </div>
               </div>
@@ -144,15 +144,15 @@ export default function RenterLayout({ children }: { children: React.ReactNode }
                   </Link>
                 ))}
                 
-                {/* Switch to Host Suite */}
+                {/* Switch to RAD Hosts */}
                 <div className="pt-4 mt-4 border-t border-slate-800">
                   <Link
                     href="/host/dashboard"
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800"
                   >
-                    <Home className="h-5 w-5 text-[#CC0000]" />
-                    Switch to Host Suite
+                    <Home className="h-5 w-5 text-[#2D4A2D]" />
+                    Switch to RAD Hosts
                   </Link>
                 </div>
               </nav>

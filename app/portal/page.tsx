@@ -129,14 +129,14 @@ export default function PortalPage() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Host Suite Portal */}
-          <Card className="bg-slate-900/50 border-slate-700 hover:border-[#CC0000] transition-all cursor-pointer group">
+          {/* RAD Hosts Portal */}
+          <Card className="bg-slate-900/50 border-slate-700 hover:border-[#2D4A2D] transition-all cursor-pointer group">
             <Link href="/host/dashboard">
               <CardHeader className="text-center pb-4">
-                <div className="w-20 h-20 bg-[#CC0000]/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-[#CC0000]/30 transition-colors">
-                  <Home className="h-10 w-10 text-[#CC0000]" />
+                <div className="w-20 h-20 bg-[#2D4A2D]/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-[#2D4A2D]/30 transition-colors">
+                  <Home className="h-10 w-10 text-[#2D4A2D]" />
                 </div>
-                <CardTitle className="text-white text-2xl">Host Suite</CardTitle>
+                <CardTitle className="text-white text-2xl">RAD Hosts</CardTitle>
                 <CardDescription className="text-slate-400">
                   Your host command center
                 </CardDescription>
@@ -148,21 +148,21 @@ export default function PortalPage() {
                   <li>Connect with AI agents (Dollar, Shield, Eagle)</li>
                   <li>Earn XP and badges in The Game Room</li>
                 </ul>
-                <Button className="w-full bg-[#CC0000] hover:bg-[#AA0000]">
-                  Enter Host Suite
+                <Button className="w-full bg-[#2D4A2D] hover:bg-[#4A7C59]">
+                  Enter RAD Hosts
                 </Button>
               </CardContent>
             </Link>
           </Card>
 
-          {/* Renter Suite Portal */}
-          <Card className="bg-slate-900/50 border-slate-700 hover:border-[#CC0000] transition-all cursor-pointer group">
+          {/* RAD Renters Portal */}
+          <Card className="bg-slate-900/50 border-slate-700 hover:border-[#C4813A] transition-all cursor-pointer group">
             <Link href="/renter/suite">
               <CardHeader className="text-center pb-4">
-                <div className="w-20 h-20 bg-[#CC0000]/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-[#CC0000]/30 transition-colors">
-                  <Car className="h-10 w-10 text-[#CC0000]" />
+                <div className="w-20 h-20 bg-[#C4813A]/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-[#C4813A]/30 transition-colors">
+                  <Car className="h-10 w-10 text-[#C4813A]" />
                 </div>
-                <CardTitle className="text-white text-2xl">Renter Suite</CardTitle>
+                <CardTitle className="text-white text-2xl">RAD Renters</CardTitle>
                 <CardDescription className="text-slate-400">
                   Your renter experience hub
                 </CardDescription>
@@ -174,8 +174,8 @@ export default function PortalPage() {
                   <li>Earn rewards and unlock perks</li>
                   <li>Get 24/7 support from RAD AI</li>
                 </ul>
-                <Button className="w-full bg-[#CC0000] hover:bg-[#AA0000]">
-                  Enter Renter Suite
+                <Button className="w-full bg-[#C4813A] hover:bg-[#B4712A]">
+                  Enter RAD Renters
                 </Button>
               </CardContent>
             </Link>

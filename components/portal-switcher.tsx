@@ -36,22 +36,22 @@ export function PortalSwitcher({ className, variant = 'default' }: PortalSwitche
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel>Switch Suite</DropdownMenuLabel>
+          <DropdownMenuLabel>Switch Dashboard</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <Link href="/host/dashboard" className="flex items-center gap-2">
-              <Home className="h-4 w-4 text-[#CC0000]" />
+              <Home className="h-4 w-4 text-[#2D4A2D]" />
               <div>
-                <div className="font-medium">Host Suite</div>
+                <div className="font-medium">RAD Hosts</div>
                 <div className="text-xs text-muted-foreground">Host command center</div>
               </div>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href="/renter/suite" className="flex items-center gap-2">
-              <Car className="h-4 w-4 text-[#CC0000]" />
+              <Car className="h-4 w-4 text-[#C4813A]" />
               <div>
-                <div className="font-medium">Renter Suite</div>
+                <div className="font-medium">RAD Renters</div>
                 <div className="text-xs text-muted-foreground">Renter experience</div>
               </div>
             </Link>
@@ -76,15 +76,15 @@ export function PortalSwitcher({ className, variant = 'default' }: PortalSwitche
       >
         {currentPortal === 'host' ? (
           <>
-            <Car className="h-4 w-4 text-[#CC0000]" />
-            <span className="hidden sm:inline">Switch to Renter Suite</span>
-            <span className="sm:hidden">Renter</span>
+            <Car className="h-4 w-4 text-[#C4813A]" />
+            <span className="hidden sm:inline">Switch to RAD Renters</span>
+            <span className="sm:hidden">Renters</span>
           </>
         ) : (
           <>
-            <Home className="h-4 w-4 text-[#CC0000]" />
-            <span className="hidden sm:inline">Switch to Host Suite</span>
-            <span className="sm:hidden">Host</span>
+            <Home className="h-4 w-4 text-[#2D4A2D]" />
+            <span className="hidden sm:inline">Switch to RAD Hosts</span>
+            <span className="sm:hidden">Hosts</span>
           </>
         )}
       </Link>
