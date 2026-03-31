@@ -135,11 +135,7 @@ export default async function HostDashboardPage() {
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Link href="/host/lab">
-                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 px-6 py-3 h-auto">
-                    Go RAD
-                  </Button>
-                </Link>
+
                 <Link href="/host/ai-agents">
                   <Button variant="ghost" className="text-white/60 hover:text-white px-6 py-3 h-auto">
                     Meet Your RAD Agents
@@ -296,9 +292,9 @@ export default async function HostDashboardPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Ready to maximize your fleet&apos;s potential?</h2>
           <p className="text-blue-200 mb-6">Join RAD Hosts and let AI handle the heavy lifting</p>
-          <Link href="/host/lab">
+          <Link href="/host/vehicles/new">
             <Button className="bg-white text-[#1a237e] hover:bg-gray-100 px-8 py-3 h-auto font-semibold">
-              Go RAD
+              List Your Vehicle
             </Button>
           </Link>
         </div>

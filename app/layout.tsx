@@ -8,6 +8,7 @@ import { ProactiveAgent } from '@/components/agents'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { CookieConsent } from '@/components/cookie-consent'
 import { ThemeProvider } from '@/components/theme-provider'
+import { Navigation } from '@/components/Navigation'
 import './globals.css'
 
 const dmSans = DM_Sans({ 
@@ -102,13 +103,9 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: [
-      { url: '/icons/icon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
   manifest: '/manifest.json',
   alternates: {
@@ -134,6 +131,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
+        {/* Favicon */}
+        <link rel="icon" href="/logo.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+        
         {/* PWA Meta Tags */}
         <meta name="application-name" content="Rent and Drive" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -174,10 +175,14 @@ export default function RootLayout({
           themes={['light', 'dark', 'rad']}
           enableSystem={false}
           disableTransitionOnChange
+          storageKey="rad-theme"
         >
-          <ErrorBoundary>
-            {children}
-          </ErrorBoundary>
+          <Navigation />
+          <main className="w-full max-w-[1280px] mx-auto px-6">
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
+          </main>
           <Concierge />
           <ProactiveAgent />
           <CookieConsent />

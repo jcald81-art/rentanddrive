@@ -196,7 +196,7 @@ function ConfirmationContent({ booking }: { booking: any }) {
                 <div>
                   <p className="text-white font-medium">Pick up your vehicle</p>
                   <p className="text-gray-400 text-sm">
-                    Use the igloohome code to unlock the lockbox and get your keys. Go RAD!
+                    Use the igloohome code to unlock the lockbox and get your keys. Safe travels!
                   </p>
                 </div>
               </div>

@@ -110,12 +110,12 @@ export function BookingSummaryCard({
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-muted-foreground">Pick-up</p>
-              <p className="font-medium">{formatInTimeZone(startDate, 'UTC', 'MMM d, yyyy')}</p>
+              <p className="font-medium" suppressHydrationWarning>{formatInTimeZone(startDate, 'UTC', 'MMM d, yyyy')}</p>
               <p className="text-muted-foreground">10:00 AM</p>
             </div>
             <div>
               <p className="text-muted-foreground">Return</p>
-              <p className="font-medium">{formatInTimeZone(endDate, 'UTC', 'MMM d, yyyy')}</p>
+              <p className="font-medium" suppressHydrationWarning>{formatInTimeZone(endDate, 'UTC', 'MMM d, yyyy')}</p>
               <p className="text-muted-foreground">10:00 AM</p>
             </div>
           </div>

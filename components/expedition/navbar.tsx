@@ -152,13 +152,7 @@ export function ExpeditionNavbar() {
                 className="hidden md:flex" 
               />
 
-              {/* Go RAD / Become Host CTA */}
-              <Link
-                href="/list-vehicle"
-                className="hidden md:inline-flex text-sm font-medium bg-secondary text-secondary-foreground px-5 py-2 rounded-full hover:bg-secondary/80 transition-all"
-              >
-                Go RAD
-              </Link>
+
 
               {/* User Menu or Sign In */}
               {user ? (

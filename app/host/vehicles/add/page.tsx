@@ -682,7 +682,7 @@ function StepPayout({
           disabled={publishing || stripeStatus !== "active"}
           className="flex-2 flex-grow-[2] bg-[#e63946] hover:bg-[#c1121f] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-colors flex items-center justify-center gap-2"
         >
-          {publishing ? <><Spinner /> Publishing…</> : "Go RAD — Publish Now"}
+          {publishing ? <><Spinner /> Publishing…</> : "Publish Now"}
         </button>
       </div>
     </div>

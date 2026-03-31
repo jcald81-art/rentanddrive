@@ -103,41 +103,54 @@
   --sidebar-ring: #C4813A;
 }
 
-/* RAD Mode - Bold red and gold premium adventure theme */
+/* RAD Mode - Deep navy with red/gold accents */
 .rad {
-  --background: #0D0D0D;
-  --foreground: #FFFFFF;
-  --card: #1A1A1A;
+  /* Core backgrounds per spec */
+  --background: #0a0f1e;             /* deep navy primary */
+  --foreground: #FFFFFF;             /* text primary */
+  --card: #111827;                   /* background secondary */
   --card-foreground: #FFFFFF;
-  --popover: #1A1A1A;
+  --popover: #111827;
   --popover-foreground: #FFFFFF;
-  --primary: #CC0000;
-  --primary-foreground: #FFFFFF;
-  --secondary: #D4AF37;
-  --secondary-foreground: #0D0D0D;
-  --muted: #1F1F1F;
-  --muted-foreground: #B0B0B0;
-  --accent: #D4AF37;
-  --accent-foreground: #0D0D0D;
-  --destructive: #FF3B30;
-  --destructive-foreground: #FFFFFF;
-  --border: rgba(212,175,55,0.25);
-  --input: rgba(212,175,55,0.15);
-  --ring: #D4AF37;
-  --sidebar: #0D0D0D;
-  --sidebar-foreground: #FFFFFF;
-  --sidebar-primary: #CC0000;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #D4AF37;
-  --sidebar-accent-foreground: #0D0D0D;
-  --sidebar-border: rgba(212,175,55,0.15);
-  --sidebar-ring: #D4AF37;
   
-  /* RAD mode brand overrides - red and gold */
-  --color-forest: #CC0000;
-  --color-trail: #D4AF37;
-  --color-summit: #E6C84B;
-  --color-amber: #D4AF37;
+  /* Brand colors - RAD red and gold */
+  --primary: #e63946;                /* RAD red CTA */
+  --primary-foreground: #FFFFFF;
+  --secondary: #F4A722;              /* RAD gold/amber */
+  --secondary-foreground: #0a0f1e;
+  
+  /* Surfaces */
+  --muted: #1a2235;                  /* background tertiary */
+  --muted-foreground: #B0B8C8;       /* text secondary */
+  --accent: #F4A722;                 /* RAD gold accent */
+  --accent-foreground: #0a0f1e;
+  --destructive: #e63946;
+  --destructive-foreground: #FFFFFF;
+  
+  /* Borders - red tinted */
+  --border: rgba(230, 57, 70, 0.25);
+  --input: rgba(230, 57, 70, 0.15);
+  --ring: #F4A722;
+  
+  /* Sidebar */
+  --sidebar: #0a0f1e;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #e63946;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F4A722;
+  --sidebar-accent-foreground: #0a0f1e;
+  --sidebar-border: rgba(244, 167, 34, 0.2);
+  --sidebar-ring: #F4A722;
+  
+  /* RAD mode brand overrides */
+  --color-forest: #e63946;
+  --color-trail: #F4A722;
+  --color-summit: #FFD166;
+  --color-amber: #F4A722;
+  
+  /* RAD-specific text colors */
+  --text-secondary: #B0B8C8;
+  --text-tertiary: #6B7A8D;
 }
 
 @theme inline {
