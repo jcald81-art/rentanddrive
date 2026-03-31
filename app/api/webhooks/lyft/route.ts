@@ -39,6 +39,34 @@ export async function POST(req: NextRequest) {
           updated_at: new Date().toISOString(),
         })
         .eq('ride_id', ride_id)
+
+      // Get dispatch to send notification
+      const { data: dispatch } = await supabase
+        .from('ride_dispatches')
+        .select('booking_id, renter_id')
+        .eq('ride_id', ride_id)
+        .single()
+
+      if (dispatch) {
+        const messages: Record<string, string> = {
+          'driver_accepted': 'Your Lyft driver is on the way to pick you up!',
+          'driver_arrived': 'Your Lyft driver has arrived at your location.',
+          'pickup': 'You\'re on your way to your RAD vehicle. Enjoy the ride!',
+          'dropoff': 'You\'ve arrived at your vehicle. Safe travels!',
+          'canceled': 'Your Lyft ride was canceled. Please book another ride.',
+        }
+
+        if (messages[data?.status]) {
+          await supabase.from('notifications').insert({
+            user_id: dispatch.renter_id,
+            type: 'ride_update',
+            title: 'Ride update',
+            body: messages[data?.status],
+            metadata: { ride_id, booking_id: dispatch.booking_id },
+            read: false,
+          })
+        }
+      }
     }
 
     switch (event_type) {
