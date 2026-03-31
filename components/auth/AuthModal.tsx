@@ -372,14 +372,8 @@ export function AuthPage({ defaultMode = 'signin' }: { defaultMode?: 'signin' | 
     router.push('/')
   }
   
-  // Dynamically import ExpeditionNavbar to avoid circular dependency
-  const ExpeditionNavbar = require('@/components/expedition/navbar').ExpeditionNavbar
-  
   return (
     <div className="min-h-screen bg-[#1C1F1A] relative">
-      {/* Navigation Bar */}
-      <ExpeditionNavbar />
-      
       {/* Background with subtle pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#1C1F1A] via-[#252923] to-[#1C1F1A]" />
       <div 

@@ -1,4 +1,3 @@
-export { ExpeditionNavbar } from './navbar'
 export { ExpeditionHero } from './hero'
 export { TrustBar } from './trust-bar'
 export { VehicleCard } from './vehicle-card'

@@ -4,7 +4,7 @@ import { VehicleFilters } from '@/components/vehicles/vehicle-filters'
 import { SortSelect } from '@/components/vehicles/sort-select'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { NavHeader } from '@/components/nav-header'
+
 import type { Vehicle } from '@/lib/types/vehicle'
 import { createClient } from '@/lib/supabase/server'
 import { SAMPLE_VEHICLES, filterVehicles } from '@/lib/data/sample-vehicles'
@@ -161,8 +161,7 @@ export default async function VehiclesPage({
   const isRentMode = params.mode !== 'buy'
 
   return (
-    <main className="min-h-screen bg-background">
-      <NavHeader />
+  <main className="min-h-screen bg-background">
       
       {/* Compact Header */}
       <div className="bg-primary px-4 py-6">

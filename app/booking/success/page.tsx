@@ -4,7 +4,7 @@ import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Check, Calendar, MapPin, Phone, Copy, CheckCircle, ExternalLink, Home, ChevronRight } from 'lucide-react'
-import { NavHeader } from '@/components/nav-header'
+
 
 function BookingSuccessContent() {
   const searchParams = useSearchParams()
@@ -42,8 +42,7 @@ function BookingSuccessContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
-      <NavHeader variant="dark" />
+  <div className="min-h-screen bg-[#0a0a0a] text-white">
       <div className="flex items-center justify-center p-4 min-h-[calc(100vh-64px)]">
       <div className="w-full max-w-lg">
         {/* Success Animation */}

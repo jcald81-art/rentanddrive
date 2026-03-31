@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Car, Star, Zap, Bluetooth, PawPrint, Baby, Users, SlidersHorizontal, X, MapPin, Calendar, Search } from 'lucide-react'
 import { VerificationBadge } from '@/components/verification-badge'
-import { NavHeader } from '@/components/nav-header'
+
 
 // Mock vehicle data
 const mockVehicles = [
@@ -144,8 +144,7 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
-      <NavHeader variant="dark" />
+  <div className="min-h-screen bg-[#0a0a0a] text-white">
 
       {/* Sticky Search Bar */}
       <div className="sticky top-0 z-50 bg-[#111111] border-b border-[#222] shadow-lg">

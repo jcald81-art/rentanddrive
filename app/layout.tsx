@@ -8,7 +8,7 @@ import { ProactiveAgent } from '@/components/agents'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { CookieConsent } from '@/components/cookie-consent'
 import { ThemeProvider } from '@/components/theme-provider'
-import { Navigation } from '@/components/Navigation'
+import { Navbar } from '@/components/layout/Navbar'
 import './globals.css'
 
 const dmSans = DM_Sans({ 
@@ -177,12 +177,10 @@ export default function RootLayout({
           disableTransitionOnChange
           storageKey="rad-theme"
         >
-          <Navigation />
-          <main className="w-full max-w-[1280px] mx-auto px-6">
-            <ErrorBoundary>
-              {children}
-            </ErrorBoundary>
-          </main>
+          <Navbar />
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
           <Concierge />
           <ProactiveAgent />
           <CookieConsent />

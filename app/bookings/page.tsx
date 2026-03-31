@@ -18,7 +18,7 @@ import {
   AlertCircle,
   Home,
 } from 'lucide-react'
-import { NavHeader } from '@/components/nav-header'
+
 
 interface Booking {
   id: string
@@ -195,7 +195,6 @@ export default function BookingsPage() {
 
   return (
   <div className="min-h-screen bg-background">
-  <NavHeader />
   <div className="container mx-auto px-4 py-8 max-w-4xl">
   {/* Breadcrumb */}
   <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">

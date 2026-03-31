@@ -46,9 +46,10 @@ export function ThemeSwitcher({ variant = 'default', className }: ThemeSwitcherP
     setMounted(true)
   }, [])
 
+  // Return a placeholder during SSR to avoid hydration mismatch
   if (!mounted) {
     return (
-      <Button variant="ghost" size="sm" className={cn('gap-2', className)} disabled>
+      <Button variant="ghost" size="sm" className={cn('gap-2', className)} disabled suppressHydrationWarning>
         <Sun className="h-4 w-4" />
         {variant !== 'icon-only' && <span>Theme</span>}
       </Button>
@@ -64,6 +65,7 @@ export function ThemeSwitcher({ variant = 'default', className }: ThemeSwitcherP
         <Button
           variant="ghost"
           size="sm"
+          suppressHydrationWarning
           className={cn(
             'gap-2 text-sm font-medium transition-colors',
             variant === 'icon-only' && 'px-2',

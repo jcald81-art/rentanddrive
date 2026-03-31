@@ -25,7 +25,7 @@ import {
   ChevronRight
 } from 'lucide-react'
 import Link from 'next/link'
-import { NavHeader } from '@/components/nav-header'
+
 
 interface Profile {
   id: string
@@ -243,7 +243,6 @@ export default function ProfilePage() {
 
   return (
   <div className="min-h-screen bg-muted/30">
-  <NavHeader />
   <div className="container max-w-4xl py-8 px-4">
     {/* Breadcrumb */}
     <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">

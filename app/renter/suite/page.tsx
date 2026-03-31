@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { NavHeader } from '@/components/nav-header'
+
 import { UpcomingEvents } from '@/components/upcoming-events'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -105,7 +105,6 @@ export default function RenterSuitePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <NavHeader />
         <div className="flex items-center justify-center h-[calc(100vh-64px)]">
           <div className="animate-spin h-8 w-8 border-4 border-[#CC0000] border-t-transparent rounded-full" />
         </div>
@@ -115,8 +114,6 @@ export default function RenterSuitePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
-      <NavHeader />
-      
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-[#C4813A] to-[#A36A2E] text-white py-12">
         <div className="container mx-auto px-4">

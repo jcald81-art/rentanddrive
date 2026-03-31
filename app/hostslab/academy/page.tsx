@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { NavHeader } from '@/components/nav-header'
+
 import Link from 'next/link'
 import {
   GraduationCap,
@@ -181,7 +181,6 @@ export default function AcademyPage() {
 
   return (
   <div className="min-h-screen bg-background">
-  <NavHeader />
   <div className="p-6 space-y-6">
   {/* Header */}
   <div className="flex items-center justify-between">

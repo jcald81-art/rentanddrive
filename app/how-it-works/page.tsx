@@ -1,6 +1,5 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { ExpeditionNavbar } from '@/components/expedition/navbar'
 import { ExpeditionFooter } from '@/components/expedition/footer'
 import { 
   Search, 
@@ -25,8 +24,6 @@ export const metadata: Metadata = {
 export default function HowItWorksPage() {
   return (
     <div className="min-h-screen bg-[#1C1F1A]">
-      <ExpeditionNavbar />
-      
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6">
         <div className="max-w-4xl mx-auto text-center">

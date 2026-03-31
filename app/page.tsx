@@ -1,7 +1,6 @@
 import Script from "next/script"
 import { getOrganizationSchema, getWebsiteSchema, getLocalBusinessSchema } from '@/lib/structured-data'
 import {
-  ExpeditionNavbar,
   ExpeditionHero,
   TrustBar,
   VehiclesSection,
@@ -33,9 +32,6 @@ export default function HomePage() {
       />
 
       <main>
-        {/* Navigation */}
-        <ExpeditionNavbar />
-
         {/* Hero Section - Dark */}
         <ExpeditionHero />
 
