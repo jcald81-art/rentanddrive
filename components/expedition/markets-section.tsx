@@ -4,27 +4,27 @@ import Link from 'next/link'
 const MARKETS = [
   {
     name: 'Reno',
-    tagline: 'Desert meets mountains',
+    tagline: 'The Biggest Little City',
     image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop&q=80',
     href: '/vehicles?location=reno',
   },
   {
-    name: 'Lake Tahoe',
-    tagline: 'Alpine adventures',
-    image: 'https://images.unsplash.com/photo-1537944434965-cf4679d1a598?w=800&auto=format&fit=crop&q=80',
-    href: '/vehicles?location=tahoe',
-  },
-  {
-    name: 'Moab',
-    tagline: 'Red rock trails',
+    name: 'Sparks',
+    tagline: 'Gateway to adventure',
     image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&auto=format&fit=crop&q=80',
-    href: '/vehicles?location=moab',
+    href: '/vehicles?location=sparks',
   },
   {
-    name: 'Bozeman',
-    tagline: 'Big Sky country',
+    name: 'North Lake Tahoe',
+    tagline: 'Alpine playground',
+    image: 'https://images.unsplash.com/photo-1537944434965-cf4679d1a598?w=800&auto=format&fit=crop&q=80',
+    href: '/vehicles?location=north-tahoe',
+  },
+  {
+    name: 'South Lake Tahoe',
+    tagline: 'Year-round excitement',
     image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop&q=80',
-    href: '/vehicles?location=bozeman',
+    href: '/vehicles?location=south-tahoe',
   },
 ]
 
@@ -33,9 +33,12 @@ export function MarketsSection() {
     <section className="bg-[#F5F2EC] py-24 lg:py-32">
       <div className="mx-auto max-w-[1280px] px-6 lg:px-20">
         {/* Header */}
-        <h2 className="font-serif italic text-4xl lg:text-5xl text-[#1C1F1A] mb-12">
-          Where we operate
+        <h2 className="font-serif italic text-4xl lg:text-5xl text-[#1C1F1A] mb-4">
+          Serving Reno-Sparks-Tahoe
         </h2>
+        <p className="text-lg text-[#6B6B6B] mb-12 max-w-2xl">
+          Peer-to-peer vehicle rentals in Northern Nevada and the Sierra. More markets coming soon.
+        </p>
 
         {/* Markets Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">

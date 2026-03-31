@@ -4,22 +4,25 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, MessageCircle, User, ChevronDown, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ThemeSwitcher } from '@/components/theme-switcher'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-
-const NAV_LINKS = [
-  { href: '/vehicles', label: 'Browse Vehicles' },
-  { href: '/how-it-works', label: 'How It Works' },
-  { href: '/renter/suite', label: 'RAD Renters' },
-  { href: '/host/dashboard', label: 'RAD Hosts' },
-]
+import { createClient } from '@/lib/supabase/client'
 
 export function ExpeditionNavbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [user, setUser] = useState<{ email?: string; user_metadata?: { full_name?: string; role?: string } } | null>(null)
   const pathname = usePathname()
+  const supabase = createClient()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,123 +32,283 @@ export function ExpeditionNavbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+    getUser()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [supabase.auth])
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    window.location.href = '/'
+  }
+
+  const openConcierge = () => {
+    // Dispatch event to open the concierge/RAD AI chat
+    window.dispatchEvent(new CustomEvent('open-concierge'))
+  }
+
   return (
     <>
       <header
         className={cn(
           'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
           isScrolled 
-            ? 'bg-[#1C1F1A]/95 backdrop-blur-md' 
+            ? 'bg-background/95 backdrop-blur-md border-b border-border' 
             : 'bg-transparent'
         )}
       >
-        <nav className="mx-auto max-w-[1280px] px-6 lg:px-20">
-          <div className="flex h-20 items-center justify-between">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+        <nav className="mx-auto max-w-[1400px] px-4 lg:px-8">
+          <div className="flex h-16 lg:h-20 items-center justify-between gap-4">
+            
+            {/* Left: Logo */}
+            <Link href="/" className="flex-shrink-0 hover:opacity-90 transition-opacity">
               <Image 
                 src="/images/rad-brand-logo.png" 
-                alt="Rent and Drive - Reno Sparks Lake Tahoe" 
+                alt="Rent and Drive" 
                 width={100}
                 height={50}
-                className="h-12 w-auto object-contain"
+                className="h-10 lg:h-12 w-auto object-contain"
                 priority
               />
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-8">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    'text-sm font-medium text-[#9A9589] hover:text-[#F5F2EC] transition-colors relative group',
-                    pathname === link.href && 'text-[#F5F2EC]'
-                  )}
-                >
-                  {link.label}
-                  <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#C4813A] transition-all group-hover:w-full" />
-                </Link>
-              ))}
+            {/* Center: Primary Nav Links (Desktop) */}
+            <div className="hidden lg:flex items-center gap-1">
+              <Link
+                href="/vehicles"
+                className={cn(
+                  'px-4 py-2 text-sm font-medium rounded-full transition-colors',
+                  pathname === '/vehicles' 
+                    ? 'bg-primary/10 text-primary' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                )}
+              >
+                Browse Vehicles
+              </Link>
+              <Link
+                href="/how-it-works"
+                className={cn(
+                  'px-4 py-2 text-sm font-medium rounded-full transition-colors',
+                  pathname === '/how-it-works' 
+                    ? 'bg-primary/10 text-primary' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                )}
+              >
+                How It Works
+              </Link>
+              <Link
+                href="/host/dashboard"
+                className={cn(
+                  'px-4 py-2 text-sm font-medium rounded-full transition-colors',
+                  pathname?.startsWith('/host') 
+                    ? 'bg-primary/10 text-primary' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                )}
+              >
+                RAD Hosts
+              </Link>
             </div>
 
-            {/* Desktop Actions */}
-            <div className="hidden lg:flex items-center gap-4">
+            {/* Right: Actions */}
+            <div className="flex items-center gap-2 lg:gap-3">
+              
+              {/* Ask RAD Button - Always visible */}
+              <Button
+                onClick={openConcierge}
+                variant="ghost"
+                size="sm"
+                className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full px-4"
+              >
+                <Sparkles className="h-4 w-4 text-primary" />
+                <span className="font-medium">Ask RAD</span>
+              </Button>
+
+              {/* Mobile Ask RAD - Icon only */}
+              <Button
+                onClick={openConcierge}
+                variant="ghost"
+                size="icon"
+                className="sm:hidden text-muted-foreground hover:text-foreground"
+              >
+                <Sparkles className="h-5 w-5 text-primary" />
+              </Button>
+
+              {/* Theme Switcher */}
               <ThemeSwitcher 
                 variant="default" 
-                className="text-[#9A9589] hover:text-[#F5F2EC]" 
+                className="hidden md:flex" 
               />
+
+              {/* Go RAD / Become Host CTA */}
               <Link
                 href="/list-vehicle"
-                className="text-sm font-medium bg-[#2D4A2D] text-[#F5F2EC] px-6 py-2.5 rounded-full hover:bg-[#4A7C59] transition-all duration-200 active:scale-95 tracking-wide"
+                className="hidden md:inline-flex text-sm font-medium bg-secondary text-secondary-foreground px-5 py-2 rounded-full hover:bg-secondary/80 transition-all"
               >
                 Go RAD
               </Link>
-              <Link
-                href="/sign-in"
-                className="text-sm font-medium text-[#9A9589] hover:text-[#F5F2EC] transition-colors"
-              >
-                Sign In
-              </Link>
-            </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 text-[#F5F2EC]"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? (
-                <X className="h-6 w-6" />
+              {/* User Menu or Sign In */}
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="flex items-center gap-2 rounded-full px-3">
+                      <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
+                        <User className="h-4 w-4 text-primary" />
+                      </div>
+                      <ChevronDown className="h-4 w-4 text-muted-foreground hidden sm:block" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <div className="px-3 py-2 border-b">
+                      <p className="text-sm font-medium">{user.user_metadata?.full_name || 'RAD Member'}</p>
+                      <p className="text-xs text-muted-foreground">{user.email}</p>
+                    </div>
+                    <DropdownMenuItem asChild>
+                      <Link href="/renter/suite" className="cursor-pointer">
+                        RAD Renters
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/host/dashboard" className="cursor-pointer">
+                        RAD Hosts
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="cursor-pointer">
+                        My Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/bookings" className="cursor-pointer">
+                        My Bookings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut} className="text-destructive cursor-pointer">
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               ) : (
-                <Menu className="h-6 w-6" />
+                <Link
+                  href="/sign-in"
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
+                >
+                  Sign In
+                </Link>
               )}
-            </button>
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden p-2 text-foreground"
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
+              </button>
+            </div>
           </div>
         </nav>
       </header>
 
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-[#1C1F1A] lg:hidden">
-          <div className="flex flex-col h-full pt-24 px-6">
-            <nav className="flex flex-col gap-2">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={cn(
-                    'text-2xl font-serif text-[#9A9589] hover:text-[#F5F2EC] py-4 border-b border-[#F5F2EC]/10 transition-colors',
-                    pathname === link.href && 'text-[#F5F2EC]'
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
+        <div className="fixed inset-0 z-40 bg-background lg:hidden">
+          <div className="flex flex-col h-full pt-20 px-6">
+            <nav className="flex flex-col gap-1">
+              <Link
+                href="/vehicles"
+                onClick={() => setMobileMenuOpen(false)}
+                className={cn(
+                  'text-lg font-medium py-4 border-b border-border transition-colors',
+                  pathname === '/vehicles' ? 'text-primary' : 'text-foreground'
+                )}
+              >
+                Browse Vehicles
+              </Link>
+              <Link
+                href="/how-it-works"
+                onClick={() => setMobileMenuOpen(false)}
+                className={cn(
+                  'text-lg font-medium py-4 border-b border-border transition-colors',
+                  pathname === '/how-it-works' ? 'text-primary' : 'text-foreground'
+                )}
+              >
+                How It Works
+              </Link>
+              <Link
+                href="/renter/suite"
+                onClick={() => setMobileMenuOpen(false)}
+                className={cn(
+                  'text-lg font-medium py-4 border-b border-border transition-colors',
+                  pathname?.startsWith('/renter') ? 'text-primary' : 'text-foreground'
+                )}
+              >
+                RAD Renters
+              </Link>
+              <Link
+                href="/host/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className={cn(
+                  'text-lg font-medium py-4 border-b border-border transition-colors',
+                  pathname?.startsWith('/host') ? 'text-primary' : 'text-foreground'
+                )}
+              >
+                RAD Hosts
+              </Link>
             </nav>
             
-            <div className="mt-auto pb-12 flex flex-col gap-4">
-              {/* Theme Switcher in Mobile */}
-              <div className="flex items-center justify-between py-4 border-b border-[#F5F2EC]/10">
-                <span className="text-lg text-[#9A9589]">Theme</span>
-                <ThemeSwitcher variant="default" className="text-[#F5F2EC]" />
+            <div className="mt-8 flex flex-col gap-4">
+              {/* Ask RAD in Mobile */}
+              <Button
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  openConcierge()
+                }}
+                variant="outline"
+                className="w-full py-6 text-lg rounded-full flex items-center justify-center gap-2"
+              >
+                <Sparkles className="h-5 w-5 text-primary" />
+                Ask RAD
+              </Button>
+
+              {/* Theme Switcher */}
+              <div className="flex items-center justify-between py-4 border-b border-border">
+                <span className="text-lg text-muted-foreground">Theme</span>
+                <ThemeSwitcher variant="default" />
               </div>
+            </div>
+            
+            <div className="mt-auto pb-12 flex flex-col gap-4">
               <Link
                 href="/list-vehicle"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center text-lg font-medium text-[#F5F2EC] bg-[#2D4A2D] px-6 py-4 rounded-full hover:bg-[#4A7C59] transition-all"
+                className="w-full text-center text-lg font-medium text-secondary-foreground bg-secondary px-6 py-4 rounded-full"
               >
                 Go RAD
               </Link>
-              <Link
-                href="/sign-in"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center text-lg font-medium text-[#9A9589] border border-[#9A9589] px-6 py-4 rounded-full"
-              >
-                Sign In
-              </Link>
+              {!user && (
+                <Link
+                  href="/sign-in"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center text-lg font-medium text-muted-foreground border border-border px-6 py-4 rounded-full"
+                >
+                  Sign In
+                </Link>
+              )}
             </div>
           </div>
         </div>

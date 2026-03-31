@@ -62,6 +62,19 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
     }
   }, [])
 
+  // Listen for 'open-concierge' event from Ask RAD button in navbar
+  useEffect(() => {
+    const handleOpenConcierge = () => {
+      setIsMinimized(false)
+      setIsOpen(true)
+      if (pauseStatus !== 'active') {
+        handleResume()
+      }
+    }
+    window.addEventListener('open-concierge', handleOpenConcierge)
+    return () => window.removeEventListener('open-concierge', handleOpenConcierge)
+  }, [pauseStatus])
+
   // Check for pause expiry
   useEffect(() => {
     if (pauseStatus === 'paused-1hr' && pauseExpiry) {
