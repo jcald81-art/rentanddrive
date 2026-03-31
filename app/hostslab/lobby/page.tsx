@@ -237,16 +237,16 @@ export default function LobbyPage() {
         </Card>
       </div>
 
-      {/* Eagle Mini Map */}
+      {/* RAD Fleet Command Mini Map */}
       <Card>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Radar className="h-5 w-5 text-[#CC0000]" />
-              <CardTitle>Eagle Fleet Tracker</CardTitle>
+              <CardTitle>RAD Fleet Tracker</CardTitle>
             </div>
             <Button asChild variant="outline" size="sm">
-              <Link href="/hostslab/eagle-command">Eagle Eye HQ</Link>
+              <Link href="/hostslab/rad-fleet-command">RAD Fleet Command</Link>
             </Button>
           </div>
         </CardHeader>
@@ -408,9 +408,9 @@ export default function LobbyPage() {
               </Link>
             </Button>
             <Button asChild variant="secondary">
-              <Link href="/hostslab/eagle-command">
+              <Link href="/hostslab/rad-fleet-command">
                 <Radar className="h-4 w-4 mr-2" />
-                Eagle Eye HQ
+                RAD Fleet Command
               </Link>
             </Button>
             <Button variant="secondary">

@@ -7,7 +7,7 @@ export function WhyRADSection() {
     },
     {
       stat: 'Real-time',
-      title: 'Eagle Eye on every trip',
+      title: 'RAD Fleet Command on every trip',
       description: 'GPS tracking, geofencing, and OBD2 health monitoring on every vehicle in the fleet.',
     },
     {

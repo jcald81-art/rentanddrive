@@ -152,10 +152,10 @@ export default function PublishPage() {
               View Your Listing
             </Button>
           </Link>
-          <Link href="/hostslab/eagle-command">
+          <Link href="/hostslab/rad-fleet-command">
             <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10 h-14">
               <Eye className="w-4 h-4 mr-2" />
-              Add to Eagle Eye HQ
+              Add to RAD Fleet Command
             </Button>
           </Link>
           <Link href="/host/vehicles/add/details">

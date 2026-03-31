@@ -67,7 +67,7 @@ export default function StripeSuccessPage() {
             <div className="flex flex-col gap-3">
               <Link href="/host/dashboard"
                 className="w-full bg-[#e63946] text-white font-bold py-4 rounded-xl text-center hover:bg-[#c1121f] transition-colors">
-                Go to Eagle Eye Dashboard
+                Go to RAD Fleet Command
               </Link>
               <Link href="/host/vehicles/add"
                 className="w-full bg-white/10 text-white font-semibold py-3 rounded-xl text-center hover:bg-white/20 transition-colors text-sm">

@@ -49,14 +49,14 @@ export default async function HostDashboardPage() {
   // AI Agent features
   const aiAgents = [
     { name: 'RAD Pricing', description: 'AI-optimized dynamic pricing', icon: DollarSign },
-    { name: 'Eagle Eye HQ', description: 'Real-time GPS fleet tracking', icon: MapPin },
+    { name: 'RAD Fleet Command', description: 'Real-time GPS fleet tracking', icon: MapPin },
     { name: 'RAD Comms', description: 'Automated guest communications', icon: MessageSquare },
     { name: 'RAD Reputation', description: 'Reputation management AI', icon: Shield },
   ]
 
   const features = [
     { text: 'AI-optimized dynamic pricing (RAD Pricing)', icon: CheckCircle2 },
-    { text: 'Real-time GPS fleet tracking (Eagle Eye HQ)', icon: CheckCircle2 },
+    { text: 'Real-time GPS fleet tracking (RAD Fleet Command)', icon: CheckCircle2 },
     { text: 'Automated guest communications (RAD Comms)', icon: CheckCircle2 },
     { text: 'Gamified hosting with XP and levels', icon: CheckCircle2 },
     { text: 'Morning briefs and market intelligence (RAD Intel)', icon: CheckCircle2 },
@@ -114,7 +114,7 @@ export default async function HostDashboardPage() {
               </h2>
               
               <p className="text-gray-400 text-lg leading-relaxed">
-                Your AI-powered command center. Eagle Eye HQ fleet tracking, RAD Pricing AI, RAD Comms automation, and real-time analytics.
+                Your AI-powered command center. RAD Fleet Command tracking, RAD Pricing AI, RAD Comms automation, and real-time analytics.
               </p>
 
               {/* Features List */}

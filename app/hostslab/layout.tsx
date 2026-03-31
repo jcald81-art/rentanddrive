@@ -35,7 +35,7 @@ import { PortalSwitcher } from '@/components/portal-switcher'
 const NAV_ITEMS = [
   { href: '/hostslab/lobby', label: 'The Lobby', icon: Home },
   { href: '/hostslab/workshop', label: 'The Garage', icon: Wrench },
-  { href: '/hostslab/eagle-command', label: 'FleetCommandCenter', icon: Radar },
+  { href: '/hostslab/rad-fleet-command', label: 'RAD Fleet Command', icon: Radar },
   { href: '/hostslab/rd-navigator', label: 'RAD Intel', icon: Compass },
   { href: '/hostslab/briefing-room', label: 'The Briefing Room', icon: FileText },
   { href: '/hostslab/vault', label: 'The Vault', icon: Vault },
@@ -187,7 +187,7 @@ function Sidebar({
               >
                 <Icon className="h-5 w-5 flex-shrink-0" />
                 <span className="truncate">{item.label}</span>
-                {item.href === '/hostslab/eagle-command' && alertCount > 0 && (
+                {item.href === '/hostslab/rad-fleet-command' && alertCount > 0 && (
                   <Badge variant="destructive" className="ml-auto">
                     {alertCount}
                   </Badge>
@@ -202,7 +202,7 @@ function Sidebar({
       <div className="p-4 border-t border-slate-700">
         {!collapsed && alertCount > 0 && (
           <Link 
-            href="/hostslab/eagle-command"
+            href="/hostslab/rad-fleet-command"
             className="flex items-center gap-2 p-3 mb-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/30 transition-colors"
           >
             <Bell className="h-4 w-4" />
@@ -309,7 +309,7 @@ function MobileNav({ host, alertCount }: { host: HostData | null; alertCount: nu
               >
                 <Icon className="h-5 w-5" />
                 <span>{item.label}</span>
-                {item.href === '/hostslab/eagle-command' && alertCount > 0 && (
+                {item.href === '/hostslab/rad-fleet-command' && alertCount > 0 && (
                   <Badge variant="destructive" className="ml-auto">
                     {alertCount}
                   </Badge>

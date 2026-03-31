@@ -59,7 +59,7 @@ export function VehicleCard({
               <span className="text-sm text-muted-foreground">/day</span>
             </div>
 
-            {/* Eagle Eye Badge */}
+            {/* RAD Fleet Tracking Badge */}
             {tracked && (
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Radio className="h-3.5 w-3.5" />

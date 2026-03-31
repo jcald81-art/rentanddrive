@@ -63,9 +63,9 @@ const EXPEDITION_AGENTS = [
     metrics: { messagesSent: 156, avgResponseTime: '< 2 min', satisfaction: '96%' }
   },
   {
-    id: 'eagle',
-    name: 'Eagle',
-    fullName: 'Eagle - The Scout',
+    id: 'fleet',
+    name: 'RAD Fleet',
+    fullName: 'RAD Fleet Command',
     role: 'Fleet Tracking',
     description: 'GPS tracking, geofencing, and real-time vehicle monitoring',
     icon: Radar,
@@ -104,13 +104,13 @@ const SYSTEM_METRICS = {
   activeAgents: 5
 }
 
-export default function EagleEyeHQPage() {
+export default function RADFleetCommandPage() {
   const [loading, setLoading] = useState(true)
   const [agentStates, setAgentStates] = useState<Record<string, boolean>>({
     dollar: true,
     shield: true,
     securelink: true,
-    eagle: true,
+    fleet: true,
     cartegrity: true
   })
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null)
@@ -155,12 +155,12 @@ export default function EagleEyeHQPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
-              Eagle Eye HQ
+              RAD Fleet Command
               <Badge variant="outline" className="text-emerald-400 border-emerald-400/30">
                 All Systems Nominal
               </Badge>
             </h1>
-            <p className="text-muted-foreground">Expedition Agent Command Center - Monitor and control your AI crew</p>
+            <p className="text-muted-foreground">RAD Agent Command Center - Monitor and control your AI crew</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -327,7 +327,7 @@ export default function EagleEyeHQPage() {
                 <Button 
                   variant="outline" 
                   className="border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10"
-                  onClick={() => setAgentStates({ dollar: true, shield: true, securelink: true, eagle: true, cartegrity: true })}
+                  onClick={() => setAgentStates({ dollar: true, shield: true, securelink: true, fleet: true, cartegrity: true })}
                 >
                   <Play className="h-4 w-4 mr-2" />
                   Activate All
@@ -335,7 +335,7 @@ export default function EagleEyeHQPage() {
                 <Button 
                   variant="outline"
                   className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
-                  onClick={() => setAgentStates({ dollar: false, shield: false, securelink: false, eagle: false, cartegrity: false })}
+                  onClick={() => setAgentStates({ dollar: false, shield: false, securelink: false, fleet: false, cartegrity: false })}
                 >
                   <Pause className="h-4 w-4 mr-2" />
                   Pause All
@@ -366,7 +366,7 @@ export default function EagleEyeHQPage() {
                   { agent: 'Dollar', action: 'Updated pricing for Toyota 4Runner', time: '2 min ago', type: 'success' },
                   { agent: 'Shield', action: 'Generated response for 5-star review', time: '5 min ago', type: 'success' },
                   { agent: 'SecureLink', action: 'Sent check-in instructions to guest', time: '8 min ago', type: 'success' },
-                  { agent: 'Eagle', action: 'Geofence alert: Vehicle left Reno area', time: '12 min ago', type: 'warning' },
+                  { agent: 'RAD Fleet', action: 'Geofence alert: Vehicle left Reno area', time: '12 min ago', type: 'warning' },
                   { agent: 'Inspector Cartegrity', action: 'Completed pre-trip inspection #CFI-2024-089', time: '15 min ago', type: 'success' },
                   { agent: 'Dollar', action: 'Surge pricing activated for Hot August Nights', time: '23 min ago', type: 'info' },
                   { agent: 'Shield', action: 'Flagged negative review for manual review', time: '31 min ago', type: 'warning' },
@@ -426,7 +426,7 @@ export default function EagleEyeHQPage() {
                     { agent: 'Shield', cost: 3.12, tokens: 234000, trend: 'down' },
                     { agent: 'SecureLink', cost: 2.89, tokens: 189000, trend: 'up' },
                     { agent: 'Inspector Cartegrity', cost: 1.78, tokens: 89000, trend: 'stable' },
-                    { agent: 'Eagle', cost: 0.45, tokens: 23000, trend: 'stable' },
+                    { agent: 'RAD Fleet', cost: 0.45, tokens: 23000, trend: 'stable' },
                   ].map(item => (
                     <div key={item.agent} className="flex items-center justify-between p-3 rounded-lg bg-black/20">
                       <span className="font-medium">{item.agent}</span>

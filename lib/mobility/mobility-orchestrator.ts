@@ -40,7 +40,7 @@ export async function handleBookingConfirmed(bookingId: string) {
   }
 }
 
-// Called when Eagle Eye confirms trip started
+// Called when RAD Fleet Command confirms trip started
 export async function handleTripStarted(bookingId: string) {
   const { data: booking } = await supabase
     .from('bookings')
@@ -57,7 +57,7 @@ export async function handleTripStarted(bookingId: string) {
   }
 }
 
-// Called when Eagle Eye confirms trip ended
+// Called when RAD Fleet Command confirms trip ended
 export async function handleTripEnded(bookingId: string) {
   const { data: booking } = await supabase
     .from('bookings')
@@ -145,7 +145,7 @@ async function dispatchUberDelivery({ booking }: { booking: Record<string, unkno
       `${vehicle.color}. ` +
       `Keys are in the igloohome Keybox. ` +
       `Keybox code: ${booking.pickup_pin}. ` +
-      `Vehicle has Eagle Eye GPS tracker installed.`,
+      `Vehicle has RAD Fleet GPS tracker installed.`,
     dropoff_address: booking.delivery_address as string,
     dropoff_name: `${renter.first_name} ${renter.last_name || ''}`,
     dropoff_phone: renter.phone as string,

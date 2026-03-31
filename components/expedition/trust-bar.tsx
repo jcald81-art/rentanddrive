@@ -1,7 +1,7 @@
 export function TrustBar() {
   const stats = [
     { value: '10%', label: 'Host Commission' },
-    { value: 'Eagle Eye', label: 'Tracking on Every Trip' },
+    { value: 'RAD Fleet', label: 'Tracking on Every Trip' },
     { value: 'CarFidelity', label: 'Certified Vehicles' },
     { value: '4 Markets', label: 'Reno - Tahoe - Moab - Bozeman' },
   ]

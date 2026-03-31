@@ -16,7 +16,7 @@ export function HostCTASection() {
             
             <p className="text-lg text-[#8BAF7C] mb-8 max-w-lg leading-relaxed">
               List on Rent and Drive and keep 90% of every booking. 
-              Eagle Eye tracks your vehicle. igloohome handles the keys. 
+              RAD Fleet tracks your vehicle. igloohome handles the keys. 
               You collect the revenue.
             </p>
 

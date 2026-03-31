@@ -168,7 +168,7 @@ export default function GameRoomPage() {
   }
 
   const displayBadges = badges.length > 0 ? badges : [
-    { id: '1', name: 'Eagle Eye', description: 'All vehicles GPS tracked with Bouncie', icon: 'eagle_eye', earned: true, earned_at: '2024-01-01', rarity: 'rare' as const },
+    { id: '1', name: 'RAD Fleet', description: 'All vehicles GPS tracked with Bouncie', icon: 'rad_fleet', earned: true, earned_at: '2024-01-01', rarity: 'rare' as const },
     { id: '2', name: 'Century Club', description: 'Complete 100 rentals', icon: 'century_club', earned: false, rarity: 'epic' as const },
     { id: '3', name: '5-Star Lab', description: 'Maintain 5.0 rating for 30 days', icon: 'five_star_lab', earned: true, earned_at: '2024-01-10', rarity: 'rare' as const },
     { id: '4', name: 'Car Lot Closer', description: 'Sell a vehicle through The Car Lot', icon: 'car_lot_closer', earned: false, rarity: 'epic' as const },

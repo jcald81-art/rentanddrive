@@ -241,7 +241,7 @@ export default function CancellationPolicyPage() {
           <CardContent className="text-muted-foreground">
             <p>
               All disputes must be initiated within <strong>72 hours</strong> of trip end. 
-              Eagle Eye GPS records and Surveyor inspection reports are used in all dispute resolutions.
+              RAD Fleet GPS records and RAD CarFidelity inspection reports are used in all dispute resolutions.
             </p>
             <p className="mt-4">
               Need help?{' '}

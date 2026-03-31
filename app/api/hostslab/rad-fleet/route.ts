@@ -108,7 +108,7 @@ export async function GET() {
       healthSummary,
     })
   } catch (error) {
-    console.error('Eagle command error:', error)
+    console.error('RAD Fleet Command error:', error)
     return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 })
   }
 }

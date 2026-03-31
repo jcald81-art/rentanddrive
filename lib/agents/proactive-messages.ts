@@ -50,10 +50,10 @@ export async function getProactiveMessage({
       return {
         agent: AGENT_CONFIGS['rad-comms'],
         preview_text: `Welcome back, ${firstName} — your fleet has activity`,
-        full_message: `Good to see you, ${firstName}. Your vehicles are getting views. Head to Fleet Tracker for your fleet overview, or check the Command Center for recent bookings.`,
+        full_message: `Good to see you, ${firstName}. Your vehicles are getting views. Head to RAD Fleet Command for your fleet overview, or check the Command Center for recent bookings.`,
         context: { page: 'home', role: 'host', profile },
         action_buttons: [
-          { label: 'Fleet Tracker', action: '/hostslab/eagle-eye', variant: 'primary' },
+          { label: 'RAD Fleet Command', action: '/hostslab/rad-fleet-command', variant: 'primary' },
           { label: 'View earnings', action: '/host/earnings', variant: 'secondary' },
         ]
       }
@@ -137,22 +137,22 @@ export async function getProactiveMessage({
     return {
       agent: AGENT_CONFIGS['rad-pricing'],
       preview_text: 'RAD Pricing has a pricing insight for your fleet',
-      full_message: `Morning, ${firstName}. I've been monitoring your fleet's performance. Check Fleet Tracker for your utilization metrics, or let's review your pricing strategy.`,
+      full_message: `Morning, ${firstName}. I've been monitoring your fleet's performance. Check RAD Fleet Command for your utilization metrics, or let's review your pricing strategy.`,
       context: { page: 'host_dashboard', profile },
       action_buttons: [
         { label: 'Update pricing', action: '/host/pricing', variant: 'primary' },
-        { label: 'View Fleet Tracker', action: '/hostslab/eagle-eye', variant: 'secondary' },
+        { label: 'RAD Fleet Command', action: '/hostslab/rad-fleet-command', variant: 'secondary' },
       ]
     }
   }
 
-  // FLEET TRACKER
-  if (pathname.startsWith('/hostslab/eagle-eye')) {
+  // RAD FLEET COMMAND
+  if (pathname.startsWith('/hostslab/rad-fleet-command')) {
     return {
       agent: AGENT_CONFIGS['rad-fleet'],
       preview_text: 'RAD Fleet has a fleet health update',
       full_message: 'Fleet status looks good. I\'m tracking maintenance schedules and vehicle condition. Any specific vehicles you want me to check on?',
-      context: { page: 'fleet_tracker', profile },
+      context: { page: 'rad_fleet_command', profile },
     }
   }
 
@@ -164,7 +164,7 @@ export async function getProactiveMessage({
       full_message: 'Welcome to RAD Hosts. This is your Command Center. What would you like to focus on — fleet management, pricing optimization, or checking your metrics?',
       context: { page: 'rad_hosts', profile },
       action_buttons: [
-        { label: 'Fleet overview', action: '/hostslab/eagle-eye', variant: 'primary' },
+        { label: 'Fleet overview', action: '/hostslab/rad-fleet-command', variant: 'primary' },
         { label: 'Pricing tools', action: '/host/pricing', variant: 'secondary' },
       ]
     }

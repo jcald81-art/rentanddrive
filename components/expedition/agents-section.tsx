@@ -51,7 +51,7 @@ const EXPEDITION_AGENTS = [
     id: 'fleet',
     name: 'RAD Fleet',
     role: 'Fleet Health',
-    description: 'Monitors every vehicle via OBD2 telemetry from Eagle Eye. Predicts maintenance needs, scores vehicle health 0-100, and alerts you before a breakdown costs you a booking.',
+    description: 'Monitors every vehicle via OBD2 telemetry from RAD Fleet Command. Predicts maintenance needs, scores vehicle health 0-100, and alerts you before a breakdown costs you a booking.',
     color: '#0F6E56',
     icon: Activity,
   },
