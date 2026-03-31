@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -40,13 +41,15 @@ export function ExpeditionNavbar() {
         <nav className="mx-auto max-w-[1280px] px-6 lg:px-20">
           <div className="flex h-20 items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3">
-              <span className="font-serif text-2xl text-[#F5F2EC] tracking-tight">
-                Rent and Drive
-              </span>
-              <span className="hidden sm:inline-flex items-center justify-center h-7 w-7 rounded bg-[#C4813A] text-[#1C1F1A] text-xs font-medium">
-                RAD
-              </span>
+            <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+              <Image 
+                src="/images/rad-brand-logo.png" 
+                alt="Rent and Drive - Reno Sparks Lake Tahoe" 
+                width={100}
+                height={50}
+                className="h-12 w-auto object-contain"
+                priority
+              />
             </Link>
 
             {/* Desktop Navigation */}

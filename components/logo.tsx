@@ -14,12 +14,12 @@ interface LogoProps {
 }
 
 const logoSources: Record<LogoVariant, string> = {
-  'simple': '/images/logo.jpg',
-  'badge': '/images/logo.jpg',
-  'suv-badge': '/images/logo.jpg',
-  'suv-mountain': '/images/logo.jpg',
-  'suv-banner': '/images/logo.jpg',
-  'poster': '/images/logo.jpg',
+  'simple': '/images/rad-brand-logo.png',
+  'badge': '/images/rad-brand-logo.png',
+  'suv-badge': '/images/rad-brand-logo.png',
+  'suv-mountain': '/images/rad-brand-logo.png',
+  'suv-banner': '/images/rad-brand-logo.png',
+  'poster': '/images/rad-brand-logo.png',
 }
 
 export function Logo({ className, size = 'md', variant = 'simple', linkTo = '/' }: LogoProps) {

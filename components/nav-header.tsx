@@ -47,11 +47,11 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
         {/* Logo */}
         <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
           <Image 
-            src="/images/logo.jpg" 
+            src="/images/rad-brand-logo.png" 
             alt="Rent and Drive - Reno Sparks Lake Tahoe" 
-            width={200}
-            height={50}
-            className="h-10 w-auto object-contain"
+            width={120}
+            height={60}
+            className="h-12 w-auto object-contain"
             priority
           />
         </Link>
