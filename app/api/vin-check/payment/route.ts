@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-03-31.basil',
-})
-
 const REPORT_PRICES: Record<string, { amount: number; name: string; description: string }> = {
   basic: {
     amount: 999,
@@ -24,6 +20,9 @@ const REPORT_PRICES: Record<string, { amount: number; name: string; description:
 }
 
 export async function POST(request: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2024-06-20',
+  })
   try {
     const body = await request.json()
     const { vin, report_type, vehicle_id, user_id, return_url } = body
@@ -80,6 +79,9 @@ export async function POST(request: NextRequest) {
 
 // Webhook handler for successful payments - triggers VIN check
 export async function PUT(request: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2024-06-20',
+  })
   try {
     const body = await request.json()
     const { payment_intent_id } = body

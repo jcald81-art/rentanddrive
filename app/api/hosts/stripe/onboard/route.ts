@@ -3,15 +3,14 @@ import Stripe from "stripe";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-06-20",
-});
-
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://rentanddrive.net";
 
 // ─── POST /api/hosts/stripe/onboard ──────────────────────────────────────────
 // Creates a Stripe Connect Express account + returns onboarding URL
 export async function POST(req: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2024-06-20",
+  });
   try {
     const cookieStore = await cookies();
     const supabase = createServerClient(
@@ -96,6 +95,9 @@ export async function POST(req: NextRequest) {
 // ─── GET /api/hosts/stripe/onboard ───────────────────────────────────────────
 // Returns current payout account status for the host dashboard
 export async function GET(req: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2024-06-20",
+  });
   try {
     const cookieStore = await cookies();
     const supabase = createServerClient(

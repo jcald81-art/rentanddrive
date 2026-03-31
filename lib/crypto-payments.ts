@@ -1,8 +1,11 @@
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
-})
+// Lazy initialization to avoid build-time errors
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2024-06-20',
+  })
+}
 
 export type CryptoCurrency = 'usdc' | 'usdt'
 export type PayoutMethod = 'bank' | 'crypto_wallet' | 'coinbase'
@@ -65,6 +68,7 @@ export async function createCryptoPaymentIntent({
   const conversionRate = 1.0
   const cryptoAmount = Math.round(amountUSD * 100) // Stripe uses cents
 
+  const stripe = getStripe()
   const paymentIntent = await stripe.paymentIntents.create({
     amount: cryptoAmount,
     currency: 'usd',
