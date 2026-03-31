@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Star, Zap, Mountain, ShieldCheck, Tag } from 'lucide-react'
+import { Star, Zap, Mountain, ShieldCheck, Tag, Eye } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { Vehicle } from '@/lib/types/vehicle'
@@ -11,6 +11,9 @@ interface VehicleCardProps {
     has_vin_report?: boolean
     sell_while_renting?: boolean
     for_sale?: boolean
+    carfidelity_certified?: boolean
+    eagle_eye_tracked?: boolean
+    photos?: string[]
   }
 }
 
@@ -20,7 +23,7 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
       <Card className="group overflow-hidden border-0 p-0 shadow-md transition-all hover:shadow-lg">
         <div className="relative aspect-[4/3] overflow-hidden">
           <img
-            src={vehicle.thumbnail || '/placeholder-car.jpg'}
+            src={vehicle.thumbnail || vehicle.photos?.[0] || '/placeholder-car.jpg'}
             alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
             className="absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-105"
           />
@@ -37,10 +40,16 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
                 AWD
               </Badge>
             )}
-            {vehicle.has_vin_report && (
+            {vehicle.carfidelity_certified && (
               <Badge variant="secondary" className="bg-green-600 text-white gap-1">
                 <ShieldCheck className="size-3" />
-                Verified
+                Certified
+              </Badge>
+            )}
+            {vehicle.eagle_eye_tracked && (
+              <Badge variant="secondary" className="bg-blue-600 text-white gap-1">
+                <Eye className="size-3" />
+                Tracked
               </Badge>
             )}
           </div>

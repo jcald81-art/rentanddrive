@@ -34,7 +34,25 @@ async function getVehicles(searchParams: SearchParams): Promise<Vehicle[]> {
   // Try database first
   try {
     const supabase = await createClient()
-    let query = supabase.from('active_listings').select('*')
+    let query = supabase
+      .from('vehicles')
+      .select('*')
+      .eq('status', 'active')
+      .eq('is_active', true)
+      .eq('is_approved', true)
+
+    // Location filter
+    if (searchParams.location) {
+      const locationMap: Record<string, string> = {
+        'reno': 'Reno',
+        'sparks': 'Sparks',
+        'tahoe': 'Lake Tahoe',
+        'north-tahoe': 'North Lake Tahoe',
+        'south-tahoe': 'South Lake Tahoe',
+      }
+      const city = locationMap[searchParams.location.toLowerCase()] || searchParams.location
+      query = query.ilike('location_city', `%${city}%`)
+    }
 
     if (searchParams.category && searchParams.category !== 'all') {
       query = query.eq('category', searchParams.category)
@@ -77,10 +95,16 @@ async function getVehicles(searchParams: SearchParams): Promise<Vehicle[]> {
     const { data, error } = await query
 
     if (!error && data && data.length > 0) {
-      return data
+      // Map database fields to Vehicle type
+      return data.map((v) => ({
+        ...v,
+        images: v.photos || [],
+        features: v.features || [],
+        location: v.location_city || 'Reno',
+      }))
     }
-  } catch {
-    // Database not available, fall through to sample data
+  } catch (err) {
+    console.error('[v0] Error fetching vehicles:', err)
   }
 
   // Return filtered sample data as fallback

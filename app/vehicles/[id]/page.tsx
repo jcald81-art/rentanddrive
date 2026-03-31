@@ -24,16 +24,24 @@ async function getVehicle(id: string): Promise<Vehicle | null> {
   const supabase = await createClient()
 
   const { data, error } = await supabase
-    .from('active_listings')
+    .from('vehicles')
     .select('*')
     .eq('id', id)
+    .eq('is_active', true)
+    .eq('is_approved', true)
     .single()
 
   if (error || !data) {
     return null
   }
 
-  return data
+  // Map database fields to Vehicle type
+  return {
+    ...data,
+    images: data.photos || [],
+    thumbnail_url: data.thumbnail || data.photos?.[0],
+    features: data.features || [],
+  }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
