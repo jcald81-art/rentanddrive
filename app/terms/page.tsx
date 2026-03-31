@@ -16,7 +16,7 @@ export default function TermsOfServicePage() {
         </Button>
 
         <h1 className="text-4xl font-bold mb-2">Terms of Service</h1>
-        <p className="text-muted-foreground mb-8">Last updated: March 29, 2026</p>
+        <p className="text-muted-foreground mb-8">Last updated: March 31, 2026</p>
 
         <div className="prose prose-slate dark:prose-invert max-w-none space-y-8">
           <section>
@@ -68,9 +68,9 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">4. carfidelity.ai Inspection Requirement</h2>
+            <h2 className="text-2xl font-semibold mb-4">4. RAD CarFidelity Inspection Requirement</h2>
             <p>
-              All rentals require completion of our carfidelity.ai inspection process (powered by Inspector Cartegrity AI). 
+              All rentals require completion of our RAD CarFidelity inspection process. 
               Both Hosts and Renters must complete photographic inspections at the start and end of each rental period. 
               These inspections document the vehicle&apos;s condition and are used to resolve any damage disputes.
             </p>
@@ -81,10 +81,10 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">5. Eagle GPS Monitoring Disclosure</h2>
+            <h2 className="text-2xl font-semibold mb-4">5. RAD Fleet Command GPS Monitoring Disclosure</h2>
             <p>
-              All vehicles on our platform are equipped with Bouncie GPS devices as part of our Eagle 
-              Fleet Monitoring System. By using our platform, you acknowledge and consent to:
+              All vehicles on our platform are equipped with Bouncie GPS devices as part of our RAD 
+              Fleet Command. By using our platform, you acknowledge and consent to:
             </p>
             <ul className="list-disc pl-6 space-y-2">
               <li>Real-time location tracking during rental periods</li>
@@ -163,7 +163,7 @@ export default function TermsOfServicePage() {
               VEHICLES ARE STRICTLY PROHIBITED FROM THE BLACK ROCK DESERT PLAYA AND BURNING MAN EVENT.
             </p>
             <p className="mb-4">
-              All vehicles listed on the Rent and Drive platform are GPS-monitored via our Eagle System. 
+              All vehicles listed on the Rent and Drive platform are GPS-monitored via RAD Fleet Command. 
               Entry into the Black Rock Desert area (coordinates: 40.7864°N, 119.2065°W, 15-mile radius) 
               will trigger an immediate critical alert.
             </p>
@@ -249,8 +249,7 @@ export default function TermsOfServicePage() {
             <address className="not-italic mt-4">
               <strong>Rent and Drive LLC</strong><br />
               Reno, Nevada<br />
-              Email: <a href="mailto:legal@rentanddrive.net" className="text-primary hover:underline">legal@rentanddrive.net</a><br />
-              Phone: (775) 555-0123
+              Email: <a href="mailto:legal@rentanddrive.net" className="text-primary hover:underline">legal@rentanddrive.net</a>
             </address>
           </section>
         </div>
