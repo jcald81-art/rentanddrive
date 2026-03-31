@@ -376,6 +376,7 @@ async function handleDisputeCreated(dispute: Stripe.Dispute) {
 // Handle checkout session completed (same as payment succeeded)
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const bookingId = session.metadata?.booking_id
+  const vehicleId = session.metadata?.vehicle_id
 
   if (!bookingId) {
     console.log('[Stripe Webhook] No booking_id in checkout session metadata')
@@ -400,14 +401,32 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     throw error
   }
 
-  // Get booking details and trigger communications
+  // Get booking details for date blocking and communications
   const { data: booking } = await supabaseAdmin
     .from('bookings')
-    .select('id, renter_id')
+    .select('id, renter_id, vehicle_id, start_date, end_date')
     .eq('id', bookingId)
     .single()
 
   if (booking) {
+    // Block the dates in vehicle_unavailability
+    const { error: unavailError } = await supabaseAdmin
+      .from('vehicle_unavailability')
+      .insert({
+        vehicle_id: booking.vehicle_id || vehicleId,
+        booking_id: bookingId,
+        start_date: booking.start_date,
+        end_date: booking.end_date,
+        reason: 'booked',
+      })
+
+    if (unavailError) {
+      console.error('[Stripe Webhook] Failed to block dates:', unavailError)
+      // Don't throw - booking is confirmed, just log the error
+    } else {
+      console.log(`[Stripe Webhook] Dates blocked for vehicle ${booking.vehicle_id}`)
+    }
+
     // Trigger booking_confirmed SMS
     try {
       await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/agents/communications`, {
