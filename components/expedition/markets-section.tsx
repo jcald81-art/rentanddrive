@@ -5,26 +5,20 @@ const MARKETS = [
   {
     name: 'Reno',
     tagline: 'The Biggest Little City',
-    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop&q=80',
+    image: '/images/markets/reno-biggest-little-city.jpg',
     href: '/vehicles?location=reno',
   },
   {
     name: 'Sparks',
     tagline: 'Gateway to adventure',
-    image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&auto=format&fit=crop&q=80',
+    image: '/images/markets/sparks-nugget-casino.jpg',
     href: '/vehicles?location=sparks',
   },
   {
-    name: 'North Lake Tahoe',
-    tagline: 'Alpine playground',
-    image: 'https://images.unsplash.com/photo-1537944434965-cf4679d1a598?w=800&auto=format&fit=crop&q=80',
-    href: '/vehicles?location=north-tahoe',
-  },
-  {
-    name: 'South Lake Tahoe',
-    tagline: 'Year-round excitement',
-    image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop&q=80',
-    href: '/vehicles?location=south-tahoe',
+    name: 'Lake Tahoe',
+    tagline: 'Alpine adventure awaits',
+    image: '/images/markets/lake-tahoe.jpg',
+    href: '/vehicles?location=tahoe',
   },
 ]
 
@@ -41,7 +35,7 @@ export function MarketsSection() {
         </p>
 
         {/* Markets Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {MARKETS.map((market) => (
             <Link
               key={market.name}
@@ -52,7 +46,7 @@ export function MarketsSection() {
                 src={market.image}
                 alt={market.name}
                 fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
               />
               
