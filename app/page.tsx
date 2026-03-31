@@ -1,5 +1,6 @@
 import Script from "next/script"
 import { getOrganizationSchema, getWebsiteSchema, getLocalBusinessSchema } from '@/lib/structured-data'
+import { SearchBar } from '@/components/layout/SearchBar'
 import {
   ExpeditionHero,
   TrustBar,
@@ -32,6 +33,9 @@ export default function HomePage() {
       />
 
       <main>
+        {/* Sticky Search Bar - Below Nav */}
+        <SearchBar />
+
         {/* Hero Section - Dark */}
         <ExpeditionHero />
 
