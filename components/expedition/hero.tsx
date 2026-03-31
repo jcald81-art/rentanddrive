@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { MapPin, Calendar, ArrowRight, ChevronDown } from 'lucide-react'
@@ -20,11 +20,34 @@ const LOCATIONS = [
   { value: 'bozeman', label: 'Bozeman, MT' },
 ]
 
+const SLOGANS = [
+  { main: "The vehicle your adventure", highlight: "deserves." },
+  { main: "Make your next rental", highlight: "a RAD rental." },
+  { main: "Not just a rental.", highlight: "A RAD rental." },
+  { main: "Your last rental was fine.", highlight: "Your next one? RAD." },
+  { main: "You deserve", highlight: "a RAD rental." },
+  { main: "One RAD rental", highlight: "and you'll never go back." },
+]
+
 export function ExpeditionHero() {
   const router = useRouter()
   const [location, setLocation] = useState('reno')
   const [pickupDate, setPickupDate] = useState('')
   const [returnDate, setReturnDate] = useState('')
+  const [sloganIndex, setSloganIndex] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
+
+  // Rotate slogans every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsAnimating(true)
+      setTimeout(() => {
+        setSloganIndex((prev) => (prev + 1) % SLOGANS.length)
+        setIsAnimating(false)
+      }, 300)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [])
 
   // Set default dates
   useState(() => {
@@ -72,9 +95,12 @@ export function ExpeditionHero() {
           {/* Text Content */}
           <div className="animate-fade-up">
             <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl xl:text-[84px] text-foreground leading-[0.95] tracking-tight mb-8">
-              The vehicle<br />
-              your adventure<br />
-              <span className="italic">deserves.</span>
+              <span 
+                className={`block transition-all duration-300 ${isAnimating ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}
+              >
+                {SLOGANS[sloganIndex].main}<br />
+                <span className="italic text-accent">{SLOGANS[sloganIndex].highlight}</span>
+              </span>
             </h1>
             
             <p className="text-lg sm:text-xl text-muted-foreground max-w-lg mb-12 font-light leading-relaxed animate-fade-up-delay-1">
