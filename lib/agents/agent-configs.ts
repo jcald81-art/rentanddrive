@@ -110,4 +110,14 @@ export const AGENT_CONFIGS: Record<string, AgentConfig> = {
     task_type: 'upsell_recommendation',
     description: 'Helps renters find the perfect vehicle and recommends add-ons.',
   },
+  rad: {
+    id: 'rad',
+    name: 'RAD',
+    role: 'Your Rent and Drive guide',
+    initials: 'R',
+    color: '#2D4A2D',
+    textColor: '#F5F2EC',
+    task_type: 'concierge',
+    description: 'Your main guide on RAD. Knows the roads, the vehicles, and the markets.',
+  },
 }

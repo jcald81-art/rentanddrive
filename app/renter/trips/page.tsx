@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 
@@ -382,10 +382,11 @@ Inspection Report
 
         {/* Review Dialog */}
         <Dialog open={!!reviewBookingId} onOpenChange={(open) => !open && setReviewBookingId(null)}>
-          <DialogContent className="bg-slate-900 border-slate-800">
-            <DialogHeader>
-              <DialogTitle className="text-white">Rate Your Trip</DialogTitle>
-            </DialogHeader>
+<DialogContent className="bg-slate-900 border-slate-800">
+        <DialogHeader>
+          <DialogTitle className="text-white">Rate Your Trip</DialogTitle>
+          <DialogDescription className="text-slate-400">Share your experience with this vehicle and host.</DialogDescription>
+        </DialogHeader>
             <div className="space-y-4">
               <div className="flex justify-center gap-2">
                 {[1, 2, 3, 4, 5].map(star => (

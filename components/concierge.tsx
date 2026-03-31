@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { MessageCircle, X, Send, Loader2, Waves, Beaker, Settings, PauseCircle, PlayCircle, Clock, Ban } from 'lucide-react'
+import { MessageCircle, X, Send, Loader2, Mountain, Beaker, Settings, PauseCircle, PlayCircle, Clock, Ban } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PERSONAS, type AIPersona } from '@/lib/ai-personas'
 import {
@@ -199,7 +199,7 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
           {isOpen ? (
             <X className="h-6 w-6 text-white" />
           ) : isRAD ? (
-            <Waves className="h-6 w-6 text-white" />
+            <Mountain className="h-6 w-6 text-white" />
           ) : (
             <MessageCircle className="h-6 w-6 text-white" />
           )}
@@ -214,9 +214,9 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
               background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`,
             }}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur font-medium">
               {isRAD ? (
-                <span className="text-2xl">🏄</span>
+                <span className="text-lg">R</span>
               ) : (
                 <Beaker className="h-5 w-5" />
               )}
@@ -241,10 +241,10 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
                 <DropdownMenuLabel>Assistant Mode</DropdownMenuLabel>
                 <DropdownMenuItem 
                   onClick={() => handlePersonaSwitch('RAD')}
-                  className={cn(persona === 'RAD' && 'bg-[#00B4D8]/10')}
+                  className={cn(persona === 'RAD' && 'bg-[#2D4A2D]/10')}
                 >
-                  <Waves className="h-4 w-4 mr-2 text-[#00B4D8]" />
-                  RAD - Standard
+                  <Mountain className="h-4 w-4 mr-2 text-[#2D4A2D]" />
+                  RAD - Guide
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => handlePersonaSwitch('R&D')}
@@ -290,9 +290,11 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
           >
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                <div className="text-5xl mb-4">{isRAD ? '🚗' : '🔬'}</div>
+                <div className="w-12 h-12 rounded-lg bg-[#2D4A2D] flex items-center justify-center text-[#F5F2EC] font-medium text-lg mb-4">
+                  {isRAD ? 'R' : '🔬'}
+                </div>
                 <h4 className="font-semibold text-lg mb-2">
-                  {isRAD ? "Hey, I'm RAD" : "Welcome to R&D"}
+                  {isRAD ? "RAD" : "Welcome to R&D"}
                 </h4>
                 <p className="text-sm text-muted-foreground mb-4">
                   {config.greeting}

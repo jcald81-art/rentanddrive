@@ -79,13 +79,12 @@ export async function getProactiveMessage({
     // New visitor
     return {
       agent: AGENT_CONFIGS.beacon,
-      preview_text: 'Find the right vehicle for where you\'re going',
-      full_message: 'Tell me where you\'re headed — I\'ll find you the right vehicle. Tahoe, Moab, Bozeman, or anywhere in between.',
+      preview_text: 'Where are you headed?',
+      full_message: 'RAD connects you directly with local vehicle owners — no rental counters, no corporate fleet. Every vehicle is CarFidelity inspected and GPS tracked. What market are you heading to?',
       context: { page: 'home', role: 'visitor' },
       action_buttons: [
-        { label: 'Browse Tahoe', action: '/vehicles?market=tahoe', variant: 'primary' },
-        { label: 'Browse Moab', action: '/vehicles?market=moab', variant: 'secondary' },
-        { label: 'Browse Reno', action: '/vehicles?market=reno', variant: 'secondary' },
+        { label: 'Reno/Sparks', action: '/vehicles?market=reno', variant: 'primary' },
+        { label: 'Lake Tahoe', action: '/vehicles?market=tahoe', variant: 'secondary' },
       ]
     }
   }
@@ -189,12 +188,12 @@ export async function getProactiveMessage({
   if (pathname.startsWith('/sign-up') || pathname.startsWith('/signup') || pathname.startsWith('/onboarding')) {
     return {
       agent: AGENT_CONFIGS.beacon,
-      preview_text: 'Welcome to RAD — let\'s get you set up',
-      full_message: 'Welcome. I\'m Beacon — your main contact on RAD. Setup takes about 3 minutes. Want to start as a renter, a host, or both?',
+      preview_text: 'Setup takes 3 minutes',
+      full_message: 'Renter or host — your call. Renters get access to the fleet immediately. Hosts need a CarFidelity inspection first. Which path?',
       context: { page: 'signup' },
       action_buttons: [
-        { label: 'I want to rent', action: 'role_renter', variant: 'primary' },
-        { label: 'I want to host', action: 'role_host', variant: 'primary' },
+        { label: 'Rent vehicles', action: 'role_renter', variant: 'primary' },
+        { label: 'List my vehicle', action: 'role_host', variant: 'primary' },
         { label: 'Both', action: 'role_both', variant: 'secondary' },
       ]
     }

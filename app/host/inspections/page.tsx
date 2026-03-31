@@ -9,6 +9,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogDescription,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
@@ -127,9 +128,10 @@ function InspectionDetailModal({ inspection }: { inspection: Inspection }) {
           View Report
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto" title={`Inspection Report - ${inspection.vehicleName}`}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Inspection Report — {inspection.vehicleName}</DialogTitle>
+          <DialogDescription>Pre and post-trip inspection details for this vehicle.</DialogDescription>
         </DialogHeader>
         <div className="space-y-6 mt-4">
           {/* Info */}

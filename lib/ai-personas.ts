@@ -3,7 +3,7 @@
  * CLIENT-SAFE FILE - NO SERVER IMPORTS
  * 
  * Includes:
- * - RAD: Renter-facing chill assistant
+ * - RAD: Your Rent and Drive guide — direct, knowledgeable, adventure-forward
  * - R&D: Beta tester technical assistant
  * - Dollar: Dynamic pricing AI for hosts
  * - Eagle: GPS fleet tracking system
@@ -54,23 +54,23 @@ export const PERSONAS: Record<AIPersona, {
   },
   'RAD': {
     name: 'RAD',
-    tagline: 'Rent and Drive — Standard Mode',
-    emoji: '🚗',
-    color: '#C4813A',
-    bgGradient: 'from-[#C4813A] to-[#A36A2E]',
+    tagline: 'Your Rent and Drive guide',
+    emoji: 'R',
+    color: '#2D4A2D',
+    bgGradient: 'from-[#2D4A2D] to-[#1C3A1C]',
     tone: 'professional',
-    greeting: "Hi, I'm RAD — your Rent and Drive assistant. I can help you find the right vehicle for your adventure, answer questions about bookings, or connect you with support.",
+    greeting: "Tell me where you're headed — I'll find you the right vehicle. Tahoe, Reno, Sparks, or anywhere in between.",
     quickReplies: [
-      'Find me a vehicle',
-      'Check my bookings',
-      'What gear is available?',
-      'Talk to support'
+      'Tahoe this weekend',
+      'AWD vehicles',
+      'How booking works',
+      'Host earnings'
     ],
     features: [
-      'Stable features',
-      'Clean interface',
-      'Proven performance',
-      'Full fleet access'
+      'Vehicle search',
+      'Booking help',
+      'Local expertise',
+      'Platform support'
     ],
     isBeta: false
   }
