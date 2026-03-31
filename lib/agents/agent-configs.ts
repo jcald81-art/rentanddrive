@@ -113,11 +113,11 @@ export const AGENT_CONFIGS: Record<string, AgentConfig> = {
   rad: {
     id: 'rad',
     name: 'RAD',
-    role: 'Your Rent and Drive guide',
+    role: 'Rent and Drive Concierge',
     initials: 'R',
     color: '#2D4A2D',
     textColor: '#F5F2EC',
     task_type: 'concierge',
-    description: 'Your main guide on RAD. Knows the roads, the vehicles, and the markets.',
+    description: 'Primary intelligence interface. Orchestrates specialist agents for comprehensive answers.',
   },
 }

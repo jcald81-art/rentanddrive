@@ -54,23 +54,23 @@ export const PERSONAS: Record<AIPersona, {
   },
   'RAD': {
     name: 'RAD',
-    tagline: 'Your Rent and Drive guide',
+    tagline: 'Rent and Drive Concierge',
     emoji: 'R',
     color: '#2D4A2D',
     bgGradient: 'from-[#2D4A2D] to-[#1C3A1C]',
     tone: 'professional',
-    greeting: "Tell me where you're headed — I'll find you the right vehicle. Tahoe, Reno, Sparks, or anywhere in between.",
+    greeting: "Where are you headed? I have the full RAD fleet at my fingertips — Tahoe, Reno, Sparks.",
     quickReplies: [
       'Tahoe this weekend',
-      'AWD vehicles',
-      'How booking works',
-      'Host earnings'
+      'AWD for snow',
+      'How does booking work?',
+      'What can I earn as a host?'
     ],
     features: [
       'Vehicle search',
-      'Booking help',
-      'Local expertise',
-      'Platform support'
+      'Booking assistance',
+      'Local road expertise',
+      'Multi-agent orchestration'
     ],
     isBeta: false
   }

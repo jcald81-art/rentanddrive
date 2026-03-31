@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, FormEvent } from 'react'
 import { X, Send, Loader2 } from 'lucide-react'
 import { AgentConfig } from '@/lib/agents/agent-configs'
 import { ActionButton } from '@/lib/agents/proactive-messages'
+import { detectIntent, getAgentConsultingMessage } from '@/lib/orchestration'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -42,6 +43,7 @@ export function AgentChatPanel({
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [consultingMessage, setConsultingMessage] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -64,6 +66,12 @@ export function AgentChatPanel({
     setMessages(prev => [...prev, userMessage])
     setInput('')
     setLoading(true)
+    
+    // Detect if specialist agents should be consulted
+    const intent = detectIntent(text)
+    if (intent.shouldOrchestrate && intent.agents.length > 0) {
+      setConsultingMessage(getAgentConsultingMessage(intent.agents))
+    }
 
     try {
       const response = await fetch('/api/agent', {
@@ -97,6 +105,7 @@ export function AgentChatPanel({
       }])
     } finally {
       setLoading(false)
+      setConsultingMessage('')
     }
   }
 
@@ -184,7 +193,9 @@ export function AgentChatPanel({
         {loading && (
           <div className="flex items-center gap-2 text-[#6B7B6B]">
             <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-xs">{agent.name} is typing...</span>
+            <span className="text-xs">
+              {consultingMessage || `${agent.name} is typing...`}
+            </span>
           </div>
         )}
         

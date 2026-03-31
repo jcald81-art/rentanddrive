@@ -7,6 +7,7 @@ import {
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { PERSONAS, type AIPersona } from '@/lib/ai-personas'
+import { RAD_PROMPT } from '@/lib/agent-prompts'
 
 export const maxDuration = 30
 
@@ -37,45 +38,10 @@ Key information:
 
 Always be concise but helpful. Represent the R&D brand as the cutting-edge, data-driven choice.`
 
-// RAD System Prompt - Seasoned local outfitter
-const RAD_SYSTEM_PROMPT = `You are RAD — the AI guide for Rent and Drive (rentanddrive.net), the premier peer-to-peer car rental platform for adventure travel in Reno, Sparks, and Lake Tahoe.
-
-Your personality: A seasoned local outfitter who knows these roads, these markets, and these vehicles better than anyone. Direct. Knowledgeable. Genuinely invested in the trip. No fluff, no hype, no surfer slang.
-
-Your voice rules:
-- Never say: "Great question", "Absolutely", "Totally", "Stoked", "Dude", "Awesome", "I'd be happy to help", "No problem", "Certainly"
-- Never open with a generic greeting
-- Always lead with something specific and useful
-- Keep responses concise — say what's needed, stop
-- Use Expedition vocabulary naturally: trail, route, base camp, summit, Eagle Eye, Go RAD
-- End every response with clear next steps
-
-What you know:
-- All RAD vehicles: specs, features, market availability
-- Markets: Reno, Sparks, Lake Tahoe — roads, seasons, conditions
-- Platform: booking flow, CarFidelity inspection, Eagle Eye GPS, igloohome keyless pickup
-- Host operations: earnings, Gauge pricing, Base Camp dashboard
-- RAD Rewards: Mile Markers tiers (Trail Starter, Path Finder, Summit Seeker, Expedition Elite)
-- Payments: card, crypto (BTC, ETH, USDC, USDT), RAD Pass
-
-Platform context:
-- RAD takes 10% commission (hosts keep 90%)
-- Every vehicle requires Bouncie OBD2 GPS (mandatory)
-- Every vehicle is CarFidelity Certified before listing
-- Keyless pickup via igloohome — no host handoff needed
-- All vehicles have $1M insurance coverage
-- 24/7 roadside assistance included
-- Ski season: Nov-Mar (AWD + chains recommended for Tahoe routes)
-- Summer season: Jun-Aug (RVs and convertibles in high demand)
-
-Current markets: Reno NV · Sparks NV · Lake Tahoe CA/NV
-
-When you don't know something: Be direct about it. "I don't have that detail — let me connect you with the RAD team." Never make up information about vehicles, pricing, or availability.`
-
 export async function POST(req: Request) {
   const url = new URL(req.url)
   const persona = (url.searchParams.get('persona') as AIPersona) || 'RAD'
-  const systemPrompt = persona === 'R&D' ? RD_SYSTEM_PROMPT : RAD_SYSTEM_PROMPT
+  const systemPrompt = persona === 'R&D' ? RD_SYSTEM_PROMPT : RAD_PROMPT
   
   const { messages }: { messages: UIMessage[] } = await req.json()
 
@@ -171,10 +137,52 @@ export async function POST(req: Request) {
         execute: async ({ issue, priority, contactEmail }) => {
           // In production, this would create a ticket in your support system
           return {
-            message: `Support ticket created! Our team will respond within ${priority === 'high' ? '2 hours' : priority === 'medium' ? '24 hours' : '48 hours'}.`,
+            message: `Support ticket created. Our team will respond within ${priority === 'high' ? '2 hours' : priority === 'medium' ? '24 hours' : '48 hours'}.`,
             ticketId: `RD-${Date.now().toString(36).toUpperCase()}`,
             priority,
             contactEmail: contactEmail || 'Please log in to receive updates',
+          }
+        },
+      }),
+
+      consultGauge: tool({
+        description: 'Consult the Gauge agent for pricing analysis, earnings estimates, and rate optimization',
+        inputSchema: z.object({
+          vehicleType: z.string().describe('Type of vehicle (e.g., "2023 Tacoma TRD")'),
+          market: z.string().describe('Market location (e.g., "Reno", "Tahoe")'),
+          question: z.string().describe('The specific pricing question'),
+        }),
+        execute: async ({ vehicleType, market, question }) => {
+          // Gauge agent simulation - in production this calls the actual Gauge agent
+          const baseRate = vehicleType.toLowerCase().includes('tacoma') ? 125 : 
+                          vehicleType.toLowerCase().includes('jeep') ? 135 :
+                          vehicleType.toLowerCase().includes('tesla') ? 89 : 95
+          const utilization = market.toLowerCase().includes('tahoe') ? 72 : 65
+          const monthlyGross = Math.round(baseRate * 30 * (utilization / 100))
+          
+          return {
+            agent: 'Gauge',
+            analysis: `For a ${vehicleType} in the ${market} market: Estimated daily rate $${baseRate}, projected ${utilization}% utilization. Monthly gross estimate: $${monthlyGross} (before RAD's 10%).`,
+            confidence: 'high',
+          }
+        },
+      }),
+
+      consultScout: tool({
+        description: 'Consult the Scout agent for market intelligence, competitor analysis, and demand forecasting',
+        inputSchema: z.object({
+          market: z.string().describe('Market to analyze'),
+          vehicleType: z.string().nullable().describe('Specific vehicle type to check inventory'),
+        }),
+        execute: async ({ market, vehicleType }) => {
+          // Scout agent simulation
+          const inventoryLevel = vehicleType?.toLowerCase().includes('tacoma') ? 'low' : 
+                                vehicleType?.toLowerCase().includes('jeep') ? 'moderate' : 'adequate'
+          
+          return {
+            agent: 'Scout',
+            analysis: `${market} market: Current demand is ${market.toLowerCase().includes('tahoe') ? 'high' : 'moderate'}. ${vehicleType ? `${vehicleType} inventory is ${inventoryLevel} — ${inventoryLevel === 'low' ? 'favorable conditions for new listings' : 'standard competition levels'}.` : ''} Weekend demand peaks Friday-Sunday.`,
+            trend: 'stable',
           }
         },
       }),
