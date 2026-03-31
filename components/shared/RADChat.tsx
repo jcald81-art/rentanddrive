@@ -14,17 +14,20 @@ interface Message {
   ts: Date
 }
 
+interface RADContext {
+  isLoggedIn: boolean
+  page: string
+  renterProfile: { first_name?: string } | null
+  upcomingBookings: Array<{ vehicles?: { make: string; model: string } }> | null
+  mileMakersInfo: { current_streak?: number } | null
+  availableVehicles: Array<{ make: string; model: string; year: number; daily_rate: number }>
+  localEvents: Array<{ event_name: string; demand_level: string }>
+}
+
 interface RADChatProps {
   isOpen: boolean
   onClose: () => void
 }
-
-const SUGGESTIONS = [
-  "How do I book a vehicle?",
-  "How does pricing work?",
-  "How do I list my car?",
-  "How do I get paid as a host?",
-]
 
 export function RADChat({ isOpen, onClose }: RADChatProps) {
   const [messages, setMessages] = useState<Message[]>([])
@@ -33,6 +36,8 @@ export function RADChat({ isOpen, onClose }: RADChatProps) {
   const [healthy, setHealthy] = useState(true)
   const [retryCount, setRetryCount] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
+  const [context, setContext] = useState<RADContext | null>(null)
+  const [greetingSent, setGreetingSent] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const abortRef = useRef<AbortController | null>(null)
@@ -62,6 +67,48 @@ export function RADChat({ isOpen, onClose }: RADChatProps) {
     }
   }, [isOpen])
 
+  // ── FETCH CONTEXT AND AUTO-GREET when panel opens ──────────
+  useEffect(() => {
+    if (isOpen && !greetingSent) {
+      const page = window.location.pathname
+      fetch(`/api/agent/context?page=${encodeURIComponent(page)}`)
+        .then(r => r.json())
+        .then(async (ctx: RADContext) => {
+          setContext(ctx)
+
+          // Auto-send a greeting request to get personalized opener
+          setLoading(true)
+          try {
+            const res = await fetch("/api/agent", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                message: "__GREETING__",
+                agent: "RAD",
+                context: ctx,
+                conversationHistory: [],
+              }),
+            })
+            const data = await res.json()
+            if (data?.response) {
+              setMessages([{
+                id: crypto.randomUUID(),
+                role: "assistant",
+                content: data.response,
+                ts: new Date(),
+              }])
+            }
+          } catch {
+            // Silently fall back — no greeting
+          } finally {
+            setLoading(false)
+            setGreetingSent(true)
+          }
+        })
+        .catch(() => setContext(null))
+    }
+  }, [isOpen, greetingSent])
+
   // ── CLEANUP on unmount ───────────────────────────────────────
   useEffect(() => {
     return () => {
@@ -88,7 +135,7 @@ export function RADChat({ isOpen, onClose }: RADChatProps) {
           body: JSON.stringify({
             message: text,
             agent: "RAD",
-            context: "chat",
+            context: context,
             conversationHistory: history.map((m) => ({
               role: m.role === "user" ? "user" : "assistant",
               content: m.content,
@@ -308,45 +355,20 @@ export function RADChat({ isOpen, onClose }: RADChatProps) {
             WebkitOverflowScrolling: "touch",
           }}
         >
-          {/* Empty state suggestions */}
+          {/* Empty state - RAD will auto-greet */}
           {messages.length === 0 && !loading && (
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: 8,
-                paddingTop: 8,
+                alignItems: "center",
+                justifyContent: "center",
+                paddingTop: 40,
+                color: "#9ca3af",
+                fontSize: 13,
               }}
             >
-              <p
-                style={{
-                  fontSize: 12,
-                  color: "#9ca3af",
-                  textAlign: "center",
-                  marginBottom: 8,
-                }}
-              >
-                Ask me anything about RAD
-              </p>
-              {SUGGESTIONS.map((q) => (
-                <button
-                  key={q}
-                  onClick={() => send(q)}
-                  style={{
-                    textAlign: "left",
-                    padding: "9px 12px",
-                    fontSize: 13,
-                    color: "#374151",
-                    backgroundColor: "#f9fafb",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: 8,
-                    cursor: "pointer",
-                    lineHeight: 1.4,
-                  }}
-                >
-                  {q}
-                </button>
-              ))}
+              <p>Starting conversation with RAD...</p>
             </div>
           )}
 
