@@ -10,7 +10,7 @@ ALTER TABLE vehicles
   ADD COLUMN IF NOT EXISTS is_demo BOOLEAN DEFAULT FALSE;
 
 ALTER TABLE vehicles
-  ADD COLUMN IF NOT EXISTS smoking_policy TEXT CHECK (smoking_policy IN ('clean', 'friendly')) DEFAULT 'clean';
+  ADD COLUMN IF NOT EXISTS smoking_policy TEXT DEFAULT 'clean';
 
 ALTER TABLE vehicles
   ADD COLUMN IF NOT EXISTS smoking_policy_locked BOOLEAN DEFAULT FALSE;
@@ -48,30 +48,12 @@ ALTER TABLE vehicles
 ALTER TABLE vehicles
   ADD COLUMN IF NOT EXISTS range_miles INTEGER;
 
--- 2. Create booking status enum if not exists
-DO $$ BEGIN
-  CREATE TYPE booking_status_enum AS ENUM (
-    'draft', 
-    'pending_verification', 
-    'pending_payment',
-    'confirmed', 
-    'active', 
-    'completed', 
-    'closed',
-    'cancelled_renter', 
-    'cancelled_host', 
-    'disputed'
-  );
-EXCEPTION
-  WHEN duplicate_object THEN NULL;
-END $$;
-
--- 3. Create bookings table
+-- 2. Create bookings table
 CREATE TABLE IF NOT EXISTS bookings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   vehicle_id UUID REFERENCES vehicles(id) ON DELETE SET NULL,
-  host_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
-  renter_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  host_id UUID,
+  renter_id UUID,
   status TEXT DEFAULT 'draft',
   
   -- Trip dates
@@ -90,7 +72,7 @@ CREATE TABLE IF NOT EXISTS bookings (
   total_charged NUMERIC(10,2),
   
   -- Payment
-  payment_method TEXT CHECK (payment_method IN ('card', 'crypto', 'rad_pass')),
+  payment_method TEXT,
   payment_status TEXT DEFAULT 'pending',
   stripe_payment_intent_id TEXT,
   stripe_charge_id TEXT,
@@ -121,7 +103,7 @@ CREATE TABLE IF NOT EXISTS bookings (
   pickup_pin_sent BOOLEAN DEFAULT FALSE,
   pickup_pin_sent_at TIMESTAMPTZ,
   
-  -- Add-ons (JSON array of selected add-ons)
+  -- Add-ons
   addons JSONB DEFAULT '[]'::JSONB,
   
   -- Timestamps
@@ -133,63 +115,21 @@ CREATE TABLE IF NOT EXISTS bookings (
   trip_ended_at TIMESTAMPTZ
 );
 
--- 4. Create index for faster lookups
+-- 3. Create indexes
 CREATE INDEX IF NOT EXISTS idx_bookings_renter ON bookings(renter_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_host ON bookings(host_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_vehicle ON bookings(vehicle_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status);
 CREATE INDEX IF NOT EXISTS idx_bookings_dates ON bookings(start_datetime, end_datetime);
 
--- 5. Enable RLS on bookings
+-- 4. Enable RLS on bookings
 ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
 
--- 6. Create RLS policies for bookings
-DROP POLICY IF EXISTS "Renters see own bookings" ON bookings;
-CREATE POLICY "Renters see own bookings"
-  ON bookings FOR SELECT
-  USING (auth.uid() = renter_id);
-
-DROP POLICY IF EXISTS "Renters can create bookings" ON bookings;
-CREATE POLICY "Renters can create bookings"
-  ON bookings FOR INSERT
-  WITH CHECK (auth.uid() = renter_id);
-
-DROP POLICY IF EXISTS "Renters can update own bookings" ON bookings;
-CREATE POLICY "Renters can update own bookings"
-  ON bookings FOR UPDATE
-  USING (auth.uid() = renter_id);
-
-DROP POLICY IF EXISTS "Hosts see their vehicle bookings" ON bookings;
-CREATE POLICY "Hosts see their vehicle bookings"
-  ON bookings FOR SELECT
-  USING (auth.uid() = host_id);
-
--- 7. Deactivate all existing vehicles
+-- 5. Deactivate all existing vehicles
 UPDATE vehicles SET is_active = FALSE WHERE id IS NOT NULL;
 
--- 8. Insert test host profile (Joe Caldwell) if not exists
-INSERT INTO profiles (id, email, first_name, last_name, phone, role, location, is_host, host_since, created_at)
-VALUES (
-  'joe-caldwell-host'::UUID,
-  'joe@rentanddrive.net',
-  'Joe',
-  'Caldwell',
-  '+17755555555',
-  'host',
-  'Sparks, NV',
-  TRUE,
-  '2024-01-01',
-  NOW()
-)
-ON CONFLICT (id) DO UPDATE SET
-  first_name = 'Joe',
-  last_name = 'Caldwell',
-  is_host = TRUE,
-  location = 'Sparks, NV';
-
--- 9. Insert Test Vehicle 1: 2014 Audi Q5
+-- 6. Insert Test Vehicle 1: 2014 Audi Q5
 INSERT INTO vehicles (
-  id,
   host_id,
   is_demo,
   is_test,
@@ -220,15 +160,12 @@ INSERT INTO vehicles (
   advance_notice_hours,
   description,
   photos,
-  rating,
-  trip_count,
   security_deposit,
   mileage_included_per_day,
   extra_mileage_fee,
   created_at
 ) VALUES (
-  'test-q5-001'::UUID,
-  'joe-caldwell-host'::UUID,
+  NULL,
   FALSE,
   TRUE,
   'Audi',
@@ -258,22 +195,14 @@ INSERT INTO vehicles (
   2,
   'Black on black 2014 Audi Q5 with Quattro AWD and panoramic sunroof. Thule ski rack pre-installed for Tahoe season. Leather interior, heated seats, all the good stuff. CarFidelity inspection complete — this vehicle is RAD Clean.',
   ARRAY['https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&auto=format&fit=crop'],
-  NULL,
-  0,
   500.00,
   200,
   0.25,
   NOW()
-)
-ON CONFLICT (id) DO UPDATE SET
-  is_active = TRUE,
-  daily_rate = 135.00,
-  carfidelity_certified = TRUE,
-  eagle_eye_tracked = TRUE;
+);
 
--- 10. Insert Test Vehicle 2: 2022 Tesla Model Y
+-- 7. Insert Test Vehicle 2: 2022 Tesla Model Y
 INSERT INTO vehicles (
-  id,
   host_id,
   is_demo,
   is_test,
@@ -304,15 +233,12 @@ INSERT INTO vehicles (
   advance_notice_hours,
   description,
   photos,
-  rating,
-  trip_count,
   security_deposit,
   mileage_included_per_day,
   extra_mileage_fee,
   created_at
 ) VALUES (
-  'test-tesla-001'::UUID,
-  'joe-caldwell-host'::UUID,
+  NULL,
   FALSE,
   TRUE,
   'Tesla',
@@ -342,18 +268,11 @@ INSERT INTO vehicles (
   2,
   'Zero emissions, full AWD, 330 mile range. Perfect for Reno to Tahoe runs with no range anxiety. Autopilot on the highway. Supercharger network access included. RAD Clean — no exceptions.',
   ARRAY['https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&auto=format&fit=crop'],
-  NULL,
-  0,
   500.00,
   250,
   0.20,
   NOW()
-)
-ON CONFLICT (id) DO UPDATE SET
-  is_active = TRUE,
-  daily_rate = 115.00,
-  carfidelity_certified = TRUE,
-  eagle_eye_tracked = TRUE;
+);
 
 -- Done!
 SELECT 'Test vehicles created successfully' AS result;
