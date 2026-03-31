@@ -16,10 +16,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
+import { AuthModal } from '@/components/auth'
 
 export function ExpeditionNavbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [authModalOpen, setAuthModalOpen] = useState(false)
   const [user, setUser] = useState<{ email?: string; user_metadata?: { full_name?: string; role?: string } } | null>(null)
   const pathname = usePathname()
   const supabase = createClient()
@@ -201,12 +203,12 @@ export function ExpeditionNavbar() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Link
-                  href="/sign-in"
+                <button
+                  onClick={() => setAuthModalOpen(true)}
                   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
                 >
                   Sign In
-                </Link>
+                </button>
               )}
 
               {/* Mobile Menu Button */}
@@ -303,18 +305,27 @@ export function ExpeditionNavbar() {
                 Go RAD
               </Link>
               {!user && (
-                <Link
-                  href="/sign-in"
-                  onClick={() => setMobileMenuOpen(false)}
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    setAuthModalOpen(true)
+                  }}
                   className="w-full text-center text-lg font-medium text-muted-foreground border border-border px-6 py-4 rounded-full"
                 >
                   Sign In
-                </Link>
+                </button>
               )}
             </div>
           </div>
         </div>
       )}
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={authModalOpen} 
+        onClose={() => setAuthModalOpen(false)} 
+        defaultMode="signin"
+      />
     </>
   )
 }
