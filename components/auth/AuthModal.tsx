@@ -350,12 +350,24 @@ export function AuthModal({ isOpen, onClose, defaultMode = 'signin', redirectTo 
   )
 }
 
-// Standalone page wrapper that shows the modal over a nice background
+// Standalone page wrapper that shows the modal over a nice background with navbar
 export function AuthPage({ defaultMode = 'signin' }: { defaultMode?: 'signin' | 'signup' }) {
   const router = useRouter()
+  const [isOpen, setIsOpen] = useState(true)
+  
+  const handleClose = () => {
+    setIsOpen(false)
+    router.push('/')
+  }
+  
+  // Dynamically import ExpeditionNavbar to avoid circular dependency
+  const ExpeditionNavbar = require('@/components/expedition/navbar').ExpeditionNavbar
   
   return (
     <div className="min-h-screen bg-[#1C1F1A] relative">
+      {/* Navigation Bar */}
+      <ExpeditionNavbar />
+      
       {/* Background with subtle pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#1C1F1A] via-[#252923] to-[#1C1F1A]" />
       <div 
@@ -367,8 +379,8 @@ export function AuthPage({ defaultMode = 'signin' }: { defaultMode?: 'signin' | 
       
       {/* Centered Modal */}
       <AuthModal 
-        isOpen={true} 
-        onClose={() => router.push('/')} 
+        isOpen={isOpen} 
+        onClose={handleClose} 
         defaultMode={defaultMode}
       />
     </div>

@@ -132,7 +132,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
         {/* PWA Meta Tags */}
         <meta name="application-name" content="Rent and Drive" />
