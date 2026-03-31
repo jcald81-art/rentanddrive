@@ -14,8 +14,8 @@ const FOOTER_LINKS = {
     title: 'RAD Hosts',
     links: [
       { href: '/list-vehicle', label: 'Become a RAD Host' },
-      { href: '/host/dashboard', label: 'Base Camp' },
-      { href: '/hostslab/eagle-eye', label: 'Eagle Eye HQ' },
+      { href: '/host/dashboard', label: 'Command Center' },
+      { href: '/hostslab/eagle-eye', label: 'Fleet Tracker' },
       { href: '/carfidelity', label: 'CarFidelity' },
     ],
   },

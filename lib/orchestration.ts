@@ -21,52 +21,52 @@ export const ORCHESTRATION_RULES: OrchestrationRule[] = [
   {
     keywords: ['earn', 'income', 'rate', 'price', 'pricing', 'revenue', 'how much', 'daily rate'],
     agents: ['pricing'],
-    rad_handoff: "Let me have Gauge run those numbers for you."
+    rad_handoff: "Let me have RAD Pricing run those numbers for you."
   },
   {
     keywords: ['market', 'competitor', 'demand', 'popular', 'busy', 'season', 'turo'],
     agents: ['market_intelligence'],
-    rad_handoff: "Scout is scanning the current market — one moment."
+    rad_handoff: "RAD Intel is scanning the current market — one moment."
   },
   {
     keywords: ['health', 'maintenance', 'oil', 'engine', 'check engine', 'miles', 'service', 'repair'],
     agents: ['fleet_health'],
-    rad_handoff: "Pulling the Vitals report on that vehicle now."
+    rad_handoff: "Pulling the RAD Fleet report on that vehicle now."
   },
   {
     keywords: ['review', 'rating', 'star', 'feedback', 'reputation', 'response'],
     agents: ['reviews'],
-    rad_handoff: "Guard handles reputation — analyzing the situation."
+    rad_handoff: "RAD Reputation handles this — analyzing the situation."
   },
   {
     keywords: ['license', 'verify', 'identity', 'approved', 'verification', 'rejected'],
     agents: ['driver_verification'],
-    rad_handoff: "Routing to Badge — our verification specialist."
+    rad_handoff: "Routing to RAD Verify — our verification specialist."
   },
   {
     keywords: ['suspicious', 'fraud', 'stolen', 'security', 'payment declined', 'flagged'],
     agents: ['fraud_detection'],
-    rad_handoff: "I'm flagging this for Lookout — our security agent."
+    rad_handoff: "I'm flagging this for RAD Secure — our security agent."
   },
   {
     keywords: ['gear', 'chains', 'rack', 'add-on', 'equip', 'what do I need', 'bring'],
     agents: ['upsell_recommendation'],
-    rad_handoff: "Outfitter knows exactly what that trip needs."
+    rad_handoff: "RAD Upsell knows exactly what that trip needs."
   },
   {
     keywords: ['damage', 'scratch', 'dent', 'photo', 'inspection', 'condition'],
     agents: ['damage_assessment'],
-    rad_handoff: "Pulling the CarFidelity inspection report."
+    rad_handoff: "Pulling the RAD CarFidelity inspection report."
   },
   {
     keywords: ['points', 'rewards', 'tier', 'milestone', 'referral', 'mile markers'],
     agents: ['engagement'],
-    rad_handoff: "Checking your Mile Markers status with Boost."
+    rad_handoff: "Checking your Mile Markers status with RAD Rewards."
   },
   {
     keywords: ['message', 'text', 'email', 'contact host', 'write', 'dispute', 'communicate'],
     agents: ['communications'],
-    rad_handoff: "Let me have Beacon draft that for you."
+    rad_handoff: "Let me have RAD Comms draft that for you."
   },
   // Complex multi-agent scenarios
   {
@@ -216,19 +216,19 @@ export async function orchestrateAgents(
 
 export function getAgentDisplayName(task: AgentTaskType): string {
   const displayNames: Record<AgentTaskType, string> = {
-    communications: 'Beacon',
-    pricing: 'Gauge',
-    reviews: 'Guard',
-    market_intelligence: 'Scout',
-    fleet_health: 'Vitals',
+    communications: 'RAD Comms',
+    pricing: 'RAD Pricing',
+    reviews: 'RAD Reputation',
+    market_intelligence: 'RAD Intel',
+    fleet_health: 'RAD Fleet',
     realtime_conditions: 'Grok',
     document_analysis: 'Gemini',
     bulk_processing: 'DeepSeek',
-    driver_verification: 'Badge',
-    damage_assessment: 'CarFidelity',
-    fraud_detection: 'Lookout',
-    upsell_recommendation: 'Outfitter',
-    engagement: 'Boost',
+    driver_verification: 'RAD Verify',
+    damage_assessment: 'RAD CarFidelity',
+    fraud_detection: 'RAD Secure',
+    upsell_recommendation: 'RAD Upsell',
+    engagement: 'RAD Rewards',
     concierge: 'RAD',
   }
   return displayNames[task] || task

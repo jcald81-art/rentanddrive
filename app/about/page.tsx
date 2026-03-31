@@ -88,7 +88,7 @@ export default function AboutPage() {
               <Card className="border-green-500/30">
                 <CardContent className="pt-6">
                   <Shield className="h-10 w-10 text-green-500 mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Cartegrity Inspections</h3>
+                  <h3 className="text-xl font-semibold mb-2">RAD CarFidelity Inspections</h3>
                   <p className="text-sm text-muted-foreground">
                     AI-powered photo inspections document vehicle condition before and after 
                     every trip. No more he-said-she-said disputes about damage.
@@ -99,10 +99,10 @@ export default function AboutPage() {
               <Card className="border-purple-500/30">
                 <CardContent className="pt-6">
                   <Bot className="h-10 w-10 text-purple-500 mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">R&D Agent System</h3>
+                  <h3 className="text-xl font-semibold mb-2">RAD Agent System</h3>
                   <p className="text-sm text-muted-foreground">
-                    Six AI agents work 24/7: SecureLink for communications, Dollar for pricing, 
-                    Shield for reputation, and more. Intelligence that actually helps.
+                    Ten AI agents work 24/7: RAD Comms for communications, RAD Pricing for rates, 
+                    RAD Reputation for trust, and more. Intelligence that actually helps.
                   </p>
                 </CardContent>
               </Card>
@@ -159,7 +159,7 @@ export default function AboutPage() {
                 <div>
                   <h3 className="text-xl font-semibold">Community Driven</h3>
                   <p className="text-muted-foreground">
-                    HostsLab and Renter&apos;s Road create engaged communities. We gamify the 
+                    RAD Hosts and RAD Renters create engaged communities. We gamify the 
                     experience because rentals should be rewarding for everyone.
                   </p>
                 </div>

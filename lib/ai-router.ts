@@ -1,5 +1,5 @@
 /**
- * Rent and Drive - Expedition Agent System AI Router
+ * Rent and Drive - RAD Agent System AI Router
  * Full router with 13 agent task types, primary/fallback routing,
  * cross-validation, and usage logging.
  */
@@ -42,13 +42,13 @@ export interface RouteConfig {
 }
 
 // ============================================
-// EXPEDITION AGENT ROUTES
+// RAD AGENT ROUTES
 // ============================================
 
 export const AGENT_ROUTES: Record<AgentTaskType, RouteConfig> = {
   communications: {
-    agent_name: 'Beacon',
-    former_name: 'SecureLink',
+    agent_name: 'RAD Comms',
+    former_name: 'Beacon',
     primary: 'anthropic/claude-sonnet-4-20250514',
     fallback: 'groq/llama-4-scout',
     streaming: true,
@@ -58,8 +58,8 @@ export const AGENT_ROUTES: Record<AgentTaskType, RouteConfig> = {
     tagline: 'Trail Communications',
   },
   pricing: {
-    agent_name: 'Gauge',
-    former_name: 'Dollar',
+    agent_name: 'RAD Pricing',
+    former_name: 'Gauge',
     primary: 'anthropic/claude-sonnet-4-20250514',
     fallback: 'openai/gpt-4o',
     cross_validation: 'openai/gpt-4o',
@@ -70,8 +70,8 @@ export const AGENT_ROUTES: Record<AgentTaskType, RouteConfig> = {
     tagline: 'Revenue Optimization',
   },
   reviews: {
-    agent_name: 'Guard',
-    former_name: 'Shield',
+    agent_name: 'RAD Reputation',
+    former_name: 'Guard',
     primary: 'anthropic/claude-sonnet-4-20250514',
     fallback: 'google/gemini-2.5-flash',
     streaming: false,
@@ -81,8 +81,8 @@ export const AGENT_ROUTES: Record<AgentTaskType, RouteConfig> = {
     tagline: 'Reputation Protection',
   },
   market_intelligence: {
-    agent_name: 'Scout',
-    former_name: 'Command&Control',
+    agent_name: 'RAD Intel',
+    former_name: 'Scout',
     primary: 'perplexity/sonar-pro',
     fallback: 'anthropic/claude-sonnet-4-20250514',
     streaming: true,
@@ -92,8 +92,8 @@ export const AGENT_ROUTES: Record<AgentTaskType, RouteConfig> = {
     tagline: 'Market Recon',
   },
   fleet_health: {
-    agent_name: 'Vitals',
-    former_name: 'Pulse',
+    agent_name: 'RAD Fleet',
+    former_name: 'Vitals',
     primary: 'nvidia/nemotron-70b',
     fallback: 'anthropic/claude-sonnet-4-20250514',
     streaming: false,
@@ -136,8 +136,8 @@ export const AGENT_ROUTES: Record<AgentTaskType, RouteConfig> = {
     tagline: 'Batch Processing',
   },
   driver_verification: {
-    agent_name: 'Badge',
-    former_name: 'Diesel',
+    agent_name: 'RAD Verify',
+    former_name: 'Badge',
     primary: 'openai/gpt-4o',
     fallback: 'google/gemini-2.5-pro',
     cross_validation: 'anthropic/claude-sonnet-4-20250514',
@@ -148,8 +148,8 @@ export const AGENT_ROUTES: Record<AgentTaskType, RouteConfig> = {
     tagline: 'Driver Verification',
   },
   damage_assessment: {
-    agent_name: 'Surveyor',
-    former_name: 'Inspector Cartegrity',
+    agent_name: 'RAD CarFidelity',
+    former_name: 'Surveyor',
     primary: 'google/gemini-2.5-pro',
     fallback: 'openai/gpt-4o',
     streaming: false,
@@ -159,8 +159,8 @@ export const AGENT_ROUTES: Record<AgentTaskType, RouteConfig> = {
     tagline: 'Damage Assessment',
   },
   fraud_detection: {
-    agent_name: 'Lookout',
-    former_name: 'NEW',
+    agent_name: 'RAD Secure',
+    former_name: 'Lookout',
     primary: 'anthropic/claude-sonnet-4-20250514',
     fallback: 'openai/gpt-4o',
     cross_validation: 'openai/gpt-4o',
@@ -172,8 +172,8 @@ export const AGENT_ROUTES: Record<AgentTaskType, RouteConfig> = {
     tagline: 'Fraud Detection',
   },
   upsell_recommendation: {
-    agent_name: 'Outfitter',
-    former_name: 'NEW',
+    agent_name: 'RAD Upsell',
+    former_name: 'Outfitter',
     primary: 'anthropic/claude-sonnet-4-20250514',
     fallback: 'anthropic/claude-haiku-4-5-20251001',
     streaming: true,
@@ -183,8 +183,8 @@ export const AGENT_ROUTES: Record<AgentTaskType, RouteConfig> = {
     tagline: 'Trip Outfitting',
   },
   engagement: {
-    agent_name: 'Boost',
-    former_name: 'Funtime',
+    agent_name: 'RAD Rewards',
+    former_name: 'Boost',
     primary: 'anthropic/claude-sonnet-4-20250514',
     fallback: 'groq/llama-4-scout',
     streaming: true,
@@ -572,20 +572,20 @@ export function getAgentByName(name: string): RouteConfig | undefined {
 export function getAgentLoadingMessage(task: AgentTaskType): string {
   const agent = AGENT_ROUTES[task]
   const messages: Record<string, string> = {
-    Beacon: 'Beacon is transmitting...',
-    Gauge: 'Gauge is reading the market...',
-    Guard: 'Guard is analyzing reputation...',
-    Scout: 'Scout is running recon...',
-    Vitals: 'Vitals is checking fleet health...',
-    Grok: 'Grok is scanning conditions...',
-    Gemini: 'Gemini is analyzing documents...',
-    DeepSeek: 'DeepSeek is processing batch...',
-    Badge: 'Badge is verifying credentials...',
-    Surveyor: 'Surveyor is assessing damage...',
-    Lookout: 'Lookout is scanning for threats...',
-    Outfitter: 'Outfitter is preparing gear...',
-    Boost: 'Boost is charging up...',
-    RAD: 'RAD is plotting your course...',
+    'RAD Comms': 'RAD Comms is transmitting...',
+    'RAD Pricing': 'RAD Pricing is reading the market...',
+    'RAD Reputation': 'RAD Reputation is analyzing reviews...',
+    'RAD Intel': 'RAD Intel is running recon...',
+    'RAD Fleet': 'RAD Fleet is checking fleet health...',
+    'Grok': 'Grok is scanning conditions...',
+    'Gemini': 'Gemini is analyzing documents...',
+    'DeepSeek': 'DeepSeek is processing batch...',
+    'RAD Verify': 'RAD Verify is verifying credentials...',
+    'RAD CarFidelity': 'RAD CarFidelity is assessing damage...',
+    'RAD Secure': 'RAD Secure is scanning for threats...',
+    'RAD Upsell': 'RAD Upsell is preparing gear...',
+    'RAD Rewards': 'RAD Rewards is charging up...',
+    'RAD': 'RAD is plotting your course...',
   }
   return messages[agent.agent_name] || `${agent.agent_name} is working...`
 }
@@ -593,7 +593,6 @@ export function getAgentLoadingMessage(task: AgentTaskType): string {
 // ============================================================================
 // BACKWARD COMPATIBILITY EXPORTS  
 // These aliases maintain compatibility with existing agent files
-// Updated: 2026-03-30 - Ensuring exports are available for all agent files
 // ============================================================================
 
 /**
@@ -624,24 +623,24 @@ export async function checkAllModelHealth(): Promise<{
   // Check each unique model across all agent routes
   const checkedModels = new Set<string>()
   
-  for (const [task, config] of Object.entries(AGENT_ROUTES)) {
+  for (const config of Object.values(AGENT_ROUTES)) {
     // Check primary model
-    if (!checkedModels.has(config.primary_model)) {
-      checkedModels.add(config.primary_model)
+    if (!checkedModels.has(config.primary)) {
+      checkedModels.add(config.primary)
       const start = Date.now()
       try {
         // Simple health check - just verify the model string is valid
-        const provider = config.primary_model.split('/')[0] || 'anthropic'
+        const provider = config.primary.split('/')[0] || 'anthropic'
         results.push({
           provider,
-          model: config.primary_model,
+          model: config.primary,
           status: 'healthy',
           latency_ms: Date.now() - start,
         })
       } catch (error) {
         results.push({
-          provider: config.primary_model.split('/')[0] || 'unknown',
-          model: config.primary_model,
+          provider: config.primary.split('/')[0] || 'unknown',
+          model: config.primary,
           status: 'down',
           error: error instanceof Error ? error.message : 'Unknown error',
         })
@@ -649,21 +648,21 @@ export async function checkAllModelHealth(): Promise<{
     }
 
     // Check fallback model if exists
-    if (config.fallback_model && !checkedModels.has(config.fallback_model)) {
-      checkedModels.add(config.fallback_model)
+    if (config.fallback && !checkedModels.has(config.fallback)) {
+      checkedModels.add(config.fallback)
       const start = Date.now()
       try {
-        const provider = config.fallback_model.split('/')[0] || 'anthropic'
+        const provider = config.fallback.split('/')[0] || 'anthropic'
         results.push({
           provider,
-          model: config.fallback_model,
+          model: config.fallback,
           status: 'healthy',
           latency_ms: Date.now() - start,
         })
       } catch (error) {
         results.push({
-          provider: config.fallback_model.split('/')[0] || 'unknown',
-          model: config.fallback_model,
+          provider: config.fallback.split('/')[0] || 'unknown',
+          model: config.fallback,
           status: 'down',
           error: error instanceof Error ? error.message : 'Unknown error',
         })

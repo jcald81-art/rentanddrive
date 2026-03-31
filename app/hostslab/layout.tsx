@@ -35,7 +35,7 @@ import { PortalSwitcher } from '@/components/portal-switcher'
 const NAV_ITEMS = [
   { href: '/hostslab/lobby', label: 'The Lobby', icon: Home },
   { href: '/hostslab/workshop', label: 'The Garage', icon: Wrench },
-  { href: '/hostslab/eagle-command', label: 'Eagle Eye HQ', icon: Radar },
+  { href: '/hostslab/eagle-command', label: 'FleetCommandCenter', icon: Radar },
   { href: '/hostslab/rd-navigator', label: 'RAD Intel', icon: Compass },
   { href: '/hostslab/briefing-room', label: 'The Briefing Room', icon: FileText },
   { href: '/hostslab/vault', label: 'The Vault', icon: Vault },
@@ -100,7 +100,7 @@ function Sidebar({
         {!collapsed && (
           <div>
             <h1 className="font-bold text-lg">RAD Hosts</h1>
-            <p className="text-xs text-slate-400">Base Camp</p>
+            <p className="text-xs text-slate-400">Command Center</p>
           </div>
         )}
       </div>
@@ -263,7 +263,7 @@ function MobileNav({ host, alertCount }: { host: HostData | null; alertCount: nu
           </div>
           <div>
             <h1 className="font-bold text-lg">RAD Hosts</h1>
-            <p className="text-xs text-slate-400">Base Camp</p>
+            <p className="text-xs text-slate-400">Command Center</p>
           </div>
         </div>
 
