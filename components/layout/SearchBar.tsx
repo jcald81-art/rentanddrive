@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { MapPin, Calendar, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -14,22 +13,17 @@ import {
 
 const LOCATIONS = [
   { value: 'reno', label: 'Reno, NV' },
-  { value: 'tahoe', label: 'Lake Tahoe' },
-  { value: 'moab', label: 'Moab, UT' },
-  { value: 'bozeman', label: 'Bozeman, MT' },
+  { value: 'sparks', label: 'Sparks, NV' },
+  { value: 'tahoe', label: 'Lake Tahoe, NV' },
 ]
 
 export function SearchBar() {
-  const router = useRouter()
-  const [mounted, setMounted] = useState(false)
   const [location, setLocation] = useState('reno')
   const [pickupDate, setPickupDate] = useState('')
   const [returnDate, setReturnDate] = useState('')
 
-  // Set mounted flag and default dates on mount
+  // Set default dates on mount
   useEffect(() => {
-    setMounted(true)
-    
     const today = new Date()
     const pickup = new Date(today)
     pickup.setDate(pickup.getDate() + 1)
@@ -41,13 +35,13 @@ export function SearchBar() {
   }, [])
 
   const handleSearch = () => {
-    if (!mounted) return
     const params = new URLSearchParams({
       location,
       start: pickupDate,
       end: returnDate,
     })
-    router.push(`/vehicles?${params.toString()}`)
+    // Use window.location for navigation to avoid router initialization issues
+    window.location.href = `/vehicles?${params.toString()}`
   }
 
   return (
