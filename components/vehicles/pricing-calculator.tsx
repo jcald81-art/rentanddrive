@@ -57,11 +57,12 @@ export function PricingCalculator({ vehicleId, dailyRate, instantBook }: Pricing
     if (!dateRange?.from || !dateRange?.to) return
 
     const params = new URLSearchParams({
-      start_date: format(dateRange.from, 'yyyy-MM-dd'),
-      end_date: format(dateRange.to, 'yyyy-MM-dd'),
+      vehicle_id: vehicleId,
+      start: dateRange.from.toISOString(),
+      end: dateRange.to.toISOString(),
     })
 
-    router.push(`/book/${vehicleId}?${params.toString()}`)
+    router.push(`/booking/details?${params.toString()}`)
   }
 
   return (

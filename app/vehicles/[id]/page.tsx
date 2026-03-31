@@ -133,11 +133,16 @@ export default async function VehicleDetailPage({ params }: PageProps) {
     ],
   }
 
+  // Build features list - only include features the vehicle has
   const features = [
-    { label: 'Seats', value: `${vehicle.seats} passengers`, available: true },
+    { label: 'Seats', value: `${vehicle.seats} passengers`, available: !!vehicle.seats },
     { label: 'AWD / 4WD', value: 'All-wheel drive', available: vehicle.is_awd },
-    { label: 'Ski Rack', value: 'Roof-mounted', available: vehicle.has_ski_rack },
+    { label: 'Ski Rack', value: 'Thule roof-mounted', available: vehicle.has_ski_rack },
     { label: 'Tow Hitch', value: 'Towing capable', available: vehicle.has_tow_hitch },
+    { label: 'Panoramic sunroof', value: 'Glass roof', available: vehicle.features?.includes('Panoramic Sunroof') },
+    { label: 'Heated seats', value: 'Front heated', available: vehicle.features?.includes('Heated Seats') },
+    { label: 'Bluetooth', value: 'Audio streaming', available: vehicle.features?.includes('Bluetooth') },
+    { label: 'Backup camera', value: 'Rear view', available: vehicle.features?.includes('Backup Camera') },
   ]
 
   return (
