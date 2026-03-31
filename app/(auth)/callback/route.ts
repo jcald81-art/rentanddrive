@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { sendWelcomeEmail } from '@/lib/email'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -33,11 +34,28 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${origin}/auth/error?message=${encodeURIComponent('No user data returned')}`)
     }
 
+    // Check if this is a new user (first sign in)
+    const isNewUser = data.user.created_at === data.user.last_sign_in_at ||
+                      new Date(data.user.created_at).getTime() > Date.now() - 60000 // Within last minute
+
     // Update user metadata with role if provided via OAuth
+    const userRole = data.user.user_metadata?.role || role
     if (role && !data.user.user_metadata?.role) {
       await supabase.auth.updateUser({
         data: { role }
       })
+    }
+
+    // Send welcome email for new users (non-blocking)
+    if (isNewUser && data.user.email) {
+      const firstName = data.user.user_metadata?.full_name?.split(' ')[0] ||
+                       data.user.user_metadata?.name?.split(' ')[0]
+      
+      sendWelcomeEmail({
+        to: data.user.email,
+        firstName,
+        role: userRole as 'host' | 'renter'
+      }).catch(err => console.error('[v0] Welcome email failed:', err))
     }
 
     // If there's a specific next URL, use that
@@ -46,7 +64,6 @@ export async function GET(request: Request) {
     }
 
     // Determine redirect based on role - direct to appropriate suite
-    const userRole = data.user.user_metadata?.role || role
     const redirectPath = userRole === 'host' ? '/host/dashboard' : '/renter/suite'
     
     return NextResponse.redirect(`${origin}${redirectPath}`)
