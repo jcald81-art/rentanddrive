@@ -11,22 +11,46 @@ const SLOGANS = [
   { main: "Your last rental was fine.", highlight: "Your next one? RAD." },
   { main: "You deserve", highlight: "a RAD rental." },
   { main: "One RAD rental", highlight: "and you'll never go back." },
+  { main: "The road is calling.", highlight: "RAD gets you there." },
+  { main: "Your keys. Your rules.", highlight: "Your adventure." },
+  { main: "Every trip starts with trust.", highlight: "RAD delivers both." },
+  { main: "The best rentals don't come from a lot —", highlight: "they come from people." },
+  { main: "Reno to Tahoe. Your terms.", highlight: "Go RAD." },
+  { main: "Transparent pricing. Real vehicles.", highlight: "Real hosts. That's RAD." },
+  { main: "We take 10%. You keep the rest.", highlight: "That's the RAD difference." },
+  { main: "Fleet-grade GPS. Keyless access.", highlight: "Zero hassle. RAD." },
+  { main: "Not a rental car company.", highlight: "Better." },
+  { main: "Your co-pilot from booking to return.", highlight: "Ask RAD anything." },
+  { main: "The Sierras are waiting.", highlight: "Start your trip on rentanddrive.net." },
+  { main: "Hosts who care. Vehicles that are verified.", highlight: "Adventures worth taking." },
 ]
 
+// Random interval between 40-60 seconds
+const getRandomInterval = () => Math.floor(Math.random() * (60000 - 40000 + 1)) + 40000
+
 export function ExpeditionHero() {
-  const [sloganIndex, setSloganIndex] = useState(0)
+  // Start on a random quote
+  const [sloganIndex, setSloganIndex] = useState(() => Math.floor(Math.random() * SLOGANS.length))
   const [isAnimating, setIsAnimating] = useState(false)
 
-  // Rotate slogans every 4 seconds
+  // Rotate slogans with random timing (40-60 seconds per quote)
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIsAnimating(true)
-      setTimeout(() => {
-        setSloganIndex((prev) => (prev + 1) % SLOGANS.length)
-        setIsAnimating(false)
-      }, 300)
-    }, 4000)
-    return () => clearInterval(interval)
+    let timeoutId: NodeJS.Timeout
+
+    const scheduleNextSlogan = () => {
+      const interval = getRandomInterval()
+      timeoutId = setTimeout(() => {
+        setIsAnimating(true)
+        setTimeout(() => {
+          setSloganIndex((prev) => (prev + 1) % SLOGANS.length)
+          setIsAnimating(false)
+          scheduleNextSlogan() // Schedule the next rotation
+        }, 300)
+      }, interval)
+    }
+
+    scheduleNextSlogan()
+    return () => clearTimeout(timeoutId)
   }, [])
 
   return (

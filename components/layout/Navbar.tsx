@@ -3,11 +3,12 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { Menu, X, User, LogOut, Car, Home as HomeIcon } from 'lucide-react'
+import { Menu, X, User, LogOut, Car, Home as HomeIcon, MessageCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { ThemeSwitcher } from '@/components/theme-switcher'
 import { AuthModal } from '@/components/auth'
+import { RADChatDrawer } from '@/components/layout/RADChatDrawer'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +22,7 @@ export function Navbar() {
   const [user, setUser] = useState<{ email?: string; user_metadata?: { avatar_url?: string; full_name?: string } } | null>(null)
   const [authModalOpen, setAuthModalOpen] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
+  const [radChatOpen, setRadChatOpen] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
@@ -45,18 +47,29 @@ export function Navbar() {
     <>
       <header className="h-16 bg-[#0a0f1e] border-b border-white/10 sticky top-0 z-50">
         <div className="h-full max-w-[1400px] mx-auto px-4 md:px-6 flex items-center justify-between">
-          {/* LEFT: Logo */}
-          <Link href="/" className="flex-shrink-0">
-            <Image 
-              src="/images/rad-brand-logo.png" 
-              alt="Rent and Drive" 
-              width={120}
-              height={40}
-              className="h-8"
-              style={{ width: 'auto', height: '32px' }}
-              priority
-            />
-          </Link>
+          {/* LEFT: Logo + Ask RAD */}
+          <div className="flex items-center gap-4">
+            <Link href="/" className="flex-shrink-0">
+              <Image 
+                src="/images/rad-brand-logo.png" 
+                alt="Rent and Drive" 
+                width={120}
+                height={40}
+                className="h-8"
+                style={{ width: 'auto', height: '32px' }}
+                priority
+              />
+            </Link>
+            
+            {/* Ask RAD Button */}
+            <Button
+              onClick={() => setRadChatOpen(true)}
+              className="hidden sm:flex bg-[#CC0000] hover:bg-[#AA0000] text-white font-medium px-4 py-2 rounded-md h-9 gap-2"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Ask RAD
+            </Button>
+          </div>
 
           {/* CENTER: Navigation Links (hidden on mobile) */}
           <nav className="hidden md:flex items-center gap-8">
@@ -167,6 +180,18 @@ export function Navbar() {
         {mobileMenuOpen && (
           <div className="md:hidden absolute top-16 left-0 right-0 bg-[#0a0f1e] border-b border-white/10 py-4 px-4 shadow-xl">
             <nav className="flex flex-col gap-4">
+              {/* Ask RAD Button - Mobile */}
+              <Button
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  setRadChatOpen(true)
+                }}
+                className="w-full bg-[#CC0000] hover:bg-[#AA0000] text-white font-medium py-2 rounded-md gap-2"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Ask RAD
+              </Button>
+              
               <Link 
                 href="/vehicles" 
                 className="text-sm text-gray-300 hover:text-white py-2"
@@ -263,6 +288,12 @@ export function Navbar() {
         isOpen={authModalOpen} 
         onClose={() => setAuthModalOpen(false)} 
         defaultMode={authMode}
+      />
+
+      {/* RAD Chat Drawer */}
+      <RADChatDrawer 
+        isOpen={radChatOpen} 
+        onClose={() => setRadChatOpen(false)} 
       />
     </>
   )
