@@ -178,9 +178,11 @@ export default function RootLayout({
           storageKey="rad-theme"
         >
           <Navbar />
-          <ErrorBoundary>
-            {children}
-          </ErrorBoundary>
+          <main className="pt-16">
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
+          </main>
           <Concierge />
           <ProactiveAgent />
           <CookieConsent />

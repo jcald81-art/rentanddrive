@@ -45,7 +45,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="h-16 bg-[#0a0f1e] border-b border-white/10 sticky top-0 z-50">
+      <header className="h-16 bg-[#0a0f1e] border-b border-white/10 fixed top-0 left-0 right-0 z-50">
         <div className="h-full max-w-[1400px] mx-auto px-4 md:px-6 flex items-center justify-between">
           {/* LEFT: Logo + Ask RAD */}
           <div className="flex items-center gap-4">

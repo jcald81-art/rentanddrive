@@ -9,6 +9,9 @@
    ============================================================================ */
 
 :root {
+  /* Layout */
+  --navbar-height: 64px;
+
   /* Backgrounds */
   --bg-primary: #F5F2EC;           /* warm off-white — parchment */
   --bg-secondary: #ECEAE3;         /* slightly darker warm surface */

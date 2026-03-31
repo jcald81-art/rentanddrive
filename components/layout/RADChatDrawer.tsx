@@ -92,14 +92,14 @@ export function RADChatDrawer({ isOpen, onClose }: RADChatDrawerProps) {
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop - starts below navbar */}
       <div 
-        className="fixed inset-0 bg-black/40 z-50 transition-opacity"
+        className="fixed inset-0 top-16 bg-black/40 z-40 transition-opacity"
         onClick={onClose}
       />
 
-      {/* Drawer */}
-      <div className="fixed right-0 top-0 h-full w-full sm:w-[420px] bg-background border-l border-border z-50 flex flex-col shadow-2xl animate-in slide-in-from-right duration-300">
+      {/* Drawer - positioned below navbar with z-index below navbar */}
+      <div className="fixed right-0 top-16 h-[calc(100vh-4rem)] w-full sm:w-[420px] bg-background border-l border-border z-40 flex flex-col shadow-2xl animate-in slide-in-from-right duration-300">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-[#0a0f1e]">
           <div className="flex items-center gap-3">

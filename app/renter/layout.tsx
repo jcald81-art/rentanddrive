@@ -60,8 +60,8 @@ export default function RenterLayout({ children }: { children: React.ReactNode }
 
   return (
     <div className="min-h-screen bg-black text-white pb-20 md:pb-0">
-      {/* Desktop Top Navigation */}
-      <header className="hidden md:flex fixed top-0 left-0 right-0 z-50 h-16 bg-black/95 backdrop-blur border-b border-slate-800 items-center px-6">
+      {/* Desktop Top Navigation - positioned below global navbar */}
+      <header className="hidden md:flex fixed top-16 left-0 right-0 z-40 h-16 bg-black/95 backdrop-blur border-b border-slate-800 items-center px-6">
         {/* Logo */}
         <Link href="/renter/suite" className="flex items-center gap-2 mr-8">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#C4813A]">
@@ -167,7 +167,7 @@ export default function RenterLayout({ children }: { children: React.ReactNode }
       </header>
 
       {/* Mobile Top Bar */}
-      <header className="md:hidden fixed top-0 left-0 right-0 z-50 h-14 bg-black/95 backdrop-blur border-b border-slate-800 flex items-center justify-between px-4">
+        <header className="md:hidden fixed top-16 left-0 right-0 z-40 h-14 bg-black/95 backdrop-blur border-b border-slate-800 flex items-center justify-between px-4">
         {/* Logo */}
         <Link href="/renter/suite" className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#CC0000]">
@@ -224,7 +224,7 @@ export default function RenterLayout({ children }: { children: React.ReactNode }
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Main Content - offset for renter navbar (root layout already offsets for global navbar) */}
       <main className="pt-14 md:pt-16">
         {children}
       </main>

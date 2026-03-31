@@ -29,17 +29,12 @@ const SLOGANS = [
 const getRandomInterval = () => Math.floor(Math.random() * (60000 - 40000 + 1)) + 40000
 
 export function ExpeditionHero() {
-  // Start with index 0 for hydration consistency, randomize on client mount
+  // Start with index 0 for hydration consistency
   const [sloganIndex, setSloganIndex] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
-  const [mounted, setMounted] = useState(false)
 
-  // On mount, pick a random starting index and start rotation
+  // Start slogan rotation after hydration - no immediate random jump
   useEffect(() => {
-    // Set random initial index on client only
-    setSloganIndex(Math.floor(Math.random() * SLOGANS.length))
-    setMounted(true)
-    
     let timeoutId: NodeJS.Timeout
 
     const scheduleNextSlogan = () => {
@@ -47,9 +42,17 @@ export function ExpeditionHero() {
       timeoutId = setTimeout(() => {
         setIsAnimating(true)
         setTimeout(() => {
-          setSloganIndex((prev) => (prev + 1) % SLOGANS.length)
+          // Pick a random next slogan (not sequential) for variety
+          setSloganIndex((prev) => {
+            let next = Math.floor(Math.random() * SLOGANS.length)
+            // Avoid showing same slogan twice
+            while (next === prev && SLOGANS.length > 1) {
+              next = Math.floor(Math.random() * SLOGANS.length)
+            }
+            return next
+          })
           setIsAnimating(false)
-          scheduleNextSlogan() // Schedule the next rotation
+          scheduleNextSlogan()
         }, 300)
       }, interval)
     }
