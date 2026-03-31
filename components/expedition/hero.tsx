@@ -59,6 +59,7 @@ export function ExpeditionHero() {
           src="/images/hero-audi-q5.png"
           alt="2014 Audi Q5 - Premium adventure SUV"
           fill
+          sizes="(max-width: 1024px) 100vw, 60vw"
           className="object-contain object-right-bottom"
           priority
         />

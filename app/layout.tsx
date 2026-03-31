@@ -7,6 +7,7 @@ import { Concierge } from '@/components/concierge'
 import { ProactiveAgent } from '@/components/agents'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { CookieConsent } from '@/components/cookie-consent'
+import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
 
 const dmSans = DM_Sans({ 
@@ -167,31 +168,39 @@ export default function RootLayout({
         )}
       </head>
       <body className={`${dmSans.variable} ${instrumentSerif.variable} ${geistMono.variable} font-sans antialiased`} suppressHydrationWarning>
-        <ErrorBoundary>
-          {children}
-        </ErrorBoundary>
-<Concierge />
-<ProactiveAgent />
-<CookieConsent />
-<Analytics />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          themes={['light', 'dark', 'rad']}
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
+          <Concierge />
+          <ProactiveAgent />
+          <CookieConsent />
+          <Analytics />
         
-        {/* Service Worker Registration */}
-        <Script id="sw-register" strategy="afterInteractive">
-          {`
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js').then(
-                  function(registration) {
-                    console.log('SW registered: ', registration.scope);
-                  },
-                  function(err) {
-                    console.log('SW registration failed: ', err);
-                  }
-                );
-              });
-            }
-          `}
-        </Script>
+          {/* Service Worker Registration */}
+          <Script id="sw-register" strategy="afterInteractive">
+            {`
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js').then(
+                    function(registration) {
+                      console.log('SW registered: ', registration.scope);
+                    },
+                    function(err) {
+                      console.log('SW registration failed: ', err);
+                    }
+                  );
+                });
+              }
+            `}
+          </Script>
+        </ThemeProvider>
       </body>
     </html>
   )

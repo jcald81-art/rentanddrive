@@ -6,6 +6,7 @@ import { Menu, X, User, LogOut, Car, Home as HomeIcon, ChevronDown } from 'lucid
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
+import { ThemeSwitcher } from '@/components/theme-switcher'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -75,9 +76,10 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
           </Link>
         </nav>
 
-        {/* Auth Buttons */}
+        {/* Theme Switcher & Auth Buttons */}
         {showAuth && (
           <div className="hidden md:flex items-center gap-3">
+            <ThemeSwitcher variant="default" className={mutedClass} />
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -179,6 +181,11 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
       {mobileMenuOpen && (
         <div className={`md:hidden ${bgClass} border-t ${isDark ? 'border-[#222]' : 'border-border'} py-4`}>
           <nav className="container mx-auto px-4 flex flex-col gap-4">
+            {/* Theme Switcher */}
+            <div className="flex items-center justify-between py-2 border-b border-border mb-2">
+              <span className={`text-sm ${mutedClass}`}>Theme</span>
+              <ThemeSwitcher variant="default" />
+            </div>
             <Link href="/" className={`text-sm ${mutedClass}`} onClick={() => setMobileMenuOpen(false)}>
               Home
             </Link>

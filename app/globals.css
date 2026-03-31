@@ -103,6 +103,43 @@
   --sidebar-ring: #C4813A;
 }
 
+/* RAD Mode - High energy adventure theme with vibrant amber/orange tones */
+.rad {
+  --background: #0A0A0A;
+  --foreground: #FFFFFF;
+  --card: #141414;
+  --card-foreground: #FFFFFF;
+  --popover: #1A1A1A;
+  --popover-foreground: #FFFFFF;
+  --primary: #FF6B35;
+  --primary-foreground: #FFFFFF;
+  --secondary: #C4813A;
+  --secondary-foreground: #0A0A0A;
+  --muted: #1F1F1F;
+  --muted-foreground: #A0A0A0;
+  --accent: #FF9F1C;
+  --accent-foreground: #0A0A0A;
+  --destructive: #FF3B30;
+  --destructive-foreground: #FFFFFF;
+  --border: rgba(255,107,53,0.2);
+  --input: rgba(255,107,53,0.15);
+  --ring: #FF6B35;
+  --sidebar: #0A0A0A;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #FF6B35;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #C4813A;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(255,107,53,0.15);
+  --sidebar-ring: #FF6B35;
+  
+  /* RAD mode brand overrides */
+  --color-forest: #FF6B35;
+  --color-trail: #FF9F1C;
+  --color-summit: #FFD166;
+  --color-amber: #FF6B35;
+}
+
 @theme inline {
   /* Typography */
   --font-sans: 'DM Sans', system-ui, sans-serif;

@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { ThemeSwitcher } from '@/components/theme-switcher'
 import { cn } from '@/lib/utils'
 
 const NAV_LINKS = [
@@ -71,6 +72,10 @@ export function ExpeditionNavbar() {
 
             {/* Desktop Actions */}
             <div className="hidden lg:flex items-center gap-4">
+              <ThemeSwitcher 
+                variant="default" 
+                className="text-[#9A9589] hover:text-[#F5F2EC]" 
+              />
               <Link
                 href="/list-vehicle"
                 className="text-sm font-medium bg-[#2D4A2D] text-[#F5F2EC] px-6 py-2.5 rounded-full hover:bg-[#4A7C59] transition-all duration-200 active:scale-95 tracking-wide"
@@ -122,6 +127,11 @@ export function ExpeditionNavbar() {
             </nav>
             
             <div className="mt-auto pb-12 flex flex-col gap-4">
+              {/* Theme Switcher in Mobile */}
+              <div className="flex items-center justify-between py-4 border-b border-[#F5F2EC]/10">
+                <span className="text-lg text-[#9A9589]">Theme</span>
+                <ThemeSwitcher variant="default" className="text-[#F5F2EC]" />
+              </div>
               <Link
                 href="/list-vehicle"
                 onClick={() => setMobileMenuOpen(false)}
