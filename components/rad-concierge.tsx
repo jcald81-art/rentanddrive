@@ -202,12 +202,14 @@ export function RADConcierge() {
 
           {/* Messages Area - scrollable, fills available space */}
           <div
-            className="flex flex-col gap-3"
+            className="flex flex-col gap-3 scrollbar-thin"
             style={{
               flex: 1,
+              minHeight: 0,
               overflowY: 'auto',
               overflowX: 'hidden',
               padding: '16px',
+              scrollBehavior: 'smooth',
             }}
           >
             {currentMessages.length === 0 && (

@@ -1,8 +1,8 @@
 'use client'
 
 import Image from 'next/image'
-import { format, differenceInDays } from 'date-fns'
-import { formatInTimeZone } from 'date-fns-tz'
+import { differenceInDays } from 'date-fns'
+import { formatInTimeZone, toZonedTime } from 'date-fns-tz'
 import { MapPin, Calendar, Shield, Fuel } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -46,7 +46,10 @@ export function BookingSummaryCard({
   promoDiscount = 0,
   showPricing = true,
 }: BookingSummaryCardProps) {
-  const days = differenceInDays(endDate, startDate) || 1
+  // Use UTC to ensure consistent date handling between server and client
+  const utcStart = toZonedTime(startDate, 'UTC')
+  const utcEnd = toZonedTime(endDate, 'UTC')
+  const days = differenceInDays(utcEnd, utcStart) || 1
   const basePrice = vehicle.daily_rate * days
   const serviceFee = Math.round(basePrice * 0.10) // 10% service fee
   const lyftPickupFee = addOns?.lyftPickup ? 25 : 0
