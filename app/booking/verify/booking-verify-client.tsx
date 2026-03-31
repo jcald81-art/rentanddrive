@@ -12,7 +12,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { BookingProgressBar } from '@/components/booking/BookingProgressBar'
 import { BookingSummaryCard } from '@/components/booking/BookingSummaryCard'
 import { TrustBadges } from '@/components/booking/TrustBadges'
-import { AuthModal } from '@/components/auth/AuthModal'
 
 interface Vehicle {
   id: string
@@ -67,14 +66,33 @@ export function BookingVerifyClient({
   const router = useRouter()
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [cancellationAccepted, setCancellationAccepted] = useState(false)
-  const [authModalOpen, setAuthModalOpen] = useState(false)
 
   const isVerified = user?.profile?.rad_verified || user?.profile?.drivers_license_verified
   const canContinue = user && termsAccepted && cancellationAccepted
 
+  const buildCurrentUrl = () => {
+    const params = new URLSearchParams({
+      vehicle_id: vehicle.id,
+      start: startDate.toISOString(),
+      end: endDate.toISOString(),
+      ...(addOns.lyftPickup && { lyft_pickup: 'true' }),
+      ...(addOns.lyftReturn && { lyft_return: 'true' }),
+      ...(addOns.unlimitedMiles && { unlimited_miles: 'true' }),
+      ...(promoCode && { promo: promoCode }),
+      ...(pickupAddress && { pickup_address: pickupAddress }),
+      ...(returnAddress && { return_address: returnAddress }),
+    })
+    return `/booking/verify?${params.toString()}`
+  }
+
+  const handleSignIn = () => {
+    const redirectUrl = buildCurrentUrl()
+    router.push(`/auth/signin?redirect=${encodeURIComponent(redirectUrl)}`)
+  }
+
   const handleContinue = () => {
     if (!user) {
-      setAuthModalOpen(true)
+      handleSignIn()
       return
     }
 
@@ -183,7 +201,7 @@ export function BookingVerifyClient({
                         Please sign in or create an account to continue with your booking.
                       </AlertDescription>
                     </Alert>
-                    <Button onClick={() => setAuthModalOpen(true)} className="w-full">
+                    <Button onClick={handleSignIn} className="w-full">
                       Sign In or Create Account
                     </Button>
                   </div>
@@ -278,11 +296,6 @@ export function BookingVerifyClient({
         </div>
       </div>
 
-      <AuthModal
-        open={authModalOpen}
-        onOpenChange={setAuthModalOpen}
-        defaultMode="signin"
-      />
     </div>
   )
 }
