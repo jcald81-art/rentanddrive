@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Car, Clock, MapPin, Plus } from 'lucide-react'
+import { ArrowLeft, Car, Clock, MapPin, Plus, CarFront } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -151,20 +151,24 @@ export function BookingDetailsClient({
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Lyft Pickup */}
-                <div className="flex items-start gap-4 p-4 rounded-lg border">
+                <div className={`flex items-start gap-4 p-4 rounded-lg border transition-colors ${addOns.lyftPickup ? 'border-[#FF00BF]/50 bg-[#FF00BF]/5' : ''}`}>
                   <Checkbox
                     id="lyft-pickup"
                     checked={addOns.lyftPickup}
                     onCheckedChange={(checked) =>
                       setAddOns((prev) => ({ ...prev, lyftPickup: checked === true }))
                     }
+                    className="data-[state=checked]:bg-[#FF00BF] data-[state=checked]:border-[#FF00BF]"
                   />
                   <div className="flex-1">
-                    <Label htmlFor="lyft-pickup" className="font-medium cursor-pointer">
-                      Lyft pickup to vehicle — $25
-                    </Label>
+                    <div className="flex items-center gap-2">
+                      <CarFront className="size-4 text-[#FF00BF]" />
+                      <Label htmlFor="lyft-pickup" className="font-medium cursor-pointer">
+                        Lyft pickup to vehicle — $25
+                      </Label>
+                    </div>
                     <p className="text-sm text-muted-foreground mt-1">
-                      We&apos;ll send a Lyft to bring you to your rental
+                      We&apos;ll send a Lyft to bring you to your rental vehicle
                     </p>
                     {addOns.lyftPickup && (
                       <Input
@@ -178,20 +182,24 @@ export function BookingDetailsClient({
                 </div>
 
                 {/* Lyft Return */}
-                <div className="flex items-start gap-4 p-4 rounded-lg border">
+                <div className={`flex items-start gap-4 p-4 rounded-lg border transition-colors ${addOns.lyftReturn ? 'border-[#FF00BF]/50 bg-[#FF00BF]/5' : ''}`}>
                   <Checkbox
                     id="lyft-return"
                     checked={addOns.lyftReturn}
                     onCheckedChange={(checked) =>
                       setAddOns((prev) => ({ ...prev, lyftReturn: checked === true }))
                     }
+                    className="data-[state=checked]:bg-[#FF00BF] data-[state=checked]:border-[#FF00BF]"
                   />
                   <div className="flex-1">
-                    <Label htmlFor="lyft-return" className="font-medium cursor-pointer">
-                      Lyft return from vehicle — $25
-                    </Label>
+                    <div className="flex items-center gap-2">
+                      <CarFront className="size-4 text-[#FF00BF]" />
+                      <Label htmlFor="lyft-return" className="font-medium cursor-pointer">
+                        Lyft return from vehicle — $25
+                      </Label>
+                    </div>
                     <p className="text-sm text-muted-foreground mt-1">
-                      We&apos;ll send a Lyft after you drop off
+                      We&apos;ll send a Lyft after you drop off the vehicle
                     </p>
                     {addOns.lyftReturn && (
                       <Input

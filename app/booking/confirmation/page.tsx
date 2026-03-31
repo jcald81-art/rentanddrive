@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { CheckCircle2, Calendar, MapPin, Car, Clock, Phone, Shield, Navigation, ArrowRight } from 'lucide-react'
+import { LyftRideOffer } from '@/components/booking/LyftRideOffer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -202,6 +203,13 @@ function ConfirmationContent({ booking }: { booking: any }) {
             </div>
           </CardContent>
         </Card>
+
+        {/* Lyft Ride Offer */}
+        <LyftRideOffer 
+          bookingId={booking.id}
+          vehicleLocation={`${vehicle.location_city}, ${vehicle.location_state}`}
+          pickupDate={startDate}
+        />
 
         {/* Trust Badges */}
         <div className="grid grid-cols-3 gap-4 mb-8">
