@@ -83,7 +83,7 @@ export default async function HostDashboardPage() {
             <Link href="/renter/suite">
               <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/10 gap-2">
                 <CarIcon className="h-4 w-4" />
-                Renter Suite
+                RAD Renters
               </Button>
             </Link>
             <form action={handleSignOut}>

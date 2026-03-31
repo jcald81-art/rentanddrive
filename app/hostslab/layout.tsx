@@ -220,14 +220,14 @@ function Sidebar({
           </Link>
         )}
 
-        {/* Switch to Renter Suite */}
+        {/* Switch to RAD Renters */}
         {!collapsed && (
           <Link 
             href="/renter/suite"
             className="flex items-center gap-2 p-3 mb-3 bg-slate-700/50 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors"
           >
             <Route className="h-4 w-4 text-[#CC0000]" />
-            <span className="text-sm">Switch to Renter Suite</span>
+            <span className="text-sm">Switch to RAD Renters</span>
           </Link>
         )}
 

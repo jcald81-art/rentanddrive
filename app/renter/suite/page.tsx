@@ -274,7 +274,7 @@ export default function RenterSuitePage() {
                 </div>
                 <Link href="/host/dashboard">
                   <Button variant="outline" className="w-full">
-                    Switch to Host Suite
+                    Switch to RAD Hosts
                   </Button>
                 </Link>
               </CardContent>
