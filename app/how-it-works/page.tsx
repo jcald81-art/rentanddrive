@@ -23,17 +23,17 @@ export const metadata: Metadata = {
 
 export default function HowItWorksPage() {
   return (
-    <div className="min-h-screen bg-[#1C1F1A]">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <span className="text-xs font-medium text-[#9A9589] uppercase tracking-widest mb-4 block">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest mb-4 block">
             The RAD Way
           </span>
-          <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-[#F5F2EC] mb-6 text-balance">
+          <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-foreground mb-6 text-balance">
             Adventure, simplified.
           </h1>
-          <p className="text-lg md:text-xl text-[#9A9589] max-w-2xl mx-auto leading-relaxed text-pretty">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed text-pretty">
             Book unique adventure vehicles from local hosts. We handle the logistics 
             with integrated Uber and Lyft — you handle the adventure.
           </p>
@@ -72,13 +72,13 @@ export default function HowItWorksPage() {
             ].map((item) => (
               <div key={item.step} className="relative">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#2D4A2D]/20 border border-[#2D4A2D]/30 flex items-center justify-center flex-shrink-0">
-                    <item.icon className="w-5 h-5 text-[#8BAF7C]" />
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
+                    <item.icon className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <span className="text-xs font-mono text-[#8BAF7C] mb-1 block">{item.step}</span>
-                    <h3 className="text-lg font-medium text-[#F5F2EC] mb-2">{item.title}</h3>
-                    <p className="text-sm text-[#9A9589] leading-relaxed">{item.description}</p>
+                    <span className="text-xs font-mono text-primary mb-1 block">{item.step}</span>
+                    <h3 className="text-lg font-medium text-foreground mb-2">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
                   </div>
                 </div>
               </div>
@@ -88,16 +88,16 @@ export default function HowItWorksPage() {
       </section>
 
       {/* RAD Mobility Section */}
-      <section className="py-20 px-6 bg-[#151815]">
+      <section className="py-20 px-6 bg-card">
         <div className="max-w-5xl mx-auto">
           <div className="mb-12">
-            <span className="text-xs font-medium text-[#9A9589] uppercase tracking-widest mb-3 block">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest mb-3 block">
               Industry first
             </span>
-            <h2 className="font-serif text-4xl md:text-5xl text-[#F5F2EC] mb-4">
+            <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">
               We handle the logistics.
             </h2>
-            <p className="text-lg text-[#9A9589] max-w-xl leading-relaxed">
+            <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
               No other P2PCR platform on earth integrates Uber and Lyft
               into the booking experience. RAD does.
             </p>
@@ -129,7 +129,7 @@ export default function HowItWorksPage() {
             ].map(item => (
               <div
                 key={item.title}
-                className="bg-white/[0.03] border border-white/10 rounded-xl p-6 hover:border-white/20 transition-colors"
+                className="bg-muted/30 border border-border rounded-xl p-6 hover:border-border/80 transition-colors"
               >
                 <span
                   className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg mb-4"
@@ -138,34 +138,34 @@ export default function HowItWorksPage() {
                   {item.provider}
                 </span>
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
-                    <item.icon className="w-5 h-5 text-[#8BAF7C]" />
+                  <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center">
+                    <item.icon className="w-5 h-5 text-primary" />
                   </div>
-                  <h3 className="text-base font-medium text-[#F5F2EC]">
+                  <h3 className="text-base font-medium text-foreground">
                     {item.title}
                   </h3>
                 </div>
-                <p className="text-sm text-[#9A9589] leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {item.body}
                 </p>
               </div>
             ))}
           </div>
 
-          <div className="mt-12 p-6 rounded-xl bg-[#2D4A2D]/10 border border-[#2D4A2D]/20">
+          <div className="mt-12 p-6 rounded-xl bg-primary/10 border border-primary/20">
             <div className="flex flex-col md:flex-row md:items-center gap-6">
               <div className="flex-1">
-                <h4 className="text-lg font-medium text-[#F5F2EC] mb-2">
+                <h4 className="text-lg font-medium text-foreground mb-2">
                   Free rides. Really.
                 </h4>
-                <p className="text-sm text-[#9A9589] leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Lyft rides to and from your RAD vehicle are complimentary with every booking. 
                   No catch, no surge pricing, no Lyft account required. We use your phone number to dispatch the ride automatically.
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-[#8BAF7C]" />
-                <span className="text-sm font-medium text-[#8BAF7C]">Included with every booking</span>
+                <CheckCircle2 className="w-5 h-5 text-primary" />
+                <span className="text-sm font-medium text-primary">Included with every booking</span>
               </div>
             </div>
           </div>
@@ -176,10 +176,10 @@ export default function HowItWorksPage() {
       <section className="py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="font-serif text-4xl md:text-5xl text-[#F5F2EC] mb-4">
+            <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">
               Built on trust.
             </h2>
-            <p className="text-lg text-[#9A9589] max-w-xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
               Every RAD booking is backed by verification, insurance, and 24/7 support.
             </p>
           </div>
@@ -204,13 +204,13 @@ export default function HowItWorksPage() {
             ].map((item) => (
               <div
                 key={item.title}
-                className="p-6 rounded-xl bg-white/[0.03] border border-white/10"
+                className="p-6 rounded-xl bg-muted/30 border border-border"
               >
-                <div className="w-12 h-12 rounded-xl bg-[#2D4A2D]/20 border border-[#2D4A2D]/30 flex items-center justify-center mb-4">
-                  <item.icon className="w-5 h-5 text-[#8BAF7C]" />
+                <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+                  <item.icon className="w-5 h-5 text-primary" />
                 </div>
-                <h3 className="text-lg font-medium text-[#F5F2EC] mb-2">{item.title}</h3>
-                <p className="text-sm text-[#9A9589] leading-relaxed">{item.description}</p>
+                <h3 className="text-lg font-medium text-foreground mb-2">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
               </div>
             ))}
           </div>
@@ -218,22 +218,22 @@ export default function HowItWorksPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6 bg-[#151815]">
+      <section className="py-20 px-6 bg-card">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="font-serif text-4xl md:text-5xl text-[#F5F2EC] mb-4">
+          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">
             Ready to go RAD?
           </h2>
-          <p className="text-lg text-[#9A9589] mb-8">
+          <p className="text-lg text-muted-foreground mb-8">
             Browse adventure-ready vehicles in Reno, Sparks, and Lake Tahoe.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-[#2D4A2D] hover:bg-[#3D5A3D] text-white">
+            <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
               <Link href="/vehicles">
                 Browse Vehicles
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white/20 text-[#F5F2EC] hover:bg-white/5">
+            <Button asChild size="lg" variant="outline" className="border-border text-foreground hover:bg-muted">
               <Link href="/host">
                 List Your Vehicle
               </Link>
