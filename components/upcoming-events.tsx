@@ -14,9 +14,7 @@ import {
   PartyPopper,
   Snowflake,
   Mountain,
-  Users,
-  Flame,
-  Info
+  Flame
 } from 'lucide-react'
 import {
   Tooltip,
@@ -31,11 +29,9 @@ interface LocalEvent {
   venue: string
   date: string
   endDate?: string
-  category: 'concert' | 'sports' | 'convention' | 'festival' | 'holiday' | 'ski' | 'outdoor'
-  expectedAttendance: number
+  category: string
   demandIncrease: 'low' | 'moderate' | 'high' | 'extreme'
-  description: string
-  bookingTip: string
+  market?: string
 }
 
 interface EventsData {
@@ -45,14 +41,18 @@ interface EventsData {
   region: string
 }
 
-const categoryIcons: Record<LocalEvent['category'], typeof Music> = {
+const categoryIcons: Record<string, typeof Music> = {
   concert: Music,
+  music: Music,
   sports: Trophy,
   convention: Building2,
   festival: PartyPopper,
   holiday: PartyPopper,
   ski: Snowflake,
-  outdoor: Mountain
+  outdoor: Mountain,
+  auto: Trophy,
+  arts: PartyPopper,
+  other: Calendar
 }
 
 const demandColors: Record<LocalEvent['demandIncrease'], string> = {
@@ -79,12 +79,6 @@ function formatDate(dateStr: string): string {
   if (diffDays < 7) return `In ${diffDays} days`
   
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-}
-
-function formatAttendance(num: number): string {
-  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`
-  if (num >= 1000) return `${(num / 1000).toFixed(0)}K`
-  return num.toString()
 }
 
 interface UpcomingEventsProps {
@@ -167,7 +161,7 @@ export function UpcomingEvents({
         <CardContent className="pt-0">
           <div className="space-y-2">
             {events.slice(0, 3).map((event) => {
-              const Icon = categoryIcons[event.category]
+              const Icon = categoryIcons[event.category] || Calendar
               return (
                 <div 
                   key={event.id} 
@@ -225,7 +219,7 @@ export function UpcomingEvents({
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2">
           {events.map((event) => {
-            const Icon = categoryIcons[event.category]
+            const Icon = categoryIcons[event.category] || Calendar
             return (
               <div 
                 key={event.id} 
@@ -249,36 +243,21 @@ export function UpcomingEvents({
                   </Badge>
                 </div>
                 
-                <p className="text-sm text-slate-300 mb-3 line-clamp-2">
-                  {event.description}
-                </p>
-                
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-3 text-slate-400">
                     <span className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
                       {formatDate(event.date)}
+                      {event.endDate && ` - ${formatDate(event.endDate)}`}
                     </span>
-                    <span className="flex items-center gap-1">
-                      <Users className="h-3 w-3" />
-                      {formatAttendance(event.expectedAttendance)}+ expected
-                    </span>
+                    {event.market && (
+                      <span className="flex items-center gap-1 capitalize">
+                        <MapPin className="h-3 w-3" />
+                        {event.market}
+                      </span>
+                    )}
                   </div>
                 </div>
-                
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger className="mt-2 w-full">
-                      <div className="flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300">
-                        <Info className="h-3 w-3" />
-                        <span>Booking tip</span>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-[250px]">
-                      <p>{event.bookingTip}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
               </div>
             )
           })}
