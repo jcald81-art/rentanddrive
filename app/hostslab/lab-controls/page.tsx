@@ -28,7 +28,9 @@ import {
   Gamepad2,
   CheckCircle,
   AlertCircle,
+  Wallet,
 } from 'lucide-react'
+import { HostCryptoSettings } from '@/components/crypto'
 
 interface AgentSettings {
   name: string
@@ -426,12 +428,16 @@ export default function LabControlsPage() {
         </TabsContent>
 
         {/* Payout Settings */}
-        <TabsContent value="payout" className="mt-6">
+        <TabsContent value="payout" className="mt-6 space-y-6">
+          {/* Standard Payout Settings */}
           <Card>
             <CardHeader>
-              <CardTitle>Payout Settings</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Bank Payout Settings
+              </CardTitle>
               <CardDescription>
-                Manage your Stripe payout preferences.
+                Manage your Stripe payout preferences for traditional payments.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -482,6 +488,22 @@ export default function LabControlsPage() {
                 <CreditCard className="h-4 w-4 mr-2" />
                 Manage in Stripe Dashboard
               </Button>
+            </CardContent>
+          </Card>
+
+          {/* Crypto Payout Settings */}
+          <Card className="border-[#3D4A3D] bg-[#1C1F1A]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-white">
+                <Wallet className="h-5 w-5 text-[#C4813A]" />
+                Crypto Payout Settings
+              </CardTitle>
+              <CardDescription className="text-[#A8B5A8]">
+                Accept USDC/USDT stablecoin payments and choose how to receive payouts.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <HostCryptoSettings />
             </CardContent>
           </Card>
         </TabsContent>

@@ -34,7 +34,10 @@ import {
   Zap,
   Tag,
   AlertCircle,
+  Wallet,
+  CreditCard,
 } from 'lucide-react'
+import { CryptoPaymentOption } from '@/components/crypto'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -586,35 +589,74 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
 
             {/* Step 4: Payment */}
             {currentStep === 4 && clientSecret && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-[#D62828]" />
-                    Secure Payment
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Elements
-                    stripe={stripePromise}
-                    options={{
-                      clientSecret,
-                      appearance: {
-                        theme: 'stripe',
-                        variables: {
-                          colorPrimary: '#D62828',
-                          borderRadius: '8px',
-                        },
-                      },
-                    }}
-                  >
-                    <PaymentForm 
-                      total={total} 
-                      bookingId={bookingData?.id}
-                      onSuccess={() => router.push('/dashboard?booking=success')}
-                    />
-                  </Elements>
-                </CardContent>
-              </Card>
+              <div className="space-y-6">
+                {/* Payment Method Selection */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Shield className="h-5 w-5 text-[#D62828]" />
+                      Choose Payment Method
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Card Payment Option */}
+                    <div className="p-4 border-2 border-[#D62828] rounded-xl bg-[#D62828]/5">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-[#D62828] rounded-lg">
+                          <CreditCard className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">Credit / Debit Card</h3>
+                          <p className="text-sm text-muted-foreground">Visa, Mastercard, Amex, Discover</p>
+                        </div>
+                      </div>
+                      <Elements
+                        stripe={stripePromise}
+                        options={{
+                          clientSecret,
+                          appearance: {
+                            theme: 'stripe',
+                            variables: {
+                              colorPrimary: '#D62828',
+                              borderRadius: '8px',
+                            },
+                          },
+                        }}
+                      >
+                        <PaymentForm 
+                          total={total} 
+                          bookingId={bookingData?.id}
+                          onSuccess={() => router.push('/dashboard?booking=success')}
+                        />
+                      </Elements>
+                    </div>
+
+                    {/* Crypto Payment Divider */}
+                    <div className="relative my-6">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200" />
+                      </div>
+                      <div className="relative flex justify-center">
+                        <span className="px-3 bg-background text-sm text-muted-foreground">or pay with stablecoins</span>
+                      </div>
+                    </div>
+
+                    {/* Crypto Payment Option */}
+                    <div className="p-4 border rounded-xl bg-[#1C1F1A]">
+                      <CryptoPaymentOption
+                        amount={total / 100}
+                        currency="USD"
+                        onPaymentInitiated={(method) => {
+                          console.log('Crypto payment initiated:', method)
+                        }}
+                        onPaymentComplete={(txHash) => {
+                          router.push(`/dashboard?booking=success&crypto=true&tx=${txHash}`)
+                        }}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {/* Error Display */}
