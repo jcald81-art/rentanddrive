@@ -31,6 +31,26 @@ export interface Vehicle {
   available_from?: string
   available_to?: string
   created_at?: string
+  // Host and audio fields
+  host_bio?: string
+  host_avatar_url?: string
+  host_rating?: number
+  host_trips?: number
+  host_joined?: string
+  audio_walkthrough_url?: string
+  audio_walkthrough_duration?: number
+  // VIN and recall fields
+  vin?: string
+  vin_report_url?: string
+  has_open_recalls?: boolean
+  recall_severity?: 'CRITICAL' | 'WARNING' | 'INFO' | null
+  // Additional listing fields
+  is_active?: boolean
+  is_approved?: boolean
+  features?: string[]
+  images?: string[]
+  thumbnail_url?: string
+  review_count?: number
 }
 
 export interface VehicleFilters {

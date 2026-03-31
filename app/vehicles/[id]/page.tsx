@@ -318,6 +318,9 @@ export default async function VehicleDetailPage({ params }: PageProps) {
               hostRating={vehicle.host_rating}
               hostTrips={vehicle.host_trips}
               hostJoined={vehicle.host_joined}
+              hostBio={vehicle.host_bio}
+              audioWalkthroughUrl={vehicle.audio_walkthrough_url}
+              audioWalkthroughDuration={vehicle.audio_walkthrough_duration}
             />
 
             {/* Similar Vehicles */}
