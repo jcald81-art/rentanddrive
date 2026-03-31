@@ -1,12 +1,43 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useRouter } from 'next/navigation'
-import { Loader2, X, Eye, EyeOff } from 'lucide-react'
+import { Loader2, X, Eye, EyeOff, Mail, ExternalLink } from 'lucide-react'
+
+// Email provider detection and webmail URLs
+const EMAIL_PROVIDERS: Record<string, { name: string; url: string; icon?: string }> = {
+  'gmail.com': { name: 'Gmail', url: 'https://mail.google.com' },
+  'googlemail.com': { name: 'Gmail', url: 'https://mail.google.com' },
+  'outlook.com': { name: 'Outlook', url: 'https://outlook.live.com' },
+  'hotmail.com': { name: 'Outlook', url: 'https://outlook.live.com' },
+  'live.com': { name: 'Outlook', url: 'https://outlook.live.com' },
+  'msn.com': { name: 'Outlook', url: 'https://outlook.live.com' },
+  'yahoo.com': { name: 'Yahoo Mail', url: 'https://mail.yahoo.com' },
+  'yahoo.co.uk': { name: 'Yahoo Mail', url: 'https://mail.yahoo.com' },
+  'ymail.com': { name: 'Yahoo Mail', url: 'https://mail.yahoo.com' },
+  'icloud.com': { name: 'iCloud Mail', url: 'https://www.icloud.com/mail' },
+  'me.com': { name: 'iCloud Mail', url: 'https://www.icloud.com/mail' },
+  'mac.com': { name: 'iCloud Mail', url: 'https://www.icloud.com/mail' },
+  'protonmail.com': { name: 'ProtonMail', url: 'https://mail.proton.me' },
+  'proton.me': { name: 'ProtonMail', url: 'https://mail.proton.me' },
+  'aol.com': { name: 'AOL Mail', url: 'https://mail.aol.com' },
+  'zoho.com': { name: 'Zoho Mail', url: 'https://mail.zoho.com' },
+  'fastmail.com': { name: 'Fastmail', url: 'https://www.fastmail.com' },
+  'tutanota.com': { name: 'Tutanota', url: 'https://mail.tutanota.com' },
+  'gmx.com': { name: 'GMX', url: 'https://www.gmx.com' },
+  'gmx.net': { name: 'GMX', url: 'https://www.gmx.net' },
+  'mail.com': { name: 'Mail.com', url: 'https://www.mail.com' },
+}
+
+function getEmailProvider(email: string): { name: string; url: string } | null {
+  const domain = email.split('@')[1]?.toLowerCase()
+  if (!domain) return null
+  return EMAIL_PROVIDERS[domain] || null
+}
 import Image from 'next/image'
 import Link from 'next/link'
 import {
@@ -33,6 +64,9 @@ export function AuthModal({ isOpen, onClose, defaultMode = 'signin', redirectTo 
   const [isLoading, setIsLoading] = useState(false)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const router = useRouter()
+  
+  // Detect email provider for smart "Open Email" button
+  const emailProvider = useMemo(() => getEmailProvider(email), [email])
 
   const resetForm = () => {
     setEmail('')
@@ -154,10 +188,28 @@ export function AuthModal({ isOpen, onClose, defaultMode = 'signin', redirectTo 
               </button>
             </div>
 
-            {/* Success Message */}
+            {/* Success Message with Smart Email Button */}
             {successMessage && (
-              <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 text-sm text-center">
-                {successMessage}
+              <div className="mb-4 p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+                <p className="text-green-400 text-sm text-center mb-3">
+                  {successMessage}
+                </p>
+                {emailProvider ? (
+                  <a
+                    href={emailProvider.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg font-medium text-sm transition-colors"
+                  >
+                    <Mail className="h-4 w-4" />
+                    Open {emailProvider.name}
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                ) : (
+                  <p className="text-xs text-green-400/70 text-center">
+                    Check your inbox at {email.split('@')[1]}
+                  </p>
+                )}
               </div>
             )}
 
