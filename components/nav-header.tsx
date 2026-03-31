@@ -121,31 +121,16 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <>
-                {/* Sign In Button - Opens Modal */}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className={mutedClass}
-                  onClick={() => {
-                    setAuthMode('signin')
-                    setAuthModalOpen(true)
-                  }}
-                >
-                  Sign In
-                </Button>
-                {/* Go RAD Button - Opens Modal in signup mode */}
-                <Button 
-                  size="sm" 
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-5"
-                  onClick={() => {
-                    setAuthMode('signup')
-                    setAuthModalOpen(true)
-                  }}
-                >
-                  Go RAD
-                </Button>
-              </>
+              <Button 
+                size="sm" 
+                className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-5"
+                onClick={() => {
+                  setAuthMode('signin')
+                  setAuthModalOpen(true)
+                }}
+              >
+                Login
+              </Button>
             )}
           </div>
         )}
@@ -187,28 +172,16 @@ export function NavHeader({ variant = 'light', showAuth = true }: NavHeaderProps
               Help
             </Link>
             {showAuth && !user && (
-              <>
-                <button 
-                  className={`text-sm ${mutedClass} text-left mt-2`} 
-                  onClick={() => {
-                    setMobileMenuOpen(false)
-                    setAuthMode('signin')
-                    setAuthModalOpen(true)
-                  }}
-                >
-                  Sign In
-                </button>
-                <button 
-                  className="w-full text-center text-sm font-medium bg-primary text-primary-foreground px-4 py-2 rounded-full mt-2"
-                  onClick={() => {
-                    setMobileMenuOpen(false)
-                    setAuthMode('signup')
-                    setAuthModalOpen(true)
-                  }}
-                >
-                  Go RAD - Create Account
-                </button>
-              </>
+              <button 
+                className="w-full text-center text-sm font-medium bg-primary text-primary-foreground px-4 py-2 rounded-full mt-4"
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  setAuthMode('signin')
+                  setAuthModalOpen(true)
+                }}
+              >
+                Login
+              </button>
             )}
             {showAuth && user && (
               <>

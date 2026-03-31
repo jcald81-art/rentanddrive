@@ -205,9 +205,9 @@ export function ExpeditionNavbar() {
               ) : (
                 <button
                   onClick={() => setAuthModalOpen(true)}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-3 py-2"
+                  className="text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors px-5 py-2 rounded-full"
                 >
-                  Sign In
+                  Login
                 </button>
               )}
 
@@ -297,22 +297,15 @@ export function ExpeditionNavbar() {
             </div>
             
             <div className="mt-auto pb-12 flex flex-col gap-4">
-              <Link
-                href="/list-vehicle"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center text-lg font-medium text-secondary-foreground bg-secondary px-6 py-4 rounded-full"
-              >
-                Go RAD
-              </Link>
               {!user && (
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false)
                     setAuthModalOpen(true)
                   }}
-                  className="w-full text-center text-lg font-medium text-muted-foreground border border-border px-6 py-4 rounded-full"
+                  className="w-full text-center text-lg font-medium bg-primary text-primary-foreground px-6 py-4 rounded-full"
                 >
-                  Sign In
+                  Login
                 </button>
               )}
             </div>
