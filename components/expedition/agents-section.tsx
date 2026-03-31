@@ -121,7 +121,7 @@ export function AgentsSection() {
             return (
               <div
                 key={agent.id}
-                className="group relative bg-white rounded-xl border border-[var(--color-border)] p-5 transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]"
+                className="group relative bg-card rounded-xl border border-border p-5 transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]"
                 style={{
                   borderTopWidth: '3px',
                   borderTopColor: agent.color,
@@ -139,7 +139,7 @@ export function AgentsSection() {
                 </div>
 
                 {/* Agent Name */}
-                <h3 className="font-medium text-base text-[var(--color-text-primary)] mb-1">
+                <h3 className="font-medium text-base text-card-foreground mb-1">
                   {agent.name}
                 </h3>
 
@@ -152,7 +152,7 @@ export function AgentsSection() {
                 </span>
 
                 {/* Description */}
-                <p className="text-[13px] font-light text-[var(--color-text-secondary)] leading-relaxed">
+                <p className="text-[13px] font-light text-muted-foreground leading-relaxed">
                   {agent.description}
                 </p>
               </div>

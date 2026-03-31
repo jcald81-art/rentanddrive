@@ -64,16 +64,16 @@ export function VehiclesSection() {
   const [activeFilter, setActiveFilter] = useState('all')
 
   return (
-    <section className="bg-[#F5F2EC] py-24 lg:py-32">
+    <section className="bg-background py-24 lg:py-32">
       <div className="mx-auto max-w-[1280px] px-6 lg:px-20">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
-          <h2 className="font-serif italic text-4xl lg:text-5xl text-[#1C1F1A]">
+          <h2 className="font-serif italic text-4xl lg:text-5xl text-foreground">
             Find your vehicle
           </h2>
           <Link 
             href="/vehicles"
-            className="text-sm font-medium text-[#2D4A2D] hover:text-[#4A7C59] transition-colors flex items-center gap-2"
+            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors flex items-center gap-2"
           >
             View all vehicles
             <ArrowRight className="h-4 w-4" />
@@ -89,8 +89,8 @@ export function VehiclesSection() {
               className={cn(
                 'px-5 py-2.5 rounded-full text-sm font-medium transition-colors',
                 activeFilter === filter.value
-                  ? 'bg-[#2D4A2D] text-white'
-                  : 'bg-white text-[#3D4A45] hover:bg-[#ECEAE3]'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-card text-card-foreground hover:bg-muted border border-border'
               )}
             >
               {filter.label}
@@ -110,7 +110,7 @@ export function VehiclesSection() {
           <Button
             asChild
             variant="outline"
-            className="border-[#2D4A2D] text-[#2D4A2D] hover:bg-[#2D4A2D] hover:text-white px-8 py-6 rounded-full"
+            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 rounded-full"
           >
             <Link href="/vehicles">
               Browse all vehicles

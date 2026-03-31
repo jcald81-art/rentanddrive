@@ -38,18 +38,18 @@ export function HeroSearchBar() {
 
   return (
     <div className="mx-auto w-full max-w-3xl">
-      <div className="flex flex-col gap-2 rounded-2xl bg-white p-2 shadow-2xl border-2 border-gray-200 md:flex-row md:items-center md:gap-0 md:rounded-full">
+      <div className="flex flex-col gap-2 rounded-2xl bg-card p-2 shadow-2xl border-2 border-border md:flex-row md:items-center md:gap-0 md:rounded-full">
         {/* Location */}
-        <div className="flex flex-1 items-center gap-3 rounded-xl px-4 py-3 md:rounded-full md:border-r md:border-gray-200">
+        <div className="flex flex-1 items-center gap-3 rounded-xl px-4 py-3 md:rounded-full md:border-r md:border-border">
           <MapPin className="h-5 w-5 shrink-0 text-primary" />
           <div className="flex-1">
-            <p className="text-xs font-medium text-gray-500">Where</p>
+            <p className="text-xs font-medium text-muted-foreground">Where</p>
             <Input 
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="City, airport, or address"
-              className="h-auto border-0 bg-transparent p-0 text-sm font-medium text-gray-900 placeholder:text-gray-400 focus-visible:ring-0"
+              className="h-auto border-0 bg-transparent p-0 text-sm font-medium text-card-foreground placeholder:text-muted-foreground focus-visible:ring-0"
             />
           </div>
         </div>
@@ -57,11 +57,11 @@ export function HeroSearchBar() {
         {/* Start Date */}
         <Popover open={startOpen} onOpenChange={setStartOpen}>
           <PopoverTrigger asChild>
-            <button className="flex flex-1 items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors hover:bg-gray-50 md:rounded-full md:border-r md:border-gray-200">
+            <button className="flex flex-1 items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors hover:bg-muted md:rounded-full md:border-r md:border-border">
               <CalendarDays className="h-5 w-5 shrink-0 text-primary" />
               <div className="flex-1">
-                <p className="text-xs font-medium text-gray-500">From</p>
-                <p className={cn("text-sm font-medium", startDate ? "text-gray-900" : "text-gray-400")}>
+                <p className="text-xs font-medium text-muted-foreground">From</p>
+                <p className={cn("text-sm font-medium", startDate ? "text-card-foreground" : "text-muted-foreground")}>
                   {!mounted ? "Loading..." : startDate ? format(startDate, "MMM d, yyyy") : "Add date"}
                 </p>
               </div>
@@ -87,11 +87,11 @@ export function HeroSearchBar() {
         {/* End Date */}
         <Popover open={endOpen} onOpenChange={setEndOpen}>
           <PopoverTrigger asChild>
-            <button className="flex flex-1 items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors hover:bg-gray-50 md:rounded-full">
+            <button className="flex flex-1 items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors hover:bg-muted md:rounded-full">
               <CalendarDays className="h-5 w-5 shrink-0 text-primary" />
               <div className="flex-1">
-                <p className="text-xs font-medium text-gray-500">Until</p>
-                <p className={cn("text-sm font-medium", endDate ? "text-gray-900" : "text-gray-400")}>
+                <p className="text-xs font-medium text-muted-foreground">Until</p>
+                <p className={cn("text-sm font-medium", endDate ? "text-card-foreground" : "text-muted-foreground")}>
                   {!mounted ? "Loading..." : endDate ? format(endDate, "MMM d, yyyy") : "Add date"}
                 </p>
               </div>

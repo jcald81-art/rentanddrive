@@ -103,41 +103,41 @@
   --sidebar-ring: #C4813A;
 }
 
-/* RAD Mode - High energy adventure theme with vibrant amber/orange tones */
+/* RAD Mode - Bold red and gold premium adventure theme */
 .rad {
-  --background: #0A0A0A;
+  --background: #0D0D0D;
   --foreground: #FFFFFF;
-  --card: #141414;
+  --card: #1A1A1A;
   --card-foreground: #FFFFFF;
   --popover: #1A1A1A;
   --popover-foreground: #FFFFFF;
-  --primary: #FF6B35;
+  --primary: #CC0000;
   --primary-foreground: #FFFFFF;
-  --secondary: #C4813A;
-  --secondary-foreground: #0A0A0A;
+  --secondary: #D4AF37;
+  --secondary-foreground: #0D0D0D;
   --muted: #1F1F1F;
-  --muted-foreground: #A0A0A0;
-  --accent: #FF9F1C;
-  --accent-foreground: #0A0A0A;
+  --muted-foreground: #B0B0B0;
+  --accent: #D4AF37;
+  --accent-foreground: #0D0D0D;
   --destructive: #FF3B30;
   --destructive-foreground: #FFFFFF;
-  --border: rgba(255,107,53,0.2);
-  --input: rgba(255,107,53,0.15);
-  --ring: #FF6B35;
-  --sidebar: #0A0A0A;
+  --border: rgba(212,175,55,0.25);
+  --input: rgba(212,175,55,0.15);
+  --ring: #D4AF37;
+  --sidebar: #0D0D0D;
   --sidebar-foreground: #FFFFFF;
-  --sidebar-primary: #FF6B35;
+  --sidebar-primary: #CC0000;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #C4813A;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: rgba(255,107,53,0.15);
-  --sidebar-ring: #FF6B35;
+  --sidebar-accent: #D4AF37;
+  --sidebar-accent-foreground: #0D0D0D;
+  --sidebar-border: rgba(212,175,55,0.15);
+  --sidebar-ring: #D4AF37;
   
-  /* RAD mode brand overrides */
-  --color-forest: #FF6B35;
-  --color-trail: #FF9F1C;
-  --color-summit: #FFD166;
-  --color-amber: #FF6B35;
+  /* RAD mode brand overrides - red and gold */
+  --color-forest: #CC0000;
+  --color-trail: #D4AF37;
+  --color-summit: #E6C84B;
+  --color-amber: #D4AF37;
 }
 
 @theme inline {

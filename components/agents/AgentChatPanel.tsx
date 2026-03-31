@@ -148,8 +148,8 @@ export function AgentChatPanel({
               className={cn(
                 'max-w-[85%] rounded-2xl px-4 py-2.5',
                 msg.role === 'agent' 
-                  ? 'bg-white text-[#1C1F1A] rounded-bl-sm' 
-                  : 'bg-[#2D4A2D] text-[#F5F2EC] ml-auto rounded-br-sm'
+                  ? 'bg-card text-card-foreground rounded-bl-sm' 
+                  : 'bg-primary text-primary-foreground ml-auto rounded-br-sm'
               )}
             >
               <p className="text-[13px] leading-relaxed whitespace-pre-wrap">
@@ -169,8 +169,8 @@ export function AgentChatPanel({
                     className={cn(
                       'text-xs h-8 rounded-full',
                       button.variant === 'primary' 
-                        ? 'bg-[#2D4A2D] hover:bg-[#4A7C59] text-[#F5F2EC]'
-                        : 'border-[#C4813A] text-[#C4813A] hover:bg-[#C4813A]/10'
+                        ? 'bg-primary hover:bg-primary/80 text-primary-foreground'
+                        : 'border-accent text-accent hover:bg-accent/10'
                     )}
                   >
                     {button.label}
@@ -192,7 +192,7 @@ export function AgentChatPanel({
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSubmit} className="px-4 py-3 border-t border-[#E5E0D5]">
+      <form onSubmit={handleSubmit} className="px-4 py-3 border-t border-border">
         <div className="flex items-center gap-2">
           <Input
             ref={inputRef}
@@ -200,13 +200,13 @@ export function AgentChatPanel({
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type a message..."
             disabled={loading}
-            className="flex-1 bg-white border-[#E5E0D5] text-[#1C1F1A] placeholder:text-[#9A9589] text-sm rounded-full"
+            className="flex-1 bg-card border-border text-card-foreground placeholder:text-muted-foreground text-sm rounded-full"
           />
           <Button 
             type="submit" 
             size="icon"
             disabled={!input.trim() || loading}
-            className="h-9 w-9 rounded-full bg-[#2D4A2D] hover:bg-[#4A7C59] text-[#F5F2EC]"
+            className="h-9 w-9 rounded-full bg-primary hover:bg-primary/80 text-primary-foreground"
           >
             <Send className="h-4 w-4" />
           </Button>

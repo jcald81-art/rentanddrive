@@ -23,7 +23,7 @@ export function VehicleCard({
 }: VehicleCardProps) {
   return (
     <Link href={`/vehicles/${id}`} className="group block">
-      <article className="bg-white rounded-2xl overflow-hidden card-hover">
+      <article className="bg-card rounded-2xl overflow-hidden card-hover border border-border">
         {/* Image Container */}
         <div className="relative aspect-[16/10] overflow-hidden">
           <Image
@@ -35,7 +35,7 @@ export function VehicleCard({
           
           {/* CarFidelity Badge */}
           {certified && (
-            <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-[#2D4A2D] text-white text-xs font-medium px-3 py-1.5 rounded-full">
+            <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-primary text-primary-foreground text-xs font-medium px-3 py-1.5 rounded-full">
               <Shield className="h-3.5 w-3.5" />
               CarFidelity Certified
             </div>
@@ -44,23 +44,23 @@ export function VehicleCard({
 
         {/* Content */}
         <div className="p-5">
-          <h3 className="font-serif text-xl text-[#1C1F1A] mb-2 group-hover:text-[#2D4A2D] transition-colors">
+          <h3 className="font-serif text-xl text-card-foreground mb-2 group-hover:text-primary transition-colors">
             {name}
           </h3>
           
-          <p className="text-sm text-[#9A9589] mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             {specs.join(' · ')}
           </p>
 
           <div className="flex items-end justify-between">
             <div>
-              <span className="text-2xl font-medium text-[#1C1F1A]">${price}</span>
-              <span className="text-sm text-[#9A9589]">/day</span>
+              <span className="text-2xl font-medium text-card-foreground">${price}</span>
+              <span className="text-sm text-muted-foreground">/day</span>
             </div>
 
             {/* Eagle Eye Badge */}
             {tracked && (
-              <div className="flex items-center gap-1.5 text-xs text-[#9A9589]">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Radio className="h-3.5 w-3.5" />
                 GPS Tracked
               </div>

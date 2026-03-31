@@ -65,11 +65,11 @@ function HeroSearchBarInner() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-xl p-4 md:p-6">
+    <div className="bg-card rounded-lg shadow-xl p-4 md:p-6 border border-border">
       <div className="flex flex-col md:flex-row gap-4">
         {/* Location */}
         <div className="flex-1">
-          <label className="text-xs font-medium text-gray-500 mb-1 block">Location</label>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">Location</label>
           <Select value={location} onValueChange={setLocation}>
             <SelectTrigger className="h-12 text-left">
               <div className="flex items-center gap-2">
@@ -89,7 +89,7 @@ function HeroSearchBarInner() {
 
         {/* Date Range */}
         <div className="flex-1">
-          <label className="text-xs font-medium text-gray-500 mb-1 block">Dates</label>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">Dates</label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -129,7 +129,7 @@ function HeroSearchBarInner() {
 
         {/* Category */}
         <div className="flex-1">
-          <label className="text-xs font-medium text-gray-500 mb-1 block">Vehicle Type</label>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">Vehicle Type</label>
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger className="h-12">
               <SelectValue placeholder="All Vehicles" />
@@ -148,7 +148,7 @@ function HeroSearchBarInner() {
         <div className="flex items-end">
           <Button 
             onClick={handleSearch}
-            className="h-12 px-8 bg-[#CC0000] hover:bg-[#CC0000]/90"
+            className="h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             <Search className="h-4 w-4 md:mr-2" />
             <span className="hidden md:inline">Search</span>
@@ -161,7 +161,7 @@ function HeroSearchBarInner() {
 
 function HeroSearchBarFallback() {
   return (
-    <div className="bg-white rounded-lg shadow-xl p-4 md:p-6">
+    <div className="bg-card rounded-lg shadow-xl p-4 md:p-6 border border-border">
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1">
           <Skeleton className="h-4 w-16 mb-1" />

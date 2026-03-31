@@ -156,7 +156,7 @@ export function RADConcierge() {
           </div>
 
           {/* Input - Fixed height at bottom */}
-          <form onSubmit={handleSubmit} className="h-[88px] border-t p-3 bg-white">
+          <form onSubmit={handleSubmit} className="h-[88px] border-t border-border p-3 bg-card">
             <div className="flex gap-2">
               <Input
                 value={input}

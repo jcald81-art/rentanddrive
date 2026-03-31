@@ -29,7 +29,7 @@ const themes = [
     value: 'rad',
     label: 'RAD',
     icon: Zap,
-    description: 'High energy adventure',
+    description: 'Red and gold premium',
   },
 ]
 
@@ -67,13 +67,13 @@ export function ThemeSwitcher({ variant = 'default', className }: ThemeSwitcherP
           className={cn(
             'gap-2 text-sm font-medium transition-colors',
             variant === 'icon-only' && 'px-2',
-            theme === 'rad' && 'text-[#FF6B35] hover:text-[#FF9F1C]',
+            theme === 'rad' && 'text-[#CC0000] hover:text-[#D4AF37]',
             className
           )}
         >
           <CurrentIcon className={cn(
             'h-4 w-4',
-            theme === 'rad' && 'text-[#FF6B35]'
+            theme === 'rad' && 'text-[#CC0000]'
           )} />
           {variant !== 'icon-only' && (
             <>
@@ -98,14 +98,14 @@ export function ThemeSwitcher({ variant = 'default', className }: ThemeSwitcherP
             >
               <Icon className={cn(
                 'h-4 w-4',
-                t.value === 'rad' && 'text-[#FF6B35]',
+                t.value === 'rad' && 'text-[#CC0000]',
                 t.value === 'light' && 'text-amber-500',
                 t.value === 'dark' && 'text-slate-400'
               )} />
               <div className="flex flex-col">
                 <span className={cn(
                   'font-medium',
-                  t.value === 'rad' && 'text-[#FF6B35]'
+                  t.value === 'rad' && 'text-[#CC0000]'
                 )}>
                   {t.label}
                 </span>

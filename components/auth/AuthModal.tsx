@@ -45,8 +45,11 @@ import {
   DialogContent,
   DialogOverlay,
   DialogPortal,
+  DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -139,7 +142,15 @@ export function AuthModal({ isOpen, onClose, defaultMode = 'signin', redirectTo 
         <DialogOverlay className="bg-black/70 backdrop-blur-sm" />
         <DialogPrimitive.Content
           className="fixed top-[50%] left-[50%] z-50 translate-x-[-50%] translate-y-[-50%] w-full max-w-[420px] max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
+          aria-describedby={undefined}
         >
+          {/* Accessibility: Hidden title for screen readers */}
+          <VisuallyHidden.Root>
+            <DialogPrimitive.Title>
+              {mode === 'signin' ? 'Sign in to Rent and Drive' : 'Create a Rent and Drive account'}
+            </DialogPrimitive.Title>
+          </VisuallyHidden.Root>
+
           {/* Close Button */}
           <button
             onClick={onClose}
@@ -155,6 +166,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = 'signin', redirectTo 
               src="/images/rad-brand-logo.png"
               alt="Rent and Drive"
               fill
+              sizes="420px"
               className="object-contain p-6"
               priority
             />
@@ -307,7 +319,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = 'signin', redirectTo 
               variant="outline"
               onClick={handleGoogleSignIn}
               disabled={isLoading}
-              className="w-full h-12 bg-white hover:bg-gray-50 text-gray-800 border-0 font-medium rounded-xl shadow-md hover:shadow-lg transition-all"
+              className="w-full h-12 bg-card hover:bg-muted text-card-foreground border border-border font-medium rounded-xl shadow-md hover:shadow-lg transition-all"
             >
               <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                 <path

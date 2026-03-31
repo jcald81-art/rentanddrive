@@ -160,7 +160,7 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
       {isMinimized && !isOpen && !isPaused && (
         <button
           onClick={() => setIsMinimized(false)}
-          className="fixed bottom-6 right-6 z-50 bg-white shadow-lg rounded-full px-4 py-2 flex items-center gap-2 hover:shadow-xl transition-all border border-gray-200 text-sm font-medium"
+          className="fixed bottom-6 right-6 z-50 bg-card shadow-lg rounded-full px-4 py-2 flex items-center gap-2 hover:shadow-xl transition-all border border-border text-sm font-medium text-card-foreground"
         >
           <MessageCircle className="h-4 w-4" style={{ color: primaryColor }} />
           Need help?
@@ -171,7 +171,7 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
       {isPaused && pauseStatus !== 'paused-permanent' && (
         <button
           onClick={handleResume}
-          className="fixed bottom-6 right-6 z-50 bg-gray-100 shadow-lg rounded-full px-4 py-2 flex items-center gap-2 hover:shadow-xl transition-all border border-gray-200 text-sm text-muted-foreground"
+          className="fixed bottom-6 right-6 z-50 bg-card shadow-lg rounded-full px-4 py-2 flex items-center gap-2 hover:shadow-xl transition-all border border-border text-sm text-muted-foreground"
         >
           <PlayCircle className="h-4 w-4" />
           Resume AI Assistant
@@ -367,7 +367,7 @@ export function Concierge({ defaultPersona = 'RAD' }: ConciergeProps) {
             </div>
           </ScrollArea>
 
-          <form onSubmit={handleSubmit} className="border-t p-3 bg-white">
+          <form onSubmit={handleSubmit} className="border-t border-border p-3 bg-card">
             <div className="flex gap-2">
               <Input
                 value={input}
