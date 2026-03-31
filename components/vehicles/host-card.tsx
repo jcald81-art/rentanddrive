@@ -37,6 +37,7 @@ export function HostCard({
               src={hostAvatar || '/placeholder-avatar.jpg'}
               alt={hostName}
               fill
+              sizes="64px"
               className="object-cover"
             />
           </div>

@@ -34,6 +34,7 @@ function HeroSearchBarInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
+  const [mode, setMode] = useState<'rent' | 'buy'>('rent')
   const [location, setLocation] = useState(searchParams.get('location') || 'reno')
   const [category, setCategory] = useState(searchParams.get('category') || 'all')
   const [mounted, setMounted] = useState(false)
@@ -56,16 +57,45 @@ function HeroSearchBarInner() {
   function handleSearch() {
     const params = new URLSearchParams()
     
+    params.set('mode', mode)
     if (location) params.set('location', location)
     if (category && category !== 'all') params.set('category', category)
-    if (dateRange?.from) params.set('start_date', format(dateRange.from, 'yyyy-MM-dd'))
-    if (dateRange?.to) params.set('end_date', format(dateRange.to, 'yyyy-MM-dd'))
+    if (mode === 'rent' && dateRange?.from) params.set('start_date', format(dateRange.from, 'yyyy-MM-dd'))
+    if (mode === 'rent' && dateRange?.to) params.set('end_date', format(dateRange.to, 'yyyy-MM-dd'))
 
     router.push(`/vehicles?${params.toString()}`)
   }
 
   return (
     <div className="bg-card rounded-lg shadow-xl p-4 md:p-6 border border-border">
+      {/* Rent/Buy Toggle */}
+      <div className="flex justify-center mb-4">
+        <div className="flex rounded-full bg-muted p-0.5">
+          <button
+            onClick={() => setMode('rent')}
+            className={cn(
+              'px-6 py-2 text-sm font-medium rounded-full transition-colors',
+              mode === 'rent' 
+                ? 'bg-primary text-primary-foreground' 
+                : 'text-muted-foreground hover:text-foreground'
+            )}
+          >
+            Rent
+          </button>
+          <button
+            onClick={() => setMode('buy')}
+            className={cn(
+              'px-6 py-2 text-sm font-medium rounded-full transition-colors',
+              mode === 'buy' 
+                ? 'bg-primary text-primary-foreground' 
+                : 'text-muted-foreground hover:text-foreground'
+            )}
+          >
+            Buy
+          </button>
+        </div>
+      </div>
+
       <div className="flex flex-col md:flex-row gap-4">
         {/* Location */}
         <div className="flex-1">
@@ -73,7 +103,7 @@ function HeroSearchBarInner() {
           <Select value={location} onValueChange={setLocation}>
             <SelectTrigger className="h-12 text-left">
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-[#CC0000]" />
+                <MapPin className="h-4 w-4 text-primary" />
                 <SelectValue placeholder="Select location" />
               </div>
             </SelectTrigger>
@@ -87,45 +117,47 @@ function HeroSearchBarInner() {
           </Select>
         </div>
 
-        {/* Date Range */}
-        <div className="flex-1">
-          <label className="text-xs font-medium text-muted-foreground mb-1 block">Dates</label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  'h-12 w-full justify-start text-left font-normal',
-                  !dateRange && 'text-muted-foreground'
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4 text-[#CC0000]" />
-                {!mounted ? (
-                  'Loading...'
-                ) : dateRange?.from ? (
-                  dateRange.to ? (
-                    <>
-                      {format(dateRange.from, 'MMM d')} - {format(dateRange.to, 'MMM d')}
-                    </>
+        {/* Date Range - Only show for rent mode */}
+        {mode === 'rent' && (
+          <div className="flex-1">
+            <label className="text-xs font-medium text-muted-foreground mb-1 block">Dates</label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    'h-12 w-full justify-start text-left font-normal',
+                    !dateRange && 'text-muted-foreground'
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
+                  {!mounted ? (
+                    'Loading...'
+                  ) : dateRange?.from ? (
+                    dateRange.to ? (
+                      <>
+                        {format(dateRange.from, 'MMM d')} - {format(dateRange.to, 'MMM d')}
+                      </>
+                    ) : (
+                      format(dateRange.from, 'MMM d, yyyy')
+                    )
                   ) : (
-                    format(dateRange.from, 'MMM d, yyyy')
-                  )
-                ) : (
-                  'Pick dates'
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="range"
-                selected={dateRange}
-                onSelect={setDateRange}
-                numberOfMonths={2}
-                disabled={{ before: new Date() }}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
+                    'Pick dates'
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="range"
+                  selected={dateRange}
+                  onSelect={setDateRange}
+                  numberOfMonths={2}
+                  disabled={{ before: new Date() }}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        )}
 
         {/* Category */}
         <div className="flex-1">

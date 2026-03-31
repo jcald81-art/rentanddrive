@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import { VehicleCard } from '@/components/vehicles/vehicle-card'
 import { VehicleFilters } from '@/components/vehicles/vehicle-filters'
-import { HeroSearchBar } from '@/components/vehicles/hero-search-bar'
 import { SortSelect } from '@/components/vehicles/sort-select'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -16,16 +15,19 @@ export const metadata = {
 }
 
 interface SearchParams {
+  mode?: string
   category?: string
   start_date?: string
   end_date?: string
   awd?: string
   ski_rack?: string
   tow_hitch?: string
+  pet_friendly?: string
   min_rate?: string
   max_rate?: string
   min_seats?: string
   sort?: string
+  location?: string
 }
 
 async function getVehicles(searchParams: SearchParams): Promise<Vehicle[]> {
@@ -34,7 +36,7 @@ async function getVehicles(searchParams: SearchParams): Promise<Vehicle[]> {
     const supabase = await createClient()
     let query = supabase.from('active_listings').select('*')
 
-    if (searchParams.category) {
+    if (searchParams.category && searchParams.category !== 'all') {
       query = query.eq('category', searchParams.category)
     }
     if (searchParams.awd === 'true') {
@@ -87,14 +89,14 @@ async function getVehicles(searchParams: SearchParams): Promise<Vehicle[]> {
 
 function VehicleGridSkeleton() {
   return (
-    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="overflow-hidden rounded-xl border">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div key={i} className="overflow-hidden rounded-lg border">
           <Skeleton className="aspect-[4/3]" />
-          <div className="p-4">
-            <Skeleton className="mb-2 h-5 w-3/4" />
-            <Skeleton className="mb-3 h-4 w-1/2" />
-            <Skeleton className="h-6 w-1/4" />
+          <div className="p-3">
+            <Skeleton className="mb-2 h-4 w-3/4" />
+            <Skeleton className="mb-2 h-3 w-1/2" />
+            <Skeleton className="h-5 w-1/4" />
           </div>
         </div>
       ))}
@@ -108,9 +110,9 @@ async function VehicleGrid({ searchParams }: { searchParams: SearchParams }) {
   if (vehicles.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-        <div className="mb-4 text-5xl">🚗</div>
+        <div className="mb-4 text-4xl">🚗</div>
         <h3 className="mb-2 text-lg font-semibold text-foreground">No vehicles found</h3>
-        <p className="text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           Try adjusting your filters or check back later for new listings.
         </p>
       </div>
@@ -118,7 +120,7 @@ async function VehicleGrid({ searchParams }: { searchParams: SearchParams }) {
   }
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {vehicles.map((vehicle) => (
         <VehicleCard key={vehicle.id} vehicle={vehicle} />
       ))}
@@ -132,75 +134,62 @@ export default async function VehiclesPage({
   searchParams: Promise<SearchParams>
 }) {
   const params = await searchParams
+  const isRentMode = params.mode !== 'buy'
 
   return (
     <main className="min-h-screen bg-background">
       <NavHeader />
-      {/* Hero Search Section */}
-      <div className="bg-gradient-to-b from-[#CC0000] to-[#990000] px-4 py-12">
-        <div className="mx-auto max-w-4xl text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Find Your Perfect Rental Vehicle
+      
+      {/* Compact Header */}
+      <div className="bg-primary px-4 py-6">
+        <div className="mx-auto max-w-7xl">
+          <h1 className="text-2xl font-bold text-primary-foreground">
+            {isRentMode ? 'Rent a Vehicle' : 'Buy a Vehicle'}
           </h1>
-          <p className="text-white/90 mb-8">
-            Save 10% vs Turo — book direct with local Reno support
+          <p className="text-sm text-primary-foreground/80">
+            {isRentMode 
+              ? 'Save 10% vs Turo — book direct with local Reno support'
+              : 'Quality pre-owned vehicles from trusted local sellers'
+            }
           </p>
-          <Suspense fallback={<Skeleton className="h-16 w-full rounded-lg" />}>
-            <HeroSearchBar />
-          </Suspense>
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-8">
-        {/* Breadcrumb Navigation */}
-        <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
-          <a href="/" className="hover:text-foreground transition-colors">Home</a>
-          <span>/</span>
-          <span className="text-foreground">Browse Vehicles</span>
-        </nav>
+      <div className="mx-auto max-w-7xl px-4 py-4">
+        {/* Compact Filter Bar */}
+        <Suspense fallback={<Skeleton className="h-12 w-full rounded-lg" />}>
+          <VehicleFilters />
+        </Suspense>
 
-        {/* Main Content */}
-        <div className="flex flex-col gap-8 lg:flex-row">
-          {/* Filters Sidebar */}
-          <Suspense fallback={<Skeleton className="h-96 w-full lg:w-72" />}>
-            <VehicleFilters />
-          </Suspense>
-
-          {/* Vehicle Grid */}
-          <div className="flex-1">
-            {/* Sort and Filter Bar */}
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
-              <div className="flex flex-wrap items-center gap-2">
-                {(params.category || params.awd || params.ski_rack || params.tow_hitch) && (
-                  <>
-                    <span className="text-sm text-muted-foreground">Active filters:</span>
-                    {params.category && (
-                      <Badge variant="secondary" className="capitalize">
-                        {params.category}
-                      </Badge>
-                    )}
-                    {params.awd === 'true' && (
-                      <Badge variant="secondary">AWD</Badge>
-                    )}
-                    {params.ski_rack === 'true' && (
-                      <Badge variant="secondary">Ski Rack</Badge>
-                    )}
-                    {params.tow_hitch === 'true' && (
-                      <Badge variant="secondary">Tow Hitch</Badge>
-                    )}
-                  </>
-                )}
-              </div>
-              <SortSelect defaultValue={params.sort || 'price_asc'} />
-            </div>
-
-
-
-            <Suspense fallback={<VehicleGridSkeleton />}>
-              <VehicleGrid searchParams={params} />
-            </Suspense>
+        {/* Results Header */}
+        <div className="mt-4 mb-3 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm text-muted-foreground">
+              {params.location && `${params.location.charAt(0).toUpperCase() + params.location.slice(1)}`}
+            </span>
+            {/* Active Filter Badges */}
+            {params.category && params.category !== 'all' && (
+              <Badge variant="secondary" className="capitalize text-xs">
+                {params.category}
+              </Badge>
+            )}
+            {params.awd === 'true' && (
+              <Badge variant="secondary" className="text-xs">AWD</Badge>
+            )}
+            {params.ski_rack === 'true' && (
+              <Badge variant="secondary" className="text-xs">Ski Rack</Badge>
+            )}
+            {params.tow_hitch === 'true' && (
+              <Badge variant="secondary" className="text-xs">Tow Hitch</Badge>
+            )}
           </div>
+          <SortSelect defaultValue={params.sort || 'price_asc'} />
         </div>
+
+        {/* Vehicle Grid */}
+        <Suspense fallback={<VehicleGridSkeleton />}>
+          <VehicleGrid searchParams={params} />
+        </Suspense>
       </div>
     </main>
   )

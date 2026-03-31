@@ -41,6 +41,7 @@ export function PhotoGallery({ images, alt }: PhotoGalleryProps) {
             src={validImages[0]}
             alt={alt}
             fill
+            sizes="(max-width: 768px) 100vw, 66vw"
             className="object-cover transition-transform hover:scale-105"
             priority
           />
@@ -64,6 +65,7 @@ export function PhotoGallery({ images, alt }: PhotoGalleryProps) {
               src={image}
               alt={`${alt} - Photo ${index + 2}`}
               fill
+              sizes="(max-width: 768px) 50vw, 17vw"
               className="object-cover transition-transform hover:scale-105"
             />
             {index === 3 && validImages.length > 5 && (
@@ -108,6 +110,7 @@ export function PhotoGallery({ images, alt }: PhotoGalleryProps) {
               src={validImages[currentIndex]}
               alt={`${alt} - Photo ${currentIndex + 1}`}
               fill
+              sizes="90vw"
               className="object-contain"
             />
           </div>
@@ -134,6 +137,7 @@ export function PhotoGallery({ images, alt }: PhotoGalleryProps) {
                   src={image}
                   alt={`${alt} - Thumbnail ${index + 1}`}
                   fill
+                  sizes="64px"
                   className="object-cover"
                 />
               </button>
