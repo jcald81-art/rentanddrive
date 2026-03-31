@@ -16,81 +16,81 @@ import {
 // Expedition Agent Configuration - Full 10-Agent Roster
 const EXPEDITION_AGENTS = [
   {
-    id: 'beacon',
-    name: 'Beacon',
+    id: 'comms',
+    name: 'RAD Comms',
     role: 'Communications',
-    description: 'Drafts and sends every message — booking confirmations, check-in instructions, dispute responses, and post-trip follow-ups. Speaks like a trail guide: clear, direct, always moving the trip forward.',
+    description: 'Drafts and sends every message — booking confirmations, check-in instructions, dispute responses, and post-trip follow-ups. Clear, direct, always moving the trip forward.',
     color: '#185FA5',
     icon: Radio,
   },
   {
-    id: 'gauge',
-    name: 'Gauge',
+    id: 'pricing',
+    name: 'RAD Pricing',
     role: 'Dynamic Pricing',
     description: 'Reads the market in real-time and sets optimal rates across your fleet. Cross-validated with a second AI model — every price recommendation is double-checked before it applies.',
     color: '#C4813A',
     icon: Gauge,
   },
   {
-    id: 'guard',
-    name: 'Guard',
-    role: 'Reputation & Reviews',
+    id: 'reputation',
+    name: 'RAD Reputation',
+    role: 'Reviews & Trust',
     description: 'Protects your trust score. Scores every incoming review for authenticity, drafts responses, flags bad-faith claims, and detects coordinated review attacks before they land.',
     color: '#3B6D11',
     icon: ShieldCheck,
   },
   {
-    id: 'scout',
-    name: 'Scout',
+    id: 'intel',
+    name: 'RAD Intel',
     role: 'Market Intelligence',
     description: 'Runs recon ahead of the market. Tracks competitor pricing, monitors Turo and Getaround in your markets, surfaces demand spikes, and flags expansion opportunities in real-time.',
     color: '#534AB7',
     icon: Binoculars,
   },
   {
-    id: 'vitals',
-    name: 'Vitals',
+    id: 'fleet',
+    name: 'RAD Fleet',
     role: 'Fleet Health',
     description: 'Monitors every vehicle via OBD2 telemetry from Eagle Eye. Predicts maintenance needs, scores vehicle health 0-100, and alerts you before a breakdown costs you a booking.',
     color: '#0F6E56',
     icon: Activity,
   },
   {
-    id: 'boost',
-    name: 'Boost',
+    id: 'rewards',
+    name: 'RAD Rewards',
     role: 'Engagement & Loyalty',
     description: 'Runs the Mile Markers loyalty program, referral campaigns, and win-back sequences. North star metric: getting the same renter back in your vehicle.',
     color: '#993C1D',
     icon: Rocket,
   },
   {
-    id: 'badge',
-    name: 'Badge',
-    role: 'Driver Verification & CarFidelity',
-    description: 'The trust gateway. Verifies every driver license via OCR and face match before a renter touches your vehicle. Also powers CarFidelity Certified — the vehicle verification badge that commands premium pricing.',
+    id: 'verify',
+    name: 'RAD Verify',
+    role: 'Driver Verification',
+    description: 'The trust gateway. Verifies every driver license via OCR and face match before a renter touches your vehicle. Also powers RAD CarFidelity Certified — the vehicle verification badge.',
     color: '#993556',
     icon: BadgeCheck,
   },
   {
-    id: 'surveyor',
-    name: 'Surveyor',
-    role: 'Damage Assessment',
+    id: 'carfidelity',
+    name: 'RAD CarFidelity',
+    role: 'Vehicle Inspection',
     description: 'Analyzes pre-trip and post-trip photos to detect damage, assess severity, and generate timestamped PDF reports. Every assessment is dispute-ready documentation.',
     color: '#5F5E5A',
     icon: Camera,
   },
   {
-    id: 'lookout',
-    name: 'Lookout',
+    id: 'secure',
+    name: 'RAD Secure',
     role: 'Fraud Detection',
-    description: 'Scans every booking, account, and payment for fraud signals. Requires agreement from two independent AI models before any account action — protects legitimate users as hard as it blocks bad actors.',
+    description: 'Scans every booking, account, and payment for fraud signals. Requires agreement from two independent AI models before any account action — protects legitimate users.',
     color: '#A32D2D',
     icon: Eye,
   },
   {
-    id: 'outfitter',
-    name: 'Outfitter',
-    role: 'Upsell & Add-ons',
+    id: 'upsell',
+    name: 'RAD Upsell',
+    role: 'Add-ons & Gear',
     description: 'Recommends the right gear at booking confirmation. Snow chains for a Tahoe trip, cargo liner for Moab, bike rack for Bozeman. Trip-specific, never generic.',
     color: '#BA7517',
     icon: Backpack,
@@ -104,13 +104,13 @@ export function AgentsSection() {
         {/* Section Header */}
         <div className="text-center mb-16">
           <span className="text-xs font-medium tracking-[0.08em] uppercase text-[var(--color-text-muted)] mb-3 block">
-            R&D Intelligence
+            RAD Intelligence
           </span>
           <h2 className="font-serif text-4xl md:text-5xl text-[var(--color-text-primary)] mb-4">
-            10 agents. One fleet.
+            10 RAD Agents. One Fleet.
           </h2>
           <p className="text-[var(--color-text-secondary)] font-light text-base max-w-2xl mx-auto">
-            Every booking, every vehicle, every renter — monitored, priced, verified, and protected by the Expedition agent suite.
+            Every booking, every vehicle, every renter — monitored, priced, verified, and protected by the RAD agent suite.
           </p>
         </div>
 

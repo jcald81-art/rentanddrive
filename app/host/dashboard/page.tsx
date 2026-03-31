@@ -48,18 +48,18 @@ export default async function HostDashboardPage() {
 
   // AI Agent features
   const aiAgents = [
-    { name: 'Dollar Agent', description: 'AI-optimized dynamic pricing', icon: DollarSign },
-    { name: 'Eagle System', description: 'Real-time GPS fleet tracking', icon: MapPin },
-    { name: 'SecureLink', description: 'Automated guest communications', icon: MessageSquare },
-    { name: 'Shield', description: 'Reputation management AI', icon: Shield },
+    { name: 'RAD Pricing', description: 'AI-optimized dynamic pricing', icon: DollarSign },
+    { name: 'Eagle Eye HQ', description: 'Real-time GPS fleet tracking', icon: MapPin },
+    { name: 'RAD Comms', description: 'Automated guest communications', icon: MessageSquare },
+    { name: 'RAD Reputation', description: 'Reputation management AI', icon: Shield },
   ]
 
   const features = [
-    { text: 'AI-optimized dynamic pricing (Dollar Agent)', icon: CheckCircle2 },
-    { text: 'Real-time GPS fleet tracking (Eagle System)', icon: CheckCircle2 },
-    { text: 'Automated guest communications (SecureLink)', icon: CheckCircle2 },
+    { text: 'AI-optimized dynamic pricing (RAD Pricing)', icon: CheckCircle2 },
+    { text: 'Real-time GPS fleet tracking (Eagle Eye HQ)', icon: CheckCircle2 },
+    { text: 'Automated guest communications (RAD Comms)', icon: CheckCircle2 },
     { text: 'Gamified hosting with XP and levels', icon: CheckCircle2 },
-    { text: 'Morning briefs and market intelligence', icon: CheckCircle2 },
+    { text: 'Morning briefs and market intelligence (RAD Intel)', icon: CheckCircle2 },
   ]
 
   return (
@@ -77,7 +77,7 @@ export default async function HostDashboardPage() {
                 className="h-8 w-auto object-contain"
               />
             </Link>
-            <span className="text-xs bg-[#D62828] px-2 py-0.5 rounded font-medium text-white">HOST SUITE</span>
+            <span className="text-xs bg-[#D62828] px-2 py-0.5 rounded font-medium text-white">RAD HOSTS</span>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/renter/suite">
@@ -106,16 +106,15 @@ export default async function HostDashboardPage() {
               </span>
               
               <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
-                Open Your Lab
+                Base Camp
               </h1>
               
               <h2 className="text-2xl font-semibold text-[#D62828]">
-                Welcome to HostsLab
+                Welcome to RAD Hosts
               </h2>
               
               <p className="text-gray-400 text-lg leading-relaxed">
-                Your AI-powered command center for fleet management. Eagle GPS tracking, Dollar pricing AI, 
-                Shield reputation management, and real-time analytics.
+                Your AI-powered command center. Eagle Eye HQ fleet tracking, RAD Pricing AI, RAD Comms automation, and real-time analytics.
               </p>
 
               {/* Features List */}
@@ -138,12 +137,12 @@ export default async function HostDashboardPage() {
                 </Link>
                 <Link href="/host/lab">
                   <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 px-6 py-3 h-auto">
-                    Enter HostsLab
+                    Go RAD
                   </Button>
                 </Link>
                 <Link href="/host/ai-agents">
                   <Button variant="ghost" className="text-white/60 hover:text-white px-6 py-3 h-auto">
-                    Meet Your AI Agents
+                    Meet Your RAD Agents
                   </Button>
                 </Link>
               </div>
@@ -296,10 +295,10 @@ export default async function HostDashboardPage() {
       <section className="bg-gradient-to-r from-[#1a237e] to-[#0d47a1] py-12">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Ready to maximize your fleet&apos;s potential?</h2>
-          <p className="text-blue-200 mb-6">Join HostsLab and let AI handle the heavy lifting</p>
+          <p className="text-blue-200 mb-6">Join RAD Hosts and let AI handle the heavy lifting</p>
           <Link href="/host/lab">
             <Button className="bg-white text-[#1a237e] hover:bg-gray-100 px-8 py-3 h-auto font-semibold">
-              Enter HostsLab
+              Go RAD
             </Button>
           </Link>
         </div>

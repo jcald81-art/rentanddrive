@@ -35,8 +35,8 @@ import { PortalSwitcher } from '@/components/portal-switcher'
 const NAV_ITEMS = [
   { href: '/hostslab/lobby', label: 'The Lobby', icon: Home },
   { href: '/hostslab/workshop', label: 'The Garage', icon: Wrench },
-  { href: '/hostslab/eagle-command', label: 'Eagle Command Center', icon: Radar },
-  { href: '/hostslab/rd-navigator', label: 'R&D Navigator', icon: Compass },
+  { href: '/hostslab/eagle-command', label: 'Eagle Eye HQ', icon: Radar },
+  { href: '/hostslab/rd-navigator', label: 'RAD Intel', icon: Compass },
   { href: '/hostslab/briefing-room', label: 'The Briefing Room', icon: FileText },
   { href: '/hostslab/vault', label: 'The Vault', icon: Vault },
   { href: '/hostslab/filing-cabinet', label: 'The Filing Cabinet', icon: FolderArchive },
@@ -99,8 +99,8 @@ function Sidebar({
         </div>
         {!collapsed && (
           <div>
-            <h1 className="font-bold text-lg">HostsLab</h1>
-            <p className="text-xs text-slate-400">Command Center</p>
+            <h1 className="font-bold text-lg">RAD Hosts</h1>
+            <p className="text-xs text-slate-400">Base Camp</p>
           </div>
         )}
       </div>
@@ -262,8 +262,8 @@ function MobileNav({ host, alertCount }: { host: HostData | null; alertCount: nu
             <FlaskConical className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-lg">HostsLab</h1>
-            <p className="text-xs text-slate-400">Command Center</p>
+            <h1 className="font-bold text-lg">RAD Hosts</h1>
+            <p className="text-xs text-slate-400">Base Camp</p>
           </div>
         </div>
 
@@ -358,7 +358,7 @@ export default function HostsLabLayout({ children }: { children: React.ReactNode
           <MobileNav host={host} alertCount={alertCount} />
           <div className="flex items-center gap-2">
             <FlaskConical className="h-6 w-6 text-[#CC0000]" />
-            <span className="font-bold">HostsLab</span>
+            <span className="font-bold">RAD Hosts</span>
           </div>
           <div className="w-10" /> {/* Spacer */}
         </header>

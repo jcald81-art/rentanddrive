@@ -148,7 +148,7 @@ export default function LobbyPage() {
                 <Zap className="h-5 w-5" />
               </div>
               <div>
-                <CardTitle className="text-white">SecureLink Morning Brief</CardTitle>
+                <CardTitle className="text-white">RAD Comms Morning Brief</CardTitle>
                 <CardDescription className="text-slate-400">
                   {brief?.created_at 
                     ? new Date(brief.created_at).toLocaleDateString('en-US', { 
@@ -247,7 +247,7 @@ export default function LobbyPage() {
               <CardTitle>Eagle Fleet Tracker</CardTitle>
             </div>
             <Button asChild variant="outline" size="sm">
-              <Link href="/hostslab/eagle-command">Full Command Center</Link>
+              <Link href="/hostslab/eagle-command">Eagle Eye HQ</Link>
             </Button>
           </div>
         </CardHeader>
@@ -267,22 +267,22 @@ export default function LobbyPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Activity className="h-5 w-5 text-[#CC0000]" />
-              <CardTitle>R&D Agent Status</CardTitle>
+              <CardTitle>RAD Agent Status</CardTitle>
             </div>
             <Button asChild variant="outline" size="sm">
-              <Link href="/hostslab/rd-navigator">Navigator</Link>
+              <Link href="/hostslab/rd-navigator">RAD Intel</Link>
             </Button>
           </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {(agents.length > 0 ? agents : [
-              { name: 'securelink', displayName: 'SecureLink', status: 'active', actionsToday: 0 },
-              { name: 'dollar', displayName: 'Dollar', status: 'idle', actionsToday: 0 },
-              { name: 'shield', displayName: 'Shield', status: 'idle', actionsToday: 0 },
-              { name: 'commandcontrol', displayName: 'Command', status: 'idle', actionsToday: 0 },
-              { name: 'pulse', displayName: 'Pulse', status: 'active', actionsToday: 0 },
-              { name: 'funtime', displayName: 'Funtime', status: 'idle', actionsToday: 0 },
+              { name: 'securelink', displayName: 'RAD Comms', status: 'active', actionsToday: 0 },
+              { name: 'dollar', displayName: 'RAD Pricing', status: 'idle', actionsToday: 0 },
+              { name: 'shield', displayName: 'RAD Reputation', status: 'idle', actionsToday: 0 },
+              { name: 'commandcontrol', displayName: 'RAD Intel', status: 'idle', actionsToday: 0 },
+              { name: 'pulse', displayName: 'RAD Fleet', status: 'active', actionsToday: 0 },
+              { name: 'funtime', displayName: 'RAD Rewards', status: 'idle', actionsToday: 0 },
             ]).map((agent) => (
               <div 
                 key={agent.name}
@@ -411,16 +411,16 @@ export default function LobbyPage() {
             <Button asChild variant="secondary">
               <Link href="/hostslab/eagle-command">
                 <Radar className="h-4 w-4 mr-2" />
-                View Eagle
+                Eagle Eye HQ
               </Link>
             </Button>
             <Button variant="secondary">
               <DollarSign className="h-4 w-4 mr-2" />
-              Run Dollar
+              RAD Pricing
             </Button>
             <Button variant="outline">
               <MessageSquare className="h-4 w-4 mr-2" />
-              Contact SecureLink
+              RAD Comms
             </Button>
           </div>
         </CardContent>
