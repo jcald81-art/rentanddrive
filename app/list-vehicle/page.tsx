@@ -13,8 +13,24 @@ import { Loader2, Car, ArrowLeft, Brain, Sparkles, Shield, CheckCircle2, AlertTr
 import { Switch } from '@/components/ui/switch'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { decodeVin as decodeVinAction } from '@/app/actions/decode-vin'
 
 type VehicleType = 'car' | 'motorcycle'
+
+// Vehicle features options - defined outside component to maintain stable reference
+const VEHICLE_FEATURES = [
+  { value: 'ski_rack', label: 'Ski Rack / Roof Rack' },
+  { value: 'snow_tires', label: 'Snow Tires / Winter Package' },
+  { value: 'floor_mats', label: 'All-Weather Floor Mats' },
+  { value: 'tow_hitch', label: 'Tow Hitch' },
+  { value: 'premium_audio', label: 'Premium Audio System' },
+  { value: 'leather_seats', label: 'Leather Seats' },
+  { value: 'sunroof', label: 'Sunroof / Moonroof' },
+  { value: 'backup_camera', label: 'Backup Camera' },
+  { value: 'heated_seats', label: 'Heated Seats' },
+  { value: 'navigation', label: 'Navigation System' },
+  { value: 'bluetooth', label: 'Bluetooth / Apple CarPlay' },
+] as const
 
 interface DecodedVehicle {
   vin: string
@@ -115,21 +131,6 @@ export default function ListVehiclePage() {
   const currentYear = new Date().getFullYear()
   const yearOptions = Array.from({ length: currentYear + 2 - 1980 }, (_, i) => currentYear + 1 - i)
 
-  // Vehicle features options
-  const vehicleFeatures = [
-    { value: 'ski_rack', label: 'Ski Rack / Roof Rack' },
-    { value: 'snow_tires', label: 'Snow Tires / Winter Package' },
-    { value: 'floor_mats', label: 'All-Weather Floor Mats' },
-    { value: 'tow_hitch', label: 'Tow Hitch' },
-    { value: 'premium_audio', label: 'Premium Audio System' },
-    { value: 'leather_seats', label: 'Leather Seats' },
-    { value: 'sunroof', label: 'Sunroof / Moonroof' },
-    { value: 'backup_camera', label: 'Backup Camera' },
-    { value: 'heated_seats', label: 'Heated Seats' },
-    { value: 'navigation', label: 'Navigation System' },
-    { value: 'bluetooth', label: 'Bluetooth / Apple CarPlay' },
-  ]
-
   // Toggle feature selection
   const toggleFeature = (value: string) => {
     setSelectedFeatures(prev => 
@@ -162,17 +163,30 @@ export default function ListVehiclePage() {
       ]
 
   useEffect(() => {
+    let mounted = true
+    
     const checkAuth = async () => {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!mounted) return
+      
       if (!user) {
-        router.push('/sign-in?redirect=/list-vehicle')
+        // Use window.location for initial redirect to avoid router initialization issues
+        window.location.href = '/sign-in?redirect=/list-vehicle'
       } else {
         setIsAuthenticated(true)
       }
     }
-    checkAuth()
-  }, [router])
+    
+    // Defer auth check to ensure router is initialized
+    const timeoutId = setTimeout(checkAuth, 0)
+    
+    return () => {
+      mounted = false
+      clearTimeout(timeoutId)
+    }
+  }, [])
 
   // Fetch makes when vehicle type changes
   useEffect(() => {
@@ -263,7 +277,7 @@ export default function ListVehiclePage() {
     fetchModels()
   }, [make, year, vehicleType, vinDecoded])
 
-  // VIN Decode function
+  // VIN Decode function using server action
   const decodeVin = useCallback(async () => {
     if (vin.length !== 17) {
       setVinError('VIN must be exactly 17 characters')
@@ -271,24 +285,22 @@ export default function ListVehiclePage() {
     }
 
     setIsDecoding(true)
+    setIsCheckingRecalls(true)
     setVinError(null)
     setDecodedData(null)
     setRecallData(null)
     setRecallStatus(null)
 
     try {
-      // Decode VIN via NHTSA API
-      const decodeRes = await fetch(`/api/nhtsa/decode/${vin}`)
-      if (!decodeRes.ok) {
-        throw new Error('Failed to decode VIN')
-      }
-      const decoded: DecodedVehicle = await decodeRes.json()
+      // Call server action for VIN decode
+      const result = await decodeVinAction(vin)
       
-      if (!decoded.make || !decoded.model || !decoded.year) {
-        setVinError('Could not decode this VIN. Please verify it is correct or enter details manually.')
+      if (!result.success || !result.vehicle) {
+        setVinError(result.error || 'Could not decode this VIN. Please verify it is correct or enter details manually.')
         return
       }
 
+      const decoded = result.vehicle
       setDecodedData(decoded)
       setVinDecoded(true)
       
@@ -320,33 +332,29 @@ export default function ListVehiclePage() {
         setVehicleType('motorcycle')
       }
 
-      // Check recalls simultaneously
-      setIsCheckingRecalls(true)
-      try {
-        const recallRes = await fetch(`/api/nhtsa/recalls/${vin}`)
-        if (recallRes.ok) {
-          const recalls = await recallRes.json()
-          setRecallData(recalls)
-          
-          // Determine recall status
-          if (recalls.total_recalls === 0) {
-            setRecallStatus('clear')
-          } else if (recalls.recalls?.some((r: { Consequence?: string }) => r.Consequence?.toLowerCase().includes('crash') || r.Consequence?.toLowerCase().includes('fire'))) {
-            setRecallStatus('critical')
-          } else {
-            setRecallStatus('warning')
-          }
+      // Handle recall data from server action
+      if (result.recalls) {
+        setRecallData(result.recalls)
+        
+        // Determine recall status
+        if (result.recalls.total_recalls === 0) {
+          setRecallStatus('clear')
+        } else if (result.recalls.recalls?.some(r => 
+          r.Consequence?.toLowerCase().includes('crash') || 
+          r.Consequence?.toLowerCase().includes('fire')
+        )) {
+          setRecallStatus('critical')
+        } else {
+          setRecallStatus('warning')
         }
-      } catch {
-        // Recall check failed but decode succeeded
+      } else {
         setRecallStatus('clear')
-      } finally {
-        setIsCheckingRecalls(false)
       }
     } catch {
       setVinError('Failed to decode VIN. Please try again or enter details manually.')
     } finally {
       setIsDecoding(false)
+      setIsCheckingRecalls(false)
     }
   }, [vin])
 
@@ -423,7 +431,7 @@ export default function ListVehiclePage() {
       try {
         // Get feature labels for the selected features
         const featureLabels = selectedFeatures
-          .map(f => vehicleFeatures.find(vf => vf.value === f)?.label)
+          .map(f => VEHICLE_FEATURES.find(vf => vf.value === f)?.label)
           .filter(Boolean)
         if (otherFeature.trim()) {
           featureLabels.push(otherFeature.trim())
@@ -467,7 +475,7 @@ export default function ListVehiclePage() {
     // Debounce the AI pricing call
     const debounce = setTimeout(fetchAiPricing, 500)
     return () => clearTimeout(debounce)
-  }, [aiPricingEnabled, make, model, year, category, vehicleType, location, driveType, trim, mileage, selectedFeatures, otherFeature, description, mileageError, ageError, vehicleFeatures])
+  }, [aiPricingEnabled, make, model, year, category, vehicleType, location, driveType, trim, mileage, selectedFeatures, otherFeature, description, mileageError, ageError])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -1055,7 +1063,7 @@ export default function ListVehiclePage() {
                 <Label>Vehicle Features</Label>
                 <p className="text-xs text-muted-foreground -mt-1">Select features that may increase rental value</p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {vehicleFeatures.map(feature => (
+                  {VEHICLE_FEATURES.map(feature => (
                     <button
                       key={feature.value}
                       type="button"
