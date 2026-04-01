@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { VehicleMakeModelSelector } from '@/components/vehicles/VehicleMakeModelSelector'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Loader2, Car, ArrowLeft, RefreshCw } from 'lucide-react'
+import { Loader2, Car, ArrowLeft, Brain, Sparkles } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
 
 type VehicleType = 'car' | 'motorcycle'
 
@@ -29,6 +30,7 @@ export default function ListVehiclePage() {
   })
   const [category, setCategory] = useState('')
   const [dailyRate, setDailyRate] = useState('')
+  const [aiPricingEnabled, setAiPricingEnabled] = useState(false)
   const [description, setDescription] = useState('')
   const [location, setLocation] = useState('Reno, NV')
 
@@ -107,6 +109,7 @@ export default function ListVehiclePage() {
           category,
           vehicle_type: vehicleInfo.vehicleType,
           daily_rate: parseFloat(dailyRate),
+          ai_pricing_enabled: aiPricingEnabled,
           description,
           location,
           status: 'pending_review'
@@ -221,6 +224,45 @@ export default function ListVehiclePage() {
                     required
                     disabled={isLoading}
                   />
+                </div>
+              </div>
+
+              {/* RAD AI Pricing Toggle */}
+              <div className={`mt-4 p-4 rounded-lg border transition-colors ${
+                aiPricingEnabled 
+                  ? 'bg-[#CC0000]/5 border-[#CC0000]/20' 
+                  : 'bg-muted/50 border-border'
+              }`}>
+                <div className="flex items-start gap-4">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                    aiPricingEnabled ? 'bg-[#CC0000]' : 'bg-muted-foreground/20'
+                  }`}>
+                    <Brain className={`h-5 w-5 ${aiPricingEnabled ? 'text-white' : 'text-muted-foreground'}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-4">
+                      <Label 
+                        htmlFor="aiPricing" 
+                        className="text-foreground font-medium cursor-pointer flex items-center gap-2"
+                      >
+                        Let RAD manage my pricing
+                        {aiPricingEnabled && <Sparkles className="h-4 w-4 text-[#CC0000]" />}
+                      </Label>
+                      <Switch
+                        id="aiPricing"
+                        checked={aiPricingEnabled}
+                        onCheckedChange={setAiPricingEnabled}
+                        disabled={isLoading}
+                        className="data-[state=checked]:bg-[#CC0000]"
+                      />
+                    </div>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {aiPricingEnabled 
+                        ? "RAD will monitor market demand, Tahoe events, airport traffic, seasonality, and competitor pricing to suggest or auto-adjust your daily rate on a regular basis."
+                        : "Enable AI-powered dynamic pricing to maximize your earnings automatically."
+                      }
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

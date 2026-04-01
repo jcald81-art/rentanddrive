@@ -71,7 +71,7 @@ export function VehicleMakeModelSelector({
   const vehicleType = value.vehicleType || 'car'
   const years = getAvailableYears()
 
-  // Fetch makes when vehicle type changes
+  // Fetch makes when vehicle type changes - sorted A-Z
   useEffect(() => {
     async function fetchMakes() {
       setLoadingMakes(true)
@@ -79,7 +79,11 @@ export function VehicleMakeModelSelector({
         const res = await fetch(`/api/vehicles/makes?type=${vehicleType}`)
         if (res.ok) {
           const data = await res.json()
-          setMakes(data.makes || [])
+          // Sort makes alphabetically A-Z
+          const sortedMakes = [...(data.makes || [])].sort((a: Make, b: Make) => 
+            a.name.localeCompare(b.name)
+          )
+          setMakes(sortedMakes)
         }
       } catch (err) {
         console.error('Failed to fetch makes:', err)
@@ -90,7 +94,7 @@ export function VehicleMakeModelSelector({
     fetchMakes()
   }, [vehicleType])
 
-  // Fetch models when make or year changes
+  // Fetch models when make or year changes - sorted A-Z
   useEffect(() => {
     async function fetchModels() {
       if (!value.make) {
@@ -107,7 +111,11 @@ export function VehicleMakeModelSelector({
         const res = await fetch(`/api/vehicles/models?${params}`)
         if (res.ok) {
           const data = await res.json()
-          setModels(data.models || [])
+          // Sort models alphabetically A-Z
+          const sortedModels = [...(data.models || [])].sort((a: Model, b: Model) => 
+            a.name.localeCompare(b.name)
+          )
+          setModels(sortedModels)
         }
       } catch (err) {
         console.error('Failed to fetch models:', err)
