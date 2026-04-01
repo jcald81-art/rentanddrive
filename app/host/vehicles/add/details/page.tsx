@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { VehicleMakeModelSelector } from '@/components/vehicles/VehicleMakeModelSelector'
 
 const FEATURES = [
   'AWD/4WD', 'Bluetooth', 'Apple CarPlay', 'Android Auto', 'Backup Camera',
@@ -26,15 +27,7 @@ const ADVENTURE_TAGS = [
   { id: 'roadtrip', label: 'Road Trip', emoji: '🛣️' },
 ]
 
-const YEARS = Array.from({ length: 30 }, (_, i) => (new Date().getFullYear() + 1 - i).toString())
 
-const MAKES = [
-  'Acura', 'Audi', 'BMW', 'Buick', 'Cadillac', 'Chevrolet', 'Chrysler', 'Dodge',
-  'Ford', 'Genesis', 'GMC', 'Honda', 'Hyundai', 'Infiniti', 'Jaguar', 'Jeep',
-  'Kia', 'Land Rover', 'Lexus', 'Lincoln', 'Mazda', 'Mercedes-Benz', 'Mini',
-  'Mitsubishi', 'Nissan', 'Porsche', 'Ram', 'Subaru', 'Tesla', 'Toyota',
-  'Volkswagen', 'Volvo'
-]
 
 interface ListingData {
   vin: string
@@ -240,45 +233,17 @@ export default function VehicleDetailsPage() {
             </div>
           )}
 
-          {/* Manual Fallback */}
+          {/* Manual Fallback with Cascading Dropdowns */}
           <div className="border-t border-white/10 pt-4 mt-4">
             <p className="text-white/60 text-sm mb-4">Or enter vehicle details manually:</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <Label className="text-white/80">Year</Label>
-                <Select value={data.year} onValueChange={(v) => setData(prev => ({ ...prev, year: v }))}>
-                  <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                    <SelectValue placeholder="Select year" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {YEARS.map(year => (
-                      <SelectItem key={year} value={year}>{year}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-white/80">Make</Label>
-                <Select value={data.make} onValueChange={(v) => setData(prev => ({ ...prev, make: v }))}>
-                  <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                    <SelectValue placeholder="Select make" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {MAKES.map(make => (
-                      <SelectItem key={make} value={make}>{make}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-white/80">Model</Label>
-                <Input
-                  value={data.model}
-                  onChange={(e) => setData(prev => ({ ...prev, model: e.target.value }))}
-                  placeholder="e.g. Model Y, Wrangler"
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
-                />
-              </div>
+              <VehicleMakeModelSelector
+                value={{ year: data.year, make: data.make, model: data.model }}
+                onChange={({ year, make, model }) => 
+                  setData(prev => ({ ...prev, year, make, model }))
+                }
+                className="col-span-full sm:col-span-3 grid-cols-1 sm:grid-cols-3"
+              />
             </div>
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div>
