@@ -9,7 +9,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Loader2, Car, ArrowLeft, Brain, Sparkles, Shield, CheckCircle2, AlertTriangle, Upload, FileText, Search, Info, Zap } from 'lucide-react'
+import { Loader2, Car, ArrowLeft, Brain, Sparkles, Shield, CheckCircle2, AlertTriangle, Upload, FileText, Search, Info, Zap, Smartphone, QrCode } from 'lucide-react'
+import { QRCodeSVG } from 'qrcode.react'
 import { Switch } from '@/components/ui/switch'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -137,6 +138,14 @@ export default function ListVehiclePage() {
     status: 'idle' | 'validating' | 'valid' | 'concerns'
     message: string
   }>({ status: 'idle', message: '' })
+  
+  // QR Code state for mobile upload
+  const [showQrModal, setShowQrModal] = useState(false)
+  const [mobileUploadSessionId] = useState(() => 
+    typeof window !== 'undefined' 
+      ? `rad-upload-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      : ''
+  )
 
   // Generate year options (current year + 1 down to 1980)
   const currentYear = new Date().getFullYear()
@@ -1310,6 +1319,105 @@ export default function ListVehiclePage() {
               <p className="text-sm text-muted-foreground">
                 Required documents to protect you and renters. All documents are securely stored.
               </p>
+
+              {/* QR Code for Mobile Upload */}
+              <Card className="bg-gradient-to-br from-[#CC0000]/10 to-transparent border-[#CC0000]/30">
+                <CardContent className="p-4">
+                  <div className="flex flex-col sm:flex-row items-center gap-4">
+                    <div 
+                      className="bg-white p-3 rounded-xl shadow-sm cursor-pointer hover:shadow-md transition-shadow flex-shrink-0"
+                      onClick={() => setShowQrModal(true)}
+                    >
+                      <QRCodeSVG 
+                        value={typeof window !== 'undefined' ? `${window.location.origin}/host/mobile-upload?session=${mobileUploadSessionId}` : 'https://rentanddrive.com'} 
+                        size={100}
+                        level="H"
+                        includeMargin={false}
+                        bgColor="#ffffff"
+                        fgColor="#000000"
+                      />
+                    </div>
+                    <div className="flex-1 text-center sm:text-left">
+                      <div className="flex items-center gap-2 justify-center sm:justify-start mb-1">
+                        <Smartphone className="w-5 h-5 text-[#CC0000]" />
+                        <span className="text-sm font-semibold text-[#CC0000]">Recommended: Phone Upload</span>
+                      </div>
+                      <p className="text-sm text-foreground font-medium mb-1">
+                        Scan with your phone to upload DL, insurance, and vehicle photos easily.
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Higher quality photos. Instant sync back to this form.
+                      </p>
+                    </div>
+                    <Button 
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowQrModal(true)}
+                      className="border-[#CC0000]/30 text-[#CC0000] hover:bg-[#CC0000]/10 flex-shrink-0"
+                    >
+                      <QrCode className="w-4 h-4 mr-2" />
+                      Enlarge
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* QR Code Modal */}
+              {showQrModal && (
+                <div 
+                  className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+                  onClick={() => setShowQrModal(false)}
+                >
+                  <div 
+                    className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full text-center"
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Scan with Your Phone</h3>
+                    <p className="text-gray-600 text-sm mb-4">
+                      Open your phone camera and point it at this QR code to upload documents with better quality.
+                    </p>
+                    <div className="flex justify-center mb-4">
+                      <QRCodeSVG 
+                        value={typeof window !== 'undefined' ? `${window.location.origin}/host/mobile-upload?session=${mobileUploadSessionId}` : 'https://rentanddrive.com'} 
+                        size={200}
+                        level="H"
+                        includeMargin={true}
+                        bgColor="#ffffff"
+                        fgColor="#000000"
+                      />
+                    </div>
+                    <div className="space-y-2 text-left mb-4">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                        <span>Take photos of DL (front & back) and insurance</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                        <span>Add vehicle photos directly from your camera</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                        <span>Documents sync automatically to this form</span>
+                      </div>
+                    </div>
+                    <Button 
+                      onClick={() => setShowQrModal(false)} 
+                      className="w-full bg-[#CC0000] hover:bg-[#CC0000]/90"
+                    >
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">or upload from this device</span>
+                </div>
+              </div>
 
               {/* Driver's License Upload */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

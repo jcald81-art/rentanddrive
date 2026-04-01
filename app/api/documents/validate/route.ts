@@ -1,4 +1,3 @@
-import { gateway } from '@vercel/ai-sdk-provider-registry'
 import { generateText } from 'ai'
 import { NextResponse } from 'next/server'
 
@@ -17,7 +16,6 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer()
     const base64 = Buffer.from(bytes).toString('base64')
     const mimeType = file.type || 'image/jpeg'
-    const dataUrl = `data:${mimeType};base64,${base64}`
 
     // Build the prompt based on document type
     let prompt: string
@@ -62,19 +60,19 @@ Respond in JSON format:
       return NextResponse.json({ valid: false, message: 'Invalid document type' }, { status: 400 })
     }
 
-    // Use Grok for vision analysis (fast and capable)
+    // Use Grok vision model for analysis (model string format for Vercel AI Gateway)
     const result = await generateText({
-      model: gateway('xai/grok-2-vision'),
+      model: 'xai/grok-2-vision-1212',
       messages: [
         {
           role: 'user',
           content: [
-            { type: 'image', image: dataUrl },
+            { type: 'image', image: `data:${mimeType};base64,${base64}` },
             { type: 'text', text: prompt }
           ]
         }
       ],
-      maxTokens: 500,
+      maxOutputTokens: 500,
     })
 
     // Parse the AI response
