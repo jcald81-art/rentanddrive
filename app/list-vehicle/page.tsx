@@ -1,3 +1,4 @@
+// CACHE-BUST-2026-04-01-FULL-STANDARDIZATION
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -639,17 +640,35 @@ export default function ListVehiclePage() {
     setIsLoading(true)
     setError(null)
 
+    console.log('🚀 [RADCC VEHICLE SUBMIT DEBUG] Starting submit – FormData keys:', {
+      year, make, model, trim, category, vehicleType, dailyRate, description, location, mileage, vin, driveType, bodyClass, fuelType, engineInfo, recallStatus,
+      selectedFeatures: selectedFeatures.length,
+      otherFeature: otherFeature ? 'set' : 'empty',
+      dlFront: dlFront ? 'set' : 'missing',
+      dlBack: dlBack ? 'set' : 'missing',
+      insurance: insurance ? 'set' : 'missing',
+      aiPricingEnabled,
+    })
+
     try {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
+      console.log('🔍 [RADCC VEHICLE SUBMIT DEBUG] Getting authenticated user...')
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      
+      if (authError) {
+        console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Auth error:', authError)
+      }
+      console.log('👤 [RADCC VEHICLE SUBMIT DEBUG] User:', user ? { id: user.id, email: user.email } : 'NOT AUTHENTICATED')
       
       if (!user) {
+        console.log('⚠️ [RADCC VEHICLE SUBMIT DEBUG] No user, redirecting to sign-in')
         router.push('/sign-in?redirect=/list-vehicle')
         return
       }
 
       // Validate required fields
       if (!year || !make || !model) {
+        console.log('⚠️ [RADCC VEHICLE SUBMIT DEBUG] Missing year/make/model')
         throw new Error('Please enter year, make, and model')
       }
       if (!mileage) {
@@ -692,7 +711,7 @@ export default function ListVehiclePage() {
         allFeatures.push(`other:${otherFeature.trim()}`)
       }
 
-      console.log('[v0] Inserting vehicle into database...')
+      console.log('📤 [RADCC VEHICLE SUBMIT DEBUG] Preparing Supabase insert...')
       const insertPayload = {
         host_id: user.id,
         make,
@@ -716,7 +735,8 @@ export default function ListVehiclePage() {
         recall_checked_at: recallStatus ? new Date().toISOString() : null,
         status: 'pending_photos'
       }
-      console.log('[v0] Insert payload:', JSON.stringify(insertPayload, null, 2))
+      console.log('📋 [RADCC VEHICLE SUBMIT DEBUG] Insert payload:', JSON.stringify(insertPayload, null, 2))
+      console.log('📤 [RADCC VEHICLE SUBMIT DEBUG] Inserting to Supabase vehicles table...')
       
       const { data: vehicleData, error: insertError } = await supabase
         .from('vehicles')
@@ -724,18 +744,33 @@ export default function ListVehiclePage() {
         .select('id')
         .single()
 
+      console.log('📥 [RADCC VEHICLE SUBMIT DEBUG] Supabase response:', { data: vehicleData, error: insertError })
+      
       if (insertError) {
-        console.error('[v0] Database insert error:', insertError)
+        console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Supabase Error:', insertError)
+        console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Error details:', {
+          message: insertError.message,
+          code: insertError.code,
+          details: insertError.details,
+          hint: insertError.hint,
+        })
         throw insertError
       }
-      console.log('[v0] Vehicle created successfully:', vehicleData)
+      console.log('✅ [RADCC VEHICLE SUBMIT DEBUG] Vehicle created successfully:', vehicleData)
       
       // Save vehicle ID and move to safety standards step
       setVehicleId(vehicleData?.id || null)
       setFlowStep('safety')
     } catch (err: unknown) {
+      console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Caught error:', err)
+      console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Error type:', typeof err)
+      if (err instanceof Error) {
+        console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Error message:', err.message)
+        console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Error stack:', err.stack)
+      }
       setError(err instanceof Error ? err.message : 'Failed to list vehicle')
     } finally {
+      console.log('🏁 [RADCC VEHICLE SUBMIT DEBUG] Submit complete (finally block)')
       setIsLoading(false)
     }
   }

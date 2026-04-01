@@ -1,3 +1,4 @@
+// CACHE-BUST-2026-04-01-FULL-STANDARDIZATION
 'use client'
 
 import { useState, useEffect, use } from 'react'
@@ -15,8 +16,8 @@ interface Addon {
   quantity: number
 }
 
-export default function BookingAddonsPage({ params }: { params: Promise<{ bookingId: string }> }) {
-  const { bookingId } = use(params)
+export default function BookingAddonsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: bookingId } = use(params)
   const router = useRouter()
   const [addons, setAddons] = useState<Addon[]>([])
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())

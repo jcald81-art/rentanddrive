@@ -1,3 +1,4 @@
+// CACHE-BUST-2026-04-01-FULL-STANDARDIZATION
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -38,7 +39,7 @@ interface BookingDetails {
 export default function ReviewPage() {
   const params = useParams()
   const router = useRouter()
-  const bookingId = params.bookingId as string
+  const bookingId = params.id as string
   
   const [booking, setBooking] = useState<BookingDetails | null>(null)
   const [loading, setLoading] = useState(true)

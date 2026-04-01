@@ -1,3 +1,4 @@
+// CACHE-BUST-2026-04-01-FULL-STANDARDIZATION
 'use client'
 
 import { useState, useEffect } from 'react'
