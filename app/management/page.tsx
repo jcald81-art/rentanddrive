@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
+import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 import {
   ShieldAlert,
@@ -23,6 +26,15 @@ import {
   WifiOff,
   Calendar,
   ChevronRight,
+  FileText,
+  FolderOpen,
+  Ban,
+  CheckCircle,
+  Eye,
+  Download,
+  X,
+  UserCog,
+  Shield,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -100,6 +112,46 @@ interface RevenuePoint {
   amount: number
 }
 
+interface Document {
+  id: string
+  user_id: string
+  vehicle_id: string | null
+  document_type: string
+  file_name: string
+  file_path: string
+  status: string
+  created_at: string
+  expiry_date: string | null
+}
+
+interface DossierUser {
+  id: string
+  email: string
+  full_name: string
+  phone: string
+  role: string
+  suspended: boolean
+  suspended_at: string | null
+  suspended_reason: string | null
+  created_at: string
+  identity_verified: boolean
+  stripe_onboarding_complete: boolean
+  vehicles?: Array<{
+    id: string
+    make: string
+    model: string
+    year: number
+    status: string
+  }>
+  documents?: Document[]
+  bookings_as_renter?: Array<{
+    id: string
+    status: string
+    created_at: string
+    total_amount: number
+  }>
+}
+
 function KpiCard({ icon: Icon, label, value, sub, accent }: {
   icon: React.ElementType
   label: string
@@ -141,6 +193,15 @@ export default function ManagementPage() {
   const [activeTab, setActiveTab] = useState('overview')
   const [vehicleSearch, setVehicleSearch] = useState('')
   const [hostSearch, setHostSearch] = useState('')
+  
+  // Dossier state
+  const [dossierSearch, setDossierSearch] = useState('')
+  const [dossierUsers, setDossierUsers] = useState<DossierUser[]>([])
+  const [selectedDossier, setSelectedDossier] = useState<DossierUser | null>(null)
+  const [dossierLoading, setDossierLoading] = useState(false)
+  const [showSuspendDialog, setShowSuspendDialog] = useState(false)
+  const [suspendReason, setSuspendReason] = useState('')
+  const [actionLoading, setActionLoading] = useState(false)
 
   const fetchData = useCallback(async () => {
     try {
@@ -167,6 +228,89 @@ export default function ManagementPage() {
     const interval = setInterval(fetchData, 90_000)
     return () => clearInterval(interval)
   }, [fetchData])
+
+  // Search dossiers (users with all their data)
+  const searchDossiers = useCallback(async (query: string) => {
+    if (!query || query.length < 2) {
+      setDossierUsers([])
+      return
+    }
+    setDossierLoading(true)
+    try {
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('profiles')
+        .select(`
+          id, email, full_name, phone, role, suspended, suspended_at, suspended_reason,
+          created_at, identity_verified, stripe_onboarding_complete,
+          vehicles:vehicles(id, make, model, year, status),
+          documents:documents(id, document_type, file_name, file_path, status, created_at, expiry_date),
+          bookings_as_renter:bookings!bookings_renter_id_fkey(id, status, created_at, total_amount)
+        `)
+        .or(`full_name.ilike.%${query}%,email.ilike.%${query}%,phone.ilike.%${query}%`)
+        .limit(20)
+      
+      setDossierUsers((data as unknown as DossierUser[]) || [])
+    } catch (e) {
+      console.error('[Dossier] search error:', e)
+    } finally {
+      setDossierLoading(false)
+    }
+  }, [])
+
+  // Suspend/unsuspend user
+  const toggleSuspension = async (userId: string, suspend: boolean, reason?: string) => {
+    setActionLoading(true)
+    try {
+      const supabase = createClient()
+      const { data: { user: admin } } = await supabase.auth.getUser()
+      
+      const updates = suspend
+        ? { suspended: true, suspended_at: new Date().toISOString(), suspended_reason: reason, suspended_by: admin?.id }
+        : { suspended: false, suspended_at: null, suspended_reason: null, suspended_by: null }
+      
+      await supabase.from('profiles').update(updates).eq('id', userId)
+      
+      // Log action
+      await supabase.from('platform_audit_log').insert({
+        admin_id: admin?.id,
+        action: suspend ? 'suspend_user' : 'unsuspend_user',
+        target_type: 'user',
+        target_id: userId,
+        details: { reason }
+      })
+      
+      // Refresh dossier
+      if (selectedDossier) {
+        setSelectedDossier({ ...selectedDossier, suspended: suspend, suspended_reason: reason || null })
+      }
+      setShowSuspendDialog(false)
+      setSuspendReason('')
+    } catch (e) {
+      console.error('[Dossier] suspend error:', e)
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  // Get document download URL
+  const getDocumentUrl = async (filePath: string) => {
+    const supabase = createClient()
+    const { data } = await supabase.storage.from('filing-cabinet').createSignedUrl(filePath, 300)
+    if (data?.signedUrl) {
+      window.open(data.signedUrl, '_blank')
+    }
+  }
+
+  // Debounced dossier search
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (activeTab === 'dossiers') {
+        searchDossiers(dossierSearch)
+      }
+    }, 300)
+    return () => clearTimeout(timeout)
+  }, [dossierSearch, activeTab, searchDossiers])
 
   const mapVehicles = vehicles
     .filter(v => {
@@ -271,9 +415,10 @@ export default function ManagementPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview"><Activity className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Overview</span></TabsTrigger>
-            <TabsTrigger value="vehicles"><Car className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">All Vehicles</span></TabsTrigger>
+            <TabsTrigger value="dossiers"><FolderOpen className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Dossiers</span></TabsTrigger>
+            <TabsTrigger value="vehicles"><Car className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Vehicles</span></TabsTrigger>
             <TabsTrigger value="alerts" className="relative">
               <AlertTriangle className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Alerts</span>
               {(kpis?.critical_alerts ?? 0) > 0 && (
@@ -379,6 +524,302 @@ export default function ManagementPage() {
                 </CardContent>
               </Card>
             )}
+          </TabsContent>
+
+          {/* DOSSIERS - Searchable user profiles with documents */}
+          <TabsContent value="dossiers" className="mt-4 space-y-4">
+            <Card className="bg-card/60 border-border/50">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <FolderOpen className="h-4 w-4 text-[#CC0000]" />
+                  User Dossiers — Hosts, Renters & Documents
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by name, email, or phone..."
+                    className="pl-9 bg-background"
+                    value={dossierSearch}
+                    onChange={e => setDossierSearch(e.target.value)}
+                  />
+                </div>
+                
+                {dossierLoading && (
+                  <div className="text-center py-8">
+                    <div className="h-6 w-6 rounded-full border-2 border-[#CC0000] border-t-transparent animate-spin mx-auto" />
+                    <p className="text-xs text-muted-foreground mt-2">Searching...</p>
+                  </div>
+                )}
+                
+                {!dossierLoading && dossierSearch.length < 2 && (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <UserCog className="h-10 w-10 mx-auto mb-3 opacity-30" />
+                    <p className="text-sm">Enter at least 2 characters to search</p>
+                    <p className="text-xs mt-1">Search by name, email, or phone number</p>
+                  </div>
+                )}
+                
+                {!dossierLoading && dossierSearch.length >= 2 && dossierUsers.length === 0 && (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <p className="text-sm">No users found matching &quot;{dossierSearch}&quot;</p>
+                  </div>
+                )}
+                
+                <div className="grid gap-2">
+                  {dossierUsers.map(user => (
+                    <Card 
+                      key={user.id} 
+                      className={cn(
+                        "bg-card/40 border-border/50 hover:border-[#CC0000]/40 transition-colors cursor-pointer",
+                        user.suspended && "border-red-500/50 bg-red-500/5"
+                      )}
+                      onClick={() => setSelectedDossier(user)}
+                    >
+                      <CardContent className="py-3 px-4">
+                        <div className="flex items-center gap-3">
+                          <div className={cn(
+                            "h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0",
+                            user.suspended ? "bg-red-500/20" : "bg-[#CC0000]/20"
+                          )}>
+                            <span className={cn("text-sm font-bold", user.suspended ? "text-red-400" : "text-[#CC0000]")}>
+                              {user.full_name?.charAt(0) || user.email?.charAt(0) || '?'}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-sm font-medium">{user.full_name || 'No name'}</span>
+                              <Badge variant="outline" className={cn('text-[10px] px-1.5 py-0 capitalize',
+                                user.role === 'host' ? 'border-blue-500/40 text-blue-400' :
+                                user.role === 'admin' ? 'border-[#CC0000]/50 text-[#CC0000]' : ''
+                              )}>{user.role}</Badge>
+                              {user.suspended && (
+                                <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-[10px]">
+                                  <Ban className="h-3 w-3 mr-1" />Suspended
+                                </Badge>
+                              )}
+                              {user.identity_verified && (
+                                <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px]">
+                                  <CheckCircle className="h-3 w-3 mr-1" />ID Verified
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {user.email} {user.phone && `• ${user.phone}`}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {user.vehicles?.length || 0} vehicles • {user.documents?.length || 0} documents • Joined {new Date(user.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <Button variant="ghost" size="sm" className="text-muted-foreground">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Dossier Detail Modal */}
+            <Dialog open={!!selectedDossier} onOpenChange={() => setSelectedDossier(null)}>
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                {selectedDossier && (
+                  <>
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-3">
+                        <div className={cn(
+                          "h-12 w-12 rounded-full flex items-center justify-center",
+                          selectedDossier.suspended ? "bg-red-500/20" : "bg-[#CC0000]/20"
+                        )}>
+                          <span className={cn("text-lg font-bold", selectedDossier.suspended ? "text-red-400" : "text-[#CC0000]")}>
+                            {selectedDossier.full_name?.charAt(0) || '?'}
+                          </span>
+                        </div>
+                        <div>
+                          <span>{selectedDossier.full_name || 'No name'}</span>
+                          <p className="text-sm font-normal text-muted-foreground">{selectedDossier.email}</p>
+                        </div>
+                      </DialogTitle>
+                      <DialogDescription asChild>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          <Badge variant="outline" className="capitalize">{selectedDossier.role}</Badge>
+                          {selectedDossier.suspended && (
+                            <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Suspended</Badge>
+                          )}
+                          {selectedDossier.identity_verified && (
+                            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">ID Verified</Badge>
+                          )}
+                          {selectedDossier.stripe_onboarding_complete && (
+                            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Stripe Connected</Badge>
+                          )}
+                        </div>
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4 mt-4">
+                      {/* Quick Actions */}
+                      <div className="flex gap-2 flex-wrap">
+                        {selectedDossier.suspended ? (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10"
+                            onClick={() => toggleSuspension(selectedDossier.id, false)}
+                            disabled={actionLoading}
+                          >
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                            Unsuspend Account
+                          </Button>
+                        ) : (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="border-red-500/50 text-red-400 hover:bg-red-500/10"
+                            onClick={() => setShowSuspendDialog(true)}
+                            disabled={actionLoading}
+                          >
+                            <Ban className="h-4 w-4 mr-2" />
+                            Suspend Account
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* Suspension Info */}
+                      {selectedDossier.suspended && selectedDossier.suspended_reason && (
+                        <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                          <p className="text-sm text-red-400 font-medium">Suspension Reason:</p>
+                          <p className="text-sm text-muted-foreground">{selectedDossier.suspended_reason}</p>
+                          {selectedDossier.suspended_at && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Suspended on {new Date(selectedDossier.suspended_at).toLocaleString()}
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Documents Section */}
+                      <div>
+                        <h4 className="text-sm font-medium flex items-center gap-2 mb-2">
+                          <FileText className="h-4 w-4 text-[#CC0000]" />
+                          Documents ({selectedDossier.documents?.length || 0})
+                        </h4>
+                        {selectedDossier.documents && selectedDossier.documents.length > 0 ? (
+                          <div className="space-y-2">
+                            {selectedDossier.documents.map(doc => (
+                              <div key={doc.id} className="flex items-center justify-between p-2 bg-muted/30 rounded-lg">
+                                <div className="flex items-center gap-2">
+                                  <FileText className="h-4 w-4 text-muted-foreground" />
+                                  <div>
+                                    <p className="text-sm font-medium capitalize">{doc.document_type.replace(/_/g, ' ')}</p>
+                                    <p className="text-xs text-muted-foreground">{doc.file_name}</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="outline" className={cn('text-xs capitalize',
+                                    doc.status === 'approved' ? 'border-emerald-500/50 text-emerald-400' :
+                                    doc.status === 'rejected' ? 'border-red-500/50 text-red-400' : ''
+                                  )}>{doc.status}</Badge>
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost"
+                                    onClick={() => getDocumentUrl(doc.file_path)}
+                                  >
+                                    <Download className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">No documents uploaded</p>
+                        )}
+                      </div>
+
+                      {/* Vehicles Section */}
+                      {selectedDossier.vehicles && selectedDossier.vehicles.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-medium flex items-center gap-2 mb-2">
+                            <Car className="h-4 w-4 text-[#CC0000]" />
+                            Vehicles ({selectedDossier.vehicles.length})
+                          </h4>
+                          <div className="space-y-2">
+                            {selectedDossier.vehicles.map(v => (
+                              <div key={v.id} className="flex items-center justify-between p-2 bg-muted/30 rounded-lg">
+                                <span className="text-sm">{v.year} {v.make} {v.model}</span>
+                                <Badge variant="outline" className="capitalize text-xs">{v.status}</Badge>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Recent Bookings */}
+                      {selectedDossier.bookings_as_renter && selectedDossier.bookings_as_renter.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-medium flex items-center gap-2 mb-2">
+                            <Calendar className="h-4 w-4 text-[#CC0000]" />
+                            Recent Bookings ({selectedDossier.bookings_as_renter.length})
+                          </h4>
+                          <div className="space-y-2">
+                            {selectedDossier.bookings_as_renter.slice(0, 5).map(b => (
+                              <div key={b.id} className="flex items-center justify-between p-2 bg-muted/30 rounded-lg">
+                                <div>
+                                  <Badge variant="outline" className="capitalize text-xs">{b.status}</Badge>
+                                  <span className="text-xs text-muted-foreground ml-2">
+                                    {new Date(b.created_at).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                <span className="text-sm font-medium text-[#C4813A]">${b.total_amount?.toFixed(2)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </DialogContent>
+            </Dialog>
+
+            {/* Suspend Dialog */}
+            <Dialog open={showSuspendDialog} onOpenChange={setShowSuspendDialog}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2 text-red-400">
+                    <Shield className="h-5 w-5" />
+                    Suspend Account
+                  </DialogTitle>
+                  <DialogDescription>
+                    This will immediately suspend the user&apos;s access to the platform. 
+                    They will not be able to book vehicles or receive bookings.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div>
+                    <label className="text-sm font-medium">Reason for suspension</label>
+                    <Textarea
+                      placeholder="Enter reason for suspension..."
+                      value={suspendReason}
+                      onChange={e => setSuspendReason(e.target.value)}
+                      className="mt-2"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowSuspendDialog(false)}>Cancel</Button>
+                  <Button 
+                    className="bg-red-600 hover:bg-red-700"
+                    onClick={() => selectedDossier && toggleSuspension(selectedDossier.id, true, suspendReason)}
+                    disabled={actionLoading || !suspendReason.trim()}
+                  >
+                    {actionLoading ? 'Suspending...' : 'Suspend Account'}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
 
           {/* ALL VEHICLES */}
