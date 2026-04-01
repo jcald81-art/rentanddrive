@@ -1,4 +1,4 @@
-// CACHE-BUST-2026-04-01-FULL-STANDARDIZATION
+// CACHE-BUST-2026-04-01-SYNTAX-FIX-FINAL
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -931,29 +931,16 @@ export default function ListVehiclePage() {
         {flowStep === 'payouts' && (
           <StripePayoutSetup 
             onComplete={() => {
-        // Redirect to photo session
-        if (vehicleId && isMounted) {
-          router.push(`/host/vehicles/${vehicleId}/photos?new=true`)
-        } else {
-          setFlowStep('complete')
-        }
-      } catch (err) {
-        setPayoutsError(err instanceof Error ? err.message : 'Failed to set up payouts')
-      } finally {
-        setPayoutsLoading(false)
-      }
-    }
-
-    // Allow skipping payouts but still proceed
-    if (vehicleId && isMounted) {
-      router.push(`/host/vehicles/${vehicleId}/photos?new=true`)
+              // Redirect to photo session
+              if (vehicleId && isMounted) {
+                router.push(`/host/vehicles/${vehicleId}/photos?new=true`)
               } else {
                 setFlowStep('complete')
               }
             }}
             onSkip={() => {
               // Allow skipping payouts but still proceed
-              if (vehicleId) {
+              if (vehicleId && isMounted) {
                 router.push(`/host/vehicles/${vehicleId}/photos?new=true`)
               } else {
                 setFlowStep('complete')
