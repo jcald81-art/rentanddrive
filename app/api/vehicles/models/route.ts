@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic'
  * Hardcoded popular models per make for fallback
  */
 const POPULAR_MODELS: Record<string, string[]> = {
+  // Cars
   'Toyota': ['Camry', 'Corolla', 'RAV4', 'Highlander', 'Tacoma', 'Prius', '4Runner', 'Tundra', 'Sienna', 'Avalon'],
   'Honda': ['Accord', 'Civic', 'CR-V', 'Pilot', 'Odyssey', 'HR-V', 'Ridgeline', 'Passport', 'Fit', 'Insight'],
   'Ford': ['F-150', 'Mustang', 'Explorer', 'Escape', 'Bronco', 'Edge', 'Ranger', 'Expedition', 'Maverick', 'Focus'],
@@ -28,6 +29,18 @@ const POPULAR_MODELS: Record<string, string[]> = {
   'GMC': ['Sierra', 'Yukon', 'Acadia', 'Terrain', 'Canyon', 'Hummer EV'],
   'Dodge': ['Charger', 'Challenger', 'Durango', 'Hornet'],
   'Porsche': ['911', 'Cayenne', 'Macan', 'Panamera', 'Taycan', '718 Cayman', '718 Boxster'],
+  // Motorcycles
+  'Harley-Davidson': ['Sportster', 'Street Glide', 'Road King', 'Fat Boy', 'Iron 883', 'Road Glide', 'Softail', 'Electra Glide', 'Heritage Classic', 'Pan America'],
+  'Yamaha': ['YZF-R1', 'YZF-R6', 'MT-07', 'MT-09', 'V-Star', 'Bolt', 'Tenere 700', 'Tracer 900', 'FZ-09', 'XSR900'],
+  'Kawasaki': ['Ninja ZX-6R', 'Ninja ZX-10R', 'Ninja 400', 'Z900', 'Z650', 'Vulcan', 'Versys', 'KLR 650', 'Ninja H2', 'W800'],
+  'Suzuki': ['GSX-R600', 'GSX-R750', 'GSX-R1000', 'Hayabusa', 'V-Strom', 'SV650', 'Boulevard', 'DR-Z400', 'Katana', 'GSX-S1000'],
+  'Ducati': ['Panigale V4', 'Monster', 'Scrambler', 'Multistrada', 'Diavel', 'Streetfighter', 'Hypermotard', 'SuperSport', 'DesertX', 'XDiavel'],
+  'Triumph': ['Bonneville', 'Street Triple', 'Tiger', 'Trident', 'Speed Triple', 'Rocket 3', 'Scrambler', 'Thruxton', 'Daytona', 'Street Twin'],
+  'Indian': ['Scout', 'Chief', 'Chieftain', 'Challenger', 'Pursuit', 'Springfield', 'Roadmaster', 'FTR', 'Super Chief', 'Scout Bobber'],
+  'KTM': ['Duke 390', 'Duke 790', 'Duke 890', 'RC 390', '1290 Super Duke', 'Adventure 890', 'Adventure 1290', '390 Adventure', 'EXC', 'SMC R'],
+  'Aprilia': ['RSV4', 'Tuono', 'RS 660', 'Tuareg 660', 'Dorsoduro', 'Shiver', 'RS 125', 'SX 125', 'RX 125'],
+  'Can-Am': ['Spyder F3', 'Spyder RT', 'Ryker', 'Ryker Sport', 'Ryker Rally'],
+  'Polaris': ['Slingshot', 'Slingshot R', 'Slingshot SL'],
 }
 
 /**

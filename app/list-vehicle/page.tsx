@@ -76,6 +76,12 @@ export default function ListVehiclePage() {
   const [engineInfo, setEngineInfo] = useState('')
   const [bodyClass, setBodyClass] = useState('')
   const [fuelType, setFuelType] = useState('')
+
+  // Dynamic dropdown states for manual entry
+  const [availableMakes, setAvailableMakes] = useState<Array<{ id: number; name: string }>>([])
+  const [availableModels, setAvailableModels] = useState<Array<{ id: number; name: string }>>([])
+  const [loadingMakes, setLoadingMakes] = useState(false)
+  const [loadingModels, setLoadingModels] = useState(false)
   
   const [category, setCategory] = useState('')
   const [dailyRate, setDailyRate] = useState('')
@@ -96,6 +102,10 @@ export default function ListVehiclePage() {
   const [insurance, setInsurance] = useState<File | null>(null)
   const [insuranceVerified, setInsuranceVerified] = useState(false)
   const [uploadingDocs, setUploadingDocs] = useState(false)
+
+  // Generate year options (current year + 1 down to 1980)
+  const currentYear = new Date().getFullYear()
+  const yearOptions = Array.from({ length: currentYear + 2 - 1980 }, (_, i) => currentYear + 1 - i)
 
   // Category options based on vehicle type
   const categoryOptions = vehicleType === 'motorcycle'
@@ -131,6 +141,71 @@ export default function ListVehiclePage() {
     }
     checkAuth()
   }, [router])
+
+  // Fetch makes when vehicle type changes
+  useEffect(() => {
+    async function fetchMakes() {
+      setLoadingMakes(true)
+      try {
+        const res = await fetch(`/api/vehicles/makes?type=${vehicleType}`)
+        if (res.ok) {
+          const data = await res.json()
+          // Sort makes alphabetically A-Z
+          const sortedMakes = [...(data.makes || [])].sort((a: { name: string }, b: { name: string }) => 
+            a.name.localeCompare(b.name)
+          )
+          setAvailableMakes(sortedMakes)
+        }
+      } catch (err) {
+        console.error('Failed to fetch makes:', err)
+      } finally {
+        setLoadingMakes(false)
+      }
+    }
+    
+    // Only fetch if not VIN decoded (manual entry mode)
+    if (!vinDecoded) {
+      fetchMakes()
+      // Reset make/model when vehicle type changes
+      setMake('')
+      setModel('')
+      setAvailableModels([])
+      setCategory('')
+    }
+  }, [vehicleType, vinDecoded])
+
+  // Fetch models when make or year changes
+  useEffect(() => {
+    async function fetchModels() {
+      if (!make || vinDecoded) {
+        setAvailableModels([])
+        return
+      }
+
+      setLoadingModels(true)
+      try {
+        const params = new URLSearchParams({ make })
+        if (year) {
+          params.set('year', year)
+        }
+        params.set('type', vehicleType)
+        const res = await fetch(`/api/vehicles/models?${params}`)
+        if (res.ok) {
+          const data = await res.json()
+          // Sort models alphabetically A-Z
+          const sortedModels = [...(data.models || [])].sort((a: { name: string }, b: { name: string }) => 
+            a.name.localeCompare(b.name)
+          )
+          setAvailableModels(sortedModels)
+        }
+      } catch (err) {
+        console.error('Failed to fetch models:', err)
+      } finally {
+        setLoadingModels(false)
+      }
+    }
+    fetchModels()
+  }, [make, year, vehicleType, vinDecoded])
 
   // VIN Decode function
   const decodeVin = useCallback(async () => {
@@ -448,6 +523,39 @@ export default function ListVehiclePage() {
                 </div>
               </div>
 
+              {/* Vehicle Type Toggle */}
+              <div className="flex gap-2 p-1 bg-muted rounded-lg">
+                <button
+                  type="button"
+                  onClick={() => setVehicleType('car')}
+                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                    vehicleType === 'car'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Car className="h-4 w-4 inline-block mr-2" />
+                  Car / SUV / Truck
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setVehicleType('motorcycle')}
+                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                    vehicleType === 'motorcycle'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <svg className="h-4 w-4 inline-block mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                    <path d="M19 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                    <path d="M10 16h4"/>
+                    <path d="M6 13l3-4 4-1 2 2h4"/>
+                  </svg>
+                  Motorcycle
+                </button>
+              </div>
+
               <Card className="border-[#CC0000]/20 bg-[#CC0000]/5">
                 <CardContent className="pt-4">
                   <div className="flex gap-2">
@@ -641,38 +749,101 @@ export default function ListVehiclePage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Year Dropdown */}
                 <div className="space-y-2">
                   <Label htmlFor="year">Year</Label>
-                  <Input
-                    id="year"
-                    placeholder="e.g., 2022"
-                    value={year}
-                    onChange={(e) => setYear(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                    required
-                    disabled={isLoading}
-                  />
+                  {vinDecoded ? (
+                    <Input
+                      id="year"
+                      value={year}
+                      onChange={(e) => setYear(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                      disabled={isLoading}
+                    />
+                  ) : (
+                    <Select value={year} onValueChange={(val) => { setYear(val); setModel(''); }} disabled={isLoading}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select year" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {yearOptions.map(y => (
+                          <SelectItem key={y} value={String(y)}>
+                            {y}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
+
+                {/* Make Dropdown */}
                 <div className="space-y-2">
                   <Label htmlFor="make">Make</Label>
-                  <Input
-                    id="make"
-                    placeholder="e.g., Toyota"
-                    value={make}
-                    onChange={(e) => setMake(e.target.value)}
-                    required
-                    disabled={isLoading}
-                  />
+                  {vinDecoded ? (
+                    <Input
+                      id="make"
+                      value={make}
+                      onChange={(e) => setMake(e.target.value)}
+                      disabled={isLoading}
+                    />
+                  ) : (
+                    <Select value={make} onValueChange={(val) => { setMake(val); setModel(''); }} disabled={isLoading || loadingMakes}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={loadingMakes ? 'Loading...' : 'Select make'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableMakes.map(m => (
+                          <SelectItem key={m.id} value={m.name}>
+                            {m.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
+
+                {/* Model Dropdown */}
                 <div className="space-y-2">
                   <Label htmlFor="model">Model</Label>
-                  <Input
-                    id="model"
-                    placeholder="e.g., 4Runner"
-                    value={model}
-                    onChange={(e) => setModel(e.target.value)}
-                    required
-                    disabled={isLoading}
-                  />
+                  {vinDecoded ? (
+                    <Input
+                      id="model"
+                      value={model}
+                      onChange={(e) => setModel(e.target.value)}
+                      disabled={isLoading}
+                    />
+                  ) : (
+                    <Select value={model} onValueChange={setModel} disabled={isLoading || loadingModels || !make}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={
+                          !make ? 'Select make first' : 
+                          loadingModels ? 'Loading...' : 
+                          'Select model'
+                        } />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableModels.map(m => (
+                          <SelectItem key={m.id} value={m.name}>
+                            {m.name}
+                          </SelectItem>
+                        ))}
+                        {availableModels.length === 0 && make && !loadingModels && (
+                          <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                            No models found - type manually below
+                          </div>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  )}
+                  {/* Manual model entry fallback */}
+                  {!vinDecoded && availableModels.length === 0 && make && !loadingModels && (
+                    <Input
+                      placeholder="Or type model name..."
+                      value={model}
+                      onChange={(e) => setModel(e.target.value)}
+                      className="mt-2"
+                      disabled={isLoading}
+                    />
+                  )}
                 </div>
               </div>
 
