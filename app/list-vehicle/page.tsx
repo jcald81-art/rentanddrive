@@ -74,7 +74,13 @@ export default function ListVehiclePage() {
   const [error, setError] = useState<string | null>(null)
   const [apiErrors, setApiErrors] = useState<string[]>([])
   const [debugMode, setDebugMode] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const router = useRouter()
+  
+  // Track component mount state to prevent router actions before hydration
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
   
   // Initialize debug mode from localStorage
   useEffect(() => {
@@ -662,7 +668,7 @@ export default function ListVehiclePage() {
       
       if (!user) {
         console.log('⚠️ [RADCC VEHICLE SUBMIT DEBUG] No user, redirecting to sign-in')
-        router.push('/sign-in?redirect=/list-vehicle')
+        if (isMounted) router.push('/sign-in?redirect=/list-vehicle')
         return
       }
 
@@ -713,7 +719,7 @@ export default function ListVehiclePage() {
 
       console.log('📤 [RADCC VEHICLE SUBMIT DEBUG] Preparing Supabase insert...')
       
-      // Map features to actual schema columns
+      // Map features to both individual flags AND the new features JSONB column
       const featureFlags = {
         has_ski_rack: allFeatures.includes('Ski Rack'),
         has_bike_rack: allFeatures.includes('Bike Rack'),
@@ -723,7 +729,7 @@ export default function ListVehiclePage() {
         is_awd: driveType === 'AWD' || driveType === '4WD',
       }
       
-      // Build insert payload using ONLY columns that exist in the schema
+      // Build insert payload with all available columns (new columns added via migration)
       const insertPayload = {
         host_id: user.id,
         make,
@@ -737,6 +743,15 @@ export default function ListVehiclePage() {
         vin: vin || null,
         fuel_type: fuelType?.toLowerCase() || 'gasoline',
         mileage_limit: parseInt(mileage) || 200,
+        // NEW COLUMNS from migration
+        trim: trim || null,
+        body_class: bodyClass || null,
+        drivetrain: driveType || null,
+        engine_info: engineInfo || null,
+        vehicle_type: vehicleType || 'car',
+        mileage: mileage ? parseInt(mileage) : null,
+        features: allFeatures, // JSONB array of feature strings
+        ai_pricing_enabled: aiPricingEnabled,
         // Recall tracking
         recall_severity: recallStatus === 'critical' ? 'CRITICAL' : recallStatus === 'warning' ? 'WARNING' : null,
         last_recall_check: recallStatus ? new Date().toISOString() : null,
@@ -916,9 +931,22 @@ export default function ListVehiclePage() {
         {flowStep === 'payouts' && (
           <StripePayoutSetup 
             onComplete={() => {
-              // Redirect to photo session
-              if (vehicleId) {
-                router.push(`/host/vehicles/${vehicleId}/photos?new=true`)
+        // Redirect to photo session
+        if (vehicleId && isMounted) {
+          router.push(`/host/vehicles/${vehicleId}/photos?new=true`)
+        } else {
+          setFlowStep('complete')
+        }
+      } catch (err) {
+        setPayoutsError(err instanceof Error ? err.message : 'Failed to set up payouts')
+      } finally {
+        setPayoutsLoading(false)
+      }
+    }
+
+    // Allow skipping payouts but still proceed
+    if (vehicleId && isMounted) {
+      router.push(`/host/vehicles/${vehicleId}/photos?new=true`)
               } else {
                 setFlowStep('complete')
               }
