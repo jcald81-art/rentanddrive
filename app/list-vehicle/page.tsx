@@ -31,6 +31,12 @@ export default function ListVehiclePage() {
   const [category, setCategory] = useState('')
   const [dailyRate, setDailyRate] = useState('')
   const [aiPricingEnabled, setAiPricingEnabled] = useState(false)
+  const [aiPricingLoading, setAiPricingLoading] = useState(false)
+  const [aiRecommendation, setAiRecommendation] = useState<{
+    rate: number
+    reasoning: string
+    confidence: string
+  } | null>(null)
   const [description, setDescription] = useState('')
   const [location, setLocation] = useState('Reno, NV')
 
@@ -73,6 +79,54 @@ export default function ListVehiclePage() {
   useEffect(() => {
     setCategory('')
   }, [vehicleInfo.vehicleType])
+
+  // Fetch AI pricing recommendation when toggle is enabled and vehicle info is complete
+  useEffect(() => {
+    async function fetchAiPricing() {
+      if (!aiPricingEnabled) {
+        setAiRecommendation(null)
+        return
+      }
+
+      // Need make, model, year to get pricing
+      if (!vehicleInfo.make || !vehicleInfo.model || !vehicleInfo.year) {
+        return
+      }
+
+      setAiPricingLoading(true)
+      try {
+        const res = await fetch('/api/vehicles/ai-pricing', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            make: vehicleInfo.make,
+            model: vehicleInfo.model,
+            year: vehicleInfo.year,
+            category,
+            vehicleType: vehicleInfo.vehicleType,
+            location,
+          }),
+        })
+
+        if (res.ok) {
+          const data = await res.json()
+          setAiRecommendation({
+            rate: data.recommendedRate,
+            reasoning: data.reasoning,
+            confidence: data.confidence,
+          })
+          // Auto-populate the daily rate field
+          setDailyRate(String(data.recommendedRate))
+        }
+      } catch (err) {
+        console.error('Failed to fetch AI pricing:', err)
+      } finally {
+        setAiPricingLoading(false)
+      }
+    }
+
+    fetchAiPricing()
+  }, [aiPricingEnabled, vehicleInfo.make, vehicleInfo.model, vehicleInfo.year, category, vehicleInfo.vehicleType, location])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -203,16 +257,36 @@ export default function ListVehiclePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="dailyRate" className="text-foreground">Daily Rate ($)</Label>
-                  <Input
-                    id="dailyRate"
-                    type="number"
-                    placeholder="e.g., 75"
-                    value={dailyRate}
-                    onChange={(e) => setDailyRate(e.target.value)}
-                    required
-                    min="1"
-                    disabled={isLoading}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="dailyRate"
+                      type="number"
+                      placeholder="e.g., 75"
+                      value={dailyRate}
+                      onChange={(e) => setDailyRate(e.target.value)}
+                      required
+                      min="1"
+                      disabled={isLoading || aiPricingLoading}
+                      className={aiRecommendation ? 'pr-10' : ''}
+                    />
+                    {aiPricingLoading && (
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        <Loader2 className="h-4 w-4 animate-spin text-[#CC0000]" />
+                      </div>
+                    )}
+                  </div>
+                  {/* AI Recommendation Message */}
+                  {aiRecommendation && aiPricingEnabled && (
+                    <div className="flex items-start gap-2 mt-2 p-2 bg-[#CC0000]/5 rounded-md">
+                      <Sparkles className="h-4 w-4 text-[#CC0000] mt-0.5 flex-shrink-0" />
+                      <p className="text-xs text-muted-foreground">
+                        <span className="font-medium text-foreground">RAD recommends ${aiRecommendation.rate}</span>
+                        {' '}based on {aiRecommendation.reasoning.toLowerCase()}
+                        {aiRecommendation.confidence === 'high' && ' (high confidence)'}
+                        . You can still adjust manually.
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="location" className="text-foreground">Location</Label>
