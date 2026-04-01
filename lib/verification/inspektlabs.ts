@@ -146,41 +146,8 @@ export async function getInspectionReport(sessionId: string): Promise<InspektRep
   }
 }
 
-/**
- * Compare pre and post trip inspections
- */
-export function compareInspections(
-  preTrip: InspektReport,
-  postTrip: InspektReport
-): {
-  newDamages: InspektDamage[]
-  preExistingDamages: InspektDamage[]
-  totalNewDamageCost: number
-  hasNewDamage: boolean
-} {
-  const preTripDamageIds = new Set(preTrip.damages.map((d) => `${d.location}_${d.type}`))
-
-  const newDamages: InspektDamage[] = []
-  const preExistingDamages: InspektDamage[] = []
-
-  for (const damage of postTrip.damages) {
-    const key = `${damage.location}_${damage.type}`
-    if (preTripDamageIds.has(key)) {
-      preExistingDamages.push(damage)
-    } else {
-      newDamages.push(damage)
-    }
-  }
-
-  const totalNewDamageCost = newDamages.reduce((sum, d) => sum + d.estimated_repair_cost, 0)
-
-  return {
-    newDamages,
-    preExistingDamages,
-    totalNewDamageCost,
-    hasNewDamage: newDamages.length > 0,
-  }
-}
+// Re-export utility function from separate file (no "use server" needed for sync utils)
+export { compareInspections } from "./inspektlabs-utils"
 
 /**
  * Send inspection link via SMS
