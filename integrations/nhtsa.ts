@@ -25,11 +25,13 @@ export interface NHTSAModelYear {
   Make_Name: string
 }
 
+export type VehicleType = 'car' | 'motorcycle'
+
 /**
- * Fetch all makes for passenger cars
+ * Fetch all makes for a vehicle type (car or motorcycle)
  */
-export async function getAllMakes(): Promise<NHTSAMake[]> {
-  const url = `${NHTSA_BASE_URL}/GetMakesForVehicleType/car?format=json`
+export async function getAllMakes(vehicleType: VehicleType = 'car'): Promise<NHTSAMake[]> {
+  const url = `${NHTSA_BASE_URL}/GetMakesForVehicleType/${vehicleType}?format=json`
   
   const res = await fetch(url, { next: { revalidate: 86400 } }) // Cache for 24h
   if (!res.ok) {
@@ -74,9 +76,9 @@ export async function getModelsForMakeYear(
 }
 
 /**
- * Popular makes to prioritize in the dropdown (pre-sorted)
+ * Popular car makes to prioritize in the dropdown (pre-sorted)
  */
-export const POPULAR_MAKES = [
+export const POPULAR_CAR_MAKES = [
   'Toyota',
   'Honda',
   'Ford',
@@ -98,6 +100,35 @@ export const POPULAR_MAKES = [
   'Dodge',
   'Porsche',
 ]
+
+/**
+ * Popular motorcycle makes to prioritize in the dropdown
+ */
+export const POPULAR_MOTORCYCLE_MAKES = [
+  'Harley-Davidson',
+  'Honda',
+  'Yamaha',
+  'Kawasaki',
+  'Suzuki',
+  'BMW',
+  'Ducati',
+  'Triumph',
+  'Indian',
+  'KTM',
+  'Aprilia',
+  'Can-Am',
+  'Polaris',
+]
+
+// Legacy alias for backwards compatibility
+export const POPULAR_MAKES = POPULAR_CAR_MAKES
+
+/**
+ * Get popular makes based on vehicle type
+ */
+export function getPopularMakes(vehicleType: VehicleType): string[] {
+  return vehicleType === 'motorcycle' ? POPULAR_MOTORCYCLE_MAKES : POPULAR_CAR_MAKES
+}
 
 /**
  * Years available for vehicle selection (current year + 1 down to 2000)

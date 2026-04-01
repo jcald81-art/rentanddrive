@@ -1,34 +1,38 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getAllMakes, sortMakesWithPopularFirst, POPULAR_MAKES } from '@/integrations/nhtsa'
+import { getAllMakes, sortMakesWithPopularFirst, getPopularMakes, type VehicleType } from '@/integrations/nhtsa'
 
 export const dynamic = 'force-dynamic'
 
 /**
- * GET /api/vehicles/makes
+ * GET /api/vehicles/makes?type=car|motorcycle
  * Returns all vehicle makes, fetching from NHTSA if DB is empty
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url)
+    const vehicleType = (searchParams.get('type') || 'car') as VehicleType
+    
     const supabase = await createClient()
     
     // Try to get from database first
     const { data: dbMakes, error } = await supabase
       .from('vehicle_makes')
       .select('id, nhtsa_id, name')
-      .eq('vehicle_type', 'car')
+      .eq('vehicle_type', vehicleType)
       .order('name')
     
     if (!error && dbMakes && dbMakes.length > 0) {
       return NextResponse.json({
         makes: sortMakesWithPopularFirst(dbMakes),
         source: 'database',
+        vehicleType,
       })
     }
     
-    // Fallback to hardcoded popular makes for now
-    // Full NHTSA sync would be done via admin/cron
-    const fallbackMakes = POPULAR_MAKES.map((name, index) => ({
+    // Fallback to hardcoded popular makes for the vehicle type
+    const popularMakes = getPopularMakes(vehicleType)
+    const fallbackMakes = popularMakes.map((name, index) => ({
       id: index + 1,
       nhtsa_id: null,
       name,
@@ -37,6 +41,7 @@ export async function GET() {
     return NextResponse.json({
       makes: fallbackMakes,
       source: 'fallback',
+      vehicleType,
     })
   } catch (err) {
     console.error('Error fetching vehicle makes:', err)

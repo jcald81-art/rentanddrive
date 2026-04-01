@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -24,9 +23,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { Check, ChevronsUpDown, Loader2, Car } from 'lucide-react'
+import { Check, ChevronsUpDown, Loader2, Car, Bike } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { getAvailableYears } from '@/integrations/nhtsa'
+
+type VehicleType = 'car' | 'motorcycle'
 
 interface Make {
   id: number
@@ -41,13 +42,15 @@ interface Model {
 
 interface VehicleMakeModelSelectorProps {
   value: {
+    vehicleType?: VehicleType
     year: string
     make: string
     model: string
   }
-  onChange: (value: { year: string; make: string; model: string }) => void
+  onChange: (value: { vehicleType: VehicleType; year: string; make: string; model: string }) => void
   className?: string
   disabled?: boolean
+  showVehicleType?: boolean
 }
 
 export function VehicleMakeModelSelector({
@@ -55,6 +58,7 @@ export function VehicleMakeModelSelector({
   onChange,
   className,
   disabled = false,
+  showVehicleType = true,
 }: VehicleMakeModelSelectorProps) {
   const [makes, setMakes] = useState<Make[]>([])
   const [models, setModels] = useState<Model[]>([])
@@ -64,13 +68,15 @@ export function VehicleMakeModelSelector({
   const [modelOpen, setModelOpen] = useState(false)
   const [customModel, setCustomModel] = useState('')
 
+  const vehicleType = value.vehicleType || 'car'
   const years = getAvailableYears()
 
-  // Fetch makes on mount
+  // Fetch makes when vehicle type changes
   useEffect(() => {
     async function fetchMakes() {
+      setLoadingMakes(true)
       try {
-        const res = await fetch('/api/vehicles/makes')
+        const res = await fetch(`/api/vehicles/makes?type=${vehicleType}`)
         if (res.ok) {
           const data = await res.json()
           setMakes(data.makes || [])
@@ -82,7 +88,7 @@ export function VehicleMakeModelSelector({
       }
     }
     fetchMakes()
-  }, [])
+  }, [vehicleType])
 
   // Fetch models when make or year changes
   useEffect(() => {
@@ -112,40 +118,82 @@ export function VehicleMakeModelSelector({
     fetchModels()
   }, [value.make, value.year])
 
+  const handleVehicleTypeChange = useCallback(
+    (type: VehicleType) => {
+      onChange({ vehicleType: type, year: '', make: '', model: '' })
+    },
+    [onChange]
+  )
+
   const handleYearChange = useCallback(
     (year: string) => {
-      onChange({ ...value, year, model: '' }) // Reset model when year changes
+      onChange({ ...value, vehicleType, year, model: '' })
     },
-    [value, onChange]
+    [value, vehicleType, onChange]
   )
 
   const handleMakeChange = useCallback(
     (make: string) => {
-      onChange({ ...value, make, model: '' }) // Reset model when make changes
+      onChange({ ...value, vehicleType, make, model: '' })
       setMakeOpen(false)
     },
-    [value, onChange]
+    [value, vehicleType, onChange]
   )
 
   const handleModelChange = useCallback(
     (model: string) => {
-      onChange({ ...value, model })
+      onChange({ ...value, vehicleType, model })
       setModelOpen(false)
       setCustomModel('')
     },
-    [value, onChange]
+    [value, vehicleType, onChange]
   )
 
   const handleCustomModelSubmit = useCallback(() => {
     if (customModel.trim()) {
-      onChange({ ...value, model: customModel.trim() })
+      onChange({ ...value, vehicleType, model: customModel.trim() })
       setModelOpen(false)
       setCustomModel('')
     }
-  }, [value, onChange, customModel])
+  }, [value, vehicleType, onChange, customModel])
 
   return (
     <div className={cn('grid gap-4', className)}>
+      {/* Vehicle Type Selection */}
+      {showVehicleType && (
+        <div className="space-y-2">
+          <Label>Vehicle Type</Label>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              type="button"
+              variant={vehicleType === 'car' ? 'default' : 'outline'}
+              onClick={() => handleVehicleTypeChange('car')}
+              disabled={disabled}
+              className={cn(
+                'h-12 flex items-center justify-center gap-2',
+                vehicleType === 'car' && 'bg-[#CC0000] hover:bg-[#CC0000]/90 text-white'
+              )}
+            >
+              <Car className="h-5 w-5" />
+              Car / SUV / Truck
+            </Button>
+            <Button
+              type="button"
+              variant={vehicleType === 'motorcycle' ? 'default' : 'outline'}
+              onClick={() => handleVehicleTypeChange('motorcycle')}
+              disabled={disabled}
+              className={cn(
+                'h-12 flex items-center justify-center gap-2',
+                vehicleType === 'motorcycle' && 'bg-[#CC0000] hover:bg-[#CC0000]/90 text-white'
+              )}
+            >
+              <Bike className="h-5 w-5" />
+              Motorcycle
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Year Selection */}
       <div className="space-y-2">
         <Label htmlFor="year">Year</Label>
@@ -186,7 +234,11 @@ export function VehicleMakeModelSelector({
                 </span>
               ) : value.make ? (
                 <span className="flex items-center gap-2">
-                  <Car className="h-4 w-4 text-muted-foreground" />
+                  {vehicleType === 'motorcycle' ? (
+                    <Bike className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Car className="h-4 w-4 text-muted-foreground" />
+                  )}
                   {value.make}
                 </span>
               ) : (

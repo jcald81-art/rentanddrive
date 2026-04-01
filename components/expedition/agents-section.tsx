@@ -1,99 +1,47 @@
 'use client'
 
 import { 
-  Radio, 
-  Gauge, 
-  ShieldCheck, 
-  Binoculars, 
+  Brain,
+  MessageSquare, 
+  TrendingUp, 
   Activity, 
-  Rocket, 
-  BadgeCheck, 
+  ShieldCheck, 
   Camera, 
-  Eye, 
-  Backpack 
+  AlertTriangle,
+  Sparkles,
 } from 'lucide-react'
 
-// Expedition Agent Configuration - Full 10-Agent Roster
-const EXPEDITION_AGENTS = [
+// RAD capabilities - the unified AI brain
+const RAD_CAPABILITIES = [
   {
-    id: 'comms',
-    name: 'RAD Comms',
-    role: 'Communications',
-    description: 'Drafts and sends every message — booking confirmations, check-in instructions, dispute responses, and post-trip follow-ups. Clear, direct, always moving the trip forward.',
-    color: '#185FA5',
-    icon: Radio,
+    icon: MessageSquare,
+    title: 'Smart Communications',
+    description: 'Booking confirmations, check-in instructions, and dispute responses — all handled automatically.',
   },
   {
-    id: 'pricing',
-    name: 'RAD Pricing',
-    role: 'Dynamic Pricing',
-    description: 'Reads the market in real-time and sets optimal rates across your fleet. Cross-validated with a second AI model — every price recommendation is double-checked before it applies.',
-    color: '#C4813A',
-    icon: Gauge,
+    icon: TrendingUp,
+    title: 'Dynamic Pricing',
+    description: 'Real-time market analysis sets optimal rates across your fleet, maximizing revenue.',
   },
   {
-    id: 'reputation',
-    name: 'RAD Reputation',
-    role: 'Reviews & Trust',
-    description: 'Protects your trust score. Scores every incoming review for authenticity, drafts responses, flags bad-faith claims, and detects coordinated review attacks before they land.',
-    color: '#3B6D11',
-    icon: ShieldCheck,
-  },
-  {
-    id: 'intel',
-    name: 'RAD Intel',
-    role: 'Market Intelligence',
-    description: 'Runs recon ahead of the market. Tracks competitor pricing, monitors Turo and Getaround in your markets, surfaces demand spikes, and flags expansion opportunities in real-time.',
-    color: '#534AB7',
-    icon: Binoculars,
-  },
-  {
-    id: 'fleet',
-    name: 'RAD Fleet',
-    role: 'Fleet Health',
-    description: 'Monitors every vehicle via OBD2 telemetry from RAD Fleet Command. Predicts maintenance needs, scores vehicle health 0-100, and alerts you before a breakdown costs you a booking.',
-    color: '#0F6E56',
     icon: Activity,
+    title: 'Fleet Health Monitoring',
+    description: 'OBD2 telemetry predicts maintenance needs before a breakdown costs you a booking.',
   },
   {
-    id: 'rewards',
-    name: 'RAD Rewards',
-    role: 'Engagement & Loyalty',
-    description: 'Runs the Mile Markers loyalty program, referral campaigns, and win-back sequences. North star metric: getting the same renter back in your vehicle.',
-    color: '#993C1D',
-    icon: Rocket,
+    icon: ShieldCheck,
+    title: 'Driver Verification',
+    description: 'License OCR and face match verify every driver before they touch your vehicle.',
   },
   {
-    id: 'verify',
-    name: 'RAD Verify',
-    role: 'Driver Verification',
-    description: 'The trust gateway. Verifies every driver license via OCR and face match before a renter touches your vehicle. Also powers RAD CarFidelity Certified — the vehicle verification badge.',
-    color: '#993556',
-    icon: BadgeCheck,
-  },
-  {
-    id: 'carfidelity',
-    name: 'RAD CarFidelity',
-    role: 'Vehicle Inspection',
-    description: 'Analyzes pre-trip and post-trip photos to detect damage, assess severity, and generate timestamped PDF reports. Every assessment is dispute-ready documentation.',
-    color: '#5F5E5A',
     icon: Camera,
+    title: 'Photo Session Guidance',
+    description: 'AI-guided mobile capture ensures consistent, professional vehicle photos every time.',
   },
   {
-    id: 'secure',
-    name: 'RAD Secure',
-    role: 'Fraud Detection',
-    description: 'Scans every booking, account, and payment for fraud signals. Requires agreement from two independent AI models before any account action — protects legitimate users.',
-    color: '#A32D2D',
-    icon: Eye,
-  },
-  {
-    id: 'upsell',
-    name: 'RAD Upsell',
-    role: 'Add-ons & Gear',
-    description: 'Recommends the right gear at booking confirmation. Snow chains for a Tahoe trip, cargo liner for Moab, bike rack for Bozeman. Trip-specific, never generic.',
-    color: '#BA7517',
-    icon: Backpack,
+    icon: AlertTriangle,
+    title: 'Recall Checks',
+    description: 'VIN-based safety recall monitoring keeps your fleet compliant and renters safe.',
   },
 ]
 
@@ -101,63 +49,60 @@ export function AgentsSection() {
   return (
     <section className="py-20 md:py-28 bg-background">
       <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <span className="text-xs font-medium tracking-[0.08em] uppercase text-muted-foreground mb-3 block">
-            RAD Intelligence
+        {/* Main RAD Feature */}
+        <div className="max-w-4xl mx-auto text-center mb-16">
+          {/* RAD Icon */}
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-[#CC0000] to-[#990000] mb-6 shadow-lg">
+            <Brain className="w-10 h-10 text-white" />
+          </div>
+          
+          <span className="text-xs font-medium tracking-[0.08em] uppercase text-[#CC0000] mb-3 block">
+            Platform Intelligence
           </span>
-          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">
-            10 RAD Agents. One Fleet.
+          
+          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-5">
+            Meet RAD
           </h2>
-          <p className="text-muted-foreground font-light text-base max-w-2xl mx-auto">
-            Every booking, every vehicle, every renter — monitored, priced, verified, and protected by the RAD agent suite.
+          
+          <p className="text-muted-foreground text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed">
+            One AI brain powers everything at RentAndDrive. From the moment a vehicle is listed to the final review, RAD handles communications, pricing, verification, and fleet health — so you can focus on growing your business.
           </p>
         </div>
 
-        {/* Agent Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {EXPEDITION_AGENTS.map((agent) => {
-            const IconComponent = agent.icon
+        {/* Capabilities Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {RAD_CAPABILITIES.map((capability, index) => {
+            const IconComponent = capability.icon
             return (
               <div
-                key={agent.id}
-                className="group relative bg-card rounded-xl border border-border p-5 transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]"
-                style={{
-                  borderTopWidth: '3px',
-                  borderTopColor: agent.color,
-                }}
+                key={index}
+                className="group relative bg-card rounded-xl border border-border p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-[#CC0000]/20"
               >
                 {/* Icon */}
-                <div 
-                  className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
-                  style={{ backgroundColor: `${agent.color}15` }}
-                >
-                  <IconComponent 
-                    className="w-5 h-5" 
-                    style={{ color: agent.color }} 
-                  />
+                <div className="w-12 h-12 rounded-xl bg-[#CC0000]/10 flex items-center justify-center mb-4 group-hover:bg-[#CC0000]/15 transition-colors">
+                  <IconComponent className="w-6 h-6 text-[#CC0000]" />
                 </div>
 
-                {/* Agent Name */}
-                <h3 className="font-medium text-base text-card-foreground mb-1">
-                  {agent.name}
+                {/* Title */}
+                <h3 className="font-medium text-lg text-card-foreground mb-2">
+                  {capability.title}
                 </h3>
 
-                {/* Role Label */}
-                <span 
-                  className="text-[11px] uppercase tracking-[0.08em] font-medium mb-3 block"
-                  style={{ color: agent.color }}
-                >
-                  {agent.role}
-                </span>
-
                 {/* Description */}
-                <p className="text-[13px] font-light text-muted-foreground leading-relaxed">
-                  {agent.description}
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {capability.description}
                 </p>
               </div>
             )
           })}
+        </div>
+
+        {/* Bottom CTA */}
+        <div className="text-center mt-12">
+          <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+            <Sparkles className="w-4 h-4 text-[#CC0000]" />
+            <span>Powered by RAD — the intelligent core of RentAndDrive</span>
+          </div>
         </div>
       </div>
     </section>
