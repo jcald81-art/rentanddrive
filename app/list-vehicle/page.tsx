@@ -11,6 +11,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Loader2, Car, ArrowLeft, Brain, Sparkles, Shield, CheckCircle2, AlertTriangle, Upload, FileText, Search, Info, Zap, Smartphone, QrCode } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
+import { SafetyStandards } from '@/components/safety-standards'
+import { StripePayoutSetup } from '@/components/stripe-payout-setup'
 import { Switch } from '@/components/ui/switch'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -70,6 +72,10 @@ export default function ListVehiclePage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  
+  // Multi-step flow: 'form' -> 'safety' -> 'payouts' -> 'photos'
+  const [flowStep, setFlowStep] = useState<'form' | 'safety' | 'payouts' | 'complete'>('form')
+  const [vehicleId, setVehicleId] = useState<string | null>(null)
 
   // VIN Decode states (FIRST STEP)
   const [vin, setVin] = useState('')
@@ -628,8 +634,9 @@ export default function ListVehiclePage() {
 
       if (insertError) throw insertError
       
-      // Redirect to RAD Photo Session with the new vehicle ID
-      router.push(`/host/vehicles/${vehicleData?.id}/photos?new=true`)
+      // Save vehicle ID and move to safety standards step
+      setVehicleId(vehicleData?.id || null)
+      setFlowStep('safety')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to list vehicle')
     } finally {
@@ -662,8 +669,73 @@ export default function ListVehiclePage() {
               <p className="text-muted-foreground">Start earning money by sharing your vehicle</p>
             </div>
           </div>
+          
+          {/* Progress Steps */}
+          <div className="flex items-center justify-between mt-6 mb-2">
+            {[
+              { step: 'form', label: 'Vehicle Info' },
+              { step: 'safety', label: 'Safety Standards' },
+              { step: 'payouts', label: 'Payouts' },
+              { step: 'complete', label: 'Photos' },
+            ].map((item, idx, arr) => (
+              <div key={item.step} className="flex items-center">
+                <div className={`flex items-center gap-2 ${
+                  flowStep === item.step ? 'text-[#CC0000]' : 
+                  arr.findIndex(i => i.step === flowStep) > idx ? 'text-green-600' : 'text-muted-foreground'
+                }`}>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                    flowStep === item.step ? 'bg-[#CC0000] text-white' : 
+                    arr.findIndex(i => i.step === flowStep) > idx ? 'bg-green-600 text-white' : 'bg-muted text-muted-foreground'
+                  }`}>
+                    {arr.findIndex(i => i.step === flowStep) > idx ? <CheckCircle2 className="h-4 w-4" /> : idx + 1}
+                  </div>
+                  <span className="text-xs font-medium hidden sm:inline">{item.label}</span>
+                </div>
+                {idx < arr.length - 1 && (
+                  <div className={`w-8 sm:w-12 h-0.5 mx-2 ${
+                    arr.findIndex(i => i.step === flowStep) > idx ? 'bg-green-600' : 'bg-muted'
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
+        {/* Safety Standards Step */}
+        {flowStep === 'safety' && (
+          <SafetyStandards 
+            onAgree={() => setFlowStep('payouts')}
+            onBack={() => setFlowStep('form')}
+            isLoading={isLoading}
+          />
+        )}
+
+        {/* Payouts Setup Step */}
+        {flowStep === 'payouts' && (
+          <StripePayoutSetup 
+            onComplete={() => {
+              // Redirect to photo session
+              if (vehicleId) {
+                router.push(`/host/vehicles/${vehicleId}/photos?new=true`)
+              } else {
+                setFlowStep('complete')
+              }
+            }}
+            onSkip={() => {
+              // Allow skipping payouts but still proceed
+              if (vehicleId) {
+                router.push(`/host/vehicles/${vehicleId}/photos?new=true`)
+              } else {
+                setFlowStep('complete')
+              }
+            }}
+            onBack={() => setFlowStep('safety')}
+            isLoading={isLoading}
+          />
+        )}
+
+        {/* Vehicle Form Step */}
+        {flowStep === 'form' && (
         <div className="bg-card rounded-xl p-6 md:p-8 shadow-2xl border border-border">
           {error && (
             <div className="mb-6 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
@@ -1594,15 +1666,16 @@ export default function ListVehiclePage() {
                   {uploadingDocs ? 'Uploading Documents...' : 'Submitting...'}
                 </>
               ) : (
-                'Continue to Photo Session'
+                'Continue to Safety Standards'
               )}
             </Button>
 
             <p className="text-center text-xs text-muted-foreground">
-              After listing, you&apos;ll be guided through the RAD Photo Session to capture professional images of your vehicle.
+              After listing, you&apos;ll review our safety standards and set up payouts.
             </p>
           </form>
         </div>
+        )}
       </div>
     </div>
   )

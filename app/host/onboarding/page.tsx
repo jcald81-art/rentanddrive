@@ -27,6 +27,7 @@ import {
   Shield
 } from 'lucide-react'
 import { MFAPromptBanner, MFAEnrollment } from '@/components/mfa-enrollment'
+import { SafetyStandards } from '@/components/safety-standards'
 
 const STEPS = [
   { id: 1, label: 'Account', icon: User },
@@ -90,6 +91,10 @@ export default function HostOnboardingPage() {
   const [features, setFeatures] = useState<string[]>([])
   const [vehicleErrors, setVehicleErrors] = useState<Record<string, string>>({})
 
+  // Safety Standards (between step 4 and 5)
+  const [showSafetyStep, setShowSafetyStep] = useState(false)
+  const [safetyAgreed, setSafetyAgreed] = useState(false)
+  
   // Step 5 - Photos
   const [photos, setPhotos] = useState<File[]>([])
   const [photoShootBooked, setPhotoShootBooked] = useState(false)
@@ -203,7 +208,8 @@ export default function HostOnboardingPage() {
       const data = await response.json()
       if (data.listingId) {
         setListingId(data.listingId)
-        setCurrentStep(5)
+        // Show safety standards before moving to photos
+        setShowSafetyStep(true)
       }
     } catch (error) {
       console.error('Failed to create listing:', error)
@@ -785,9 +791,26 @@ export default function HostOnboardingPage() {
                 disabled={isLoading}
                 className="bg-[#FFD84D] hover:bg-[#FFD84D]/90 text-[#0a0a0a] font-semibold"
               >
-                {isLoading ? 'Saving...' : 'Continue to Photos'}
+                {isLoading ? 'Saving...' : 'Review Safety Standards'}
                 <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Safety Standards (between Step 4 and 5) */}
+        {currentStep === 4 && showSafetyStep && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-y-auto">
+            <div className="my-8">
+              <SafetyStandards 
+                onAgree={() => {
+                  setSafetyAgreed(true)
+                  setShowSafetyStep(false)
+                  setCurrentStep(5)
+                }}
+                onBack={() => setShowSafetyStep(false)}
+                isLoading={isLoading}
+              />
             </div>
           </div>
         )}
