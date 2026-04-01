@@ -713,47 +713,36 @@ export default function ListVehiclePage() {
 
       console.log('📤 [RADCC VEHICLE SUBMIT DEBUG] Preparing Supabase insert...')
       
-      // Map features array to individual boolean columns
+      // Map features to actual schema columns
       const featureFlags = {
-        has_carplay: allFeatures.includes('Apple CarPlay'),
-        has_android_auto: allFeatures.includes('Android Auto'),
-        has_backup_camera: allFeatures.includes('Backup Camera'),
-        has_sunroof: allFeatures.includes('Sunroof') || allFeatures.includes('Panoramic Sunroof'),
-        has_roof_rack: allFeatures.includes('Roof Rack') || allFeatures.includes('Ski Rack'),
-        has_snow_tires: allFeatures.includes('Snow Tires') || allFeatures.includes('Winter Tires'),
-        is_pet_friendly: allFeatures.includes('Pet Friendly'),
-        has_toll_transponder: allFeatures.includes('Toll Pass'),
-        has_portable_wifi: allFeatures.includes('WiFi Hotspot') || allFeatures.includes('Portable WiFi'),
         has_ski_rack: allFeatures.includes('Ski Rack'),
         has_bike_rack: allFeatures.includes('Bike Rack'),
         has_tow_hitch: allFeatures.includes('Tow Hitch'),
         has_roof_box: allFeatures.includes('Roof Box'),
+        pet_friendly: allFeatures.includes('Pet Friendly'),
+        is_awd: driveType === 'AWD' || driveType === '4WD',
       }
       
+      // Build insert payload using ONLY columns that exist in the schema
       const insertPayload = {
         host_id: user.id,
         make,
         model,
         year: parseInt(year),
-        trim: trim || null,
-        category,
-        // Note: vehicle_type maps to category in schema
+        category: category || 'car',
         daily_rate: Math.round(parseFloat(dailyRate) * 100), // Store as cents
-        description,
+        description: description || null,
         location_city: location || 'Reno',
         location_state: 'NV',
         vin: vin || null,
-        drivetrain: driveType || null,
-        body_style: bodyClass || null,
-        fuel_type: fuelType || null,
-        engine: engineInfo || null,
+        fuel_type: fuelType?.toLowerCase() || 'gasoline',
         mileage_limit: parseInt(mileage) || 200,
         // Recall tracking
         recall_severity: recallStatus === 'critical' ? 'CRITICAL' : recallStatus === 'warning' ? 'WARNING' : null,
         last_recall_check: recallStatus ? new Date().toISOString() : null,
         has_open_recalls: recallStatus === 'critical' || recallStatus === 'warning',
         status: 'pending',
-        // Spread feature flags
+        // Feature flags that exist in schema
         ...featureFlags
       }
       console.log('📋 [RADCC VEHICLE SUBMIT DEBUG] Insert payload:', JSON.stringify(insertPayload, null, 2))
