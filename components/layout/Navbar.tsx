@@ -4,7 +4,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { Menu, X, User, LogOut, Car, Home as HomeIcon } from 'lucide-react'
+import { Menu, X, User, LogOut, Car, Home as HomeIcon, ArrowRightLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { ThemeSwitcher } from '@/components/theme-switcher'
@@ -109,7 +109,20 @@ export function Navbar() {
                       Account
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuContent align="end" className="w-56">
+                    {/* Host Mode Toggle */}
+                    <DropdownMenuItem asChild>
+                      <Link 
+                        href="/hostslab/lobby" 
+                        className="flex items-center justify-between bg-[#CC0000]/5 text-[#CC0000] hover:bg-[#CC0000]/10"
+                      >
+                        <span className="flex items-center">
+                          <ArrowRightLeft className="h-4 w-4 mr-2" />
+                          Switch to Host Mode
+                        </span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <Link href="/renter/suite" className="flex items-center">
                         <Car className="h-4 w-4 mr-2" />
@@ -117,9 +130,9 @@ export function Navbar() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/host/dashboard" className="flex items-center">
+                      <Link href="/onboarding/host" className="flex items-center">
                         <HomeIcon className="h-4 w-4 mr-2" />
-                        RAD Hosts
+                        Become a Host
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -212,6 +225,14 @@ export function Navbar() {
               <div className="border-t border-sidebar-border pt-4 mt-2">
                 {user ? (
                   <>
+                    {/* Host Mode Toggle - Mobile */}
+                    <Link 
+                      href="/hostslab/lobby" 
+                      className="text-sm font-medium text-[#CC0000] hover:text-[#CC0000]/80 py-3 px-3 mb-2 flex items-center gap-2 bg-[#CC0000]/5 rounded-lg"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <ArrowRightLeft className="h-4 w-4" /> Switch to Host Mode
+                    </Link>
                     <Link 
                       href="/renter/suite" 
                       className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2 flex items-center gap-2"
@@ -220,11 +241,11 @@ export function Navbar() {
                       <Car className="h-4 w-4" /> RAD Renters
                     </Link>
                     <Link 
-                      href="/host/dashboard" 
+                      href="/onboarding/host" 
                       className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2 flex items-center gap-2"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <HomeIcon className="h-4 w-4" /> RAD Hosts
+                      <HomeIcon className="h-4 w-4" /> Become a Host
                     </Link>
                     <Link 
                       href="/profile" 
