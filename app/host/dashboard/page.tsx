@@ -47,20 +47,12 @@ export default async function HostDashboardPage() {
     { type: 'Luxury Vehicle', range: '$1,500-2,500/mo' },
   ]
 
-  // AI Agent features
-  const aiAgents = [
-    { name: 'RAD Pricing', description: 'AI-optimized dynamic pricing', icon: DollarSign },
-    { name: 'RAD Fleet Command', description: 'Real-time GPS fleet tracking', icon: MapPin },
-    { name: 'RAD Comms', description: 'Automated guest communications', icon: MessageSquare },
-    { name: 'RAD Reputation', description: 'Reputation management AI', icon: Shield },
-  ]
-
   const features = [
-    { text: 'AI-optimized dynamic pricing (RAD Pricing)', icon: CheckCircle2 },
-    { text: 'Real-time GPS fleet tracking (RAD Fleet Command)', icon: CheckCircle2 },
-    { text: 'Automated guest communications (RAD Comms)', icon: CheckCircle2 },
+    { text: 'AI-optimized dynamic pricing', icon: CheckCircle2 },
+    { text: 'Real-time GPS fleet tracking', icon: CheckCircle2 },
+    { text: 'Automated guest communications', icon: CheckCircle2 },
     { text: 'Gamified hosting with XP and levels', icon: CheckCircle2 },
-    { text: 'Morning briefs and market intelligence (RAD Intel)', icon: CheckCircle2 },
+    { text: 'Morning briefs and market intelligence', icon: CheckCircle2 },
   ]
 
   return (
@@ -118,7 +110,7 @@ export default async function HostDashboardPage() {
               </div>
               
               <p className="text-gray-400 text-lg leading-relaxed">
-                Your AI-powered command center. RAD Fleet Command tracking, RAD Pricing AI, RAD Comms automation, and real-time analytics.
+                Your AI-powered command center. RAD handles fleet tracking, dynamic pricing, automated communications, and real-time analytics.
               </p>
 
               {/* Features List */}
@@ -140,9 +132,9 @@ export default async function HostDashboardPage() {
                   </Button>
                 </Link>
 
-                <Link href="/host/ai-agents">
+                <Link href="/host/chat">
                   <Button variant="ghost" className="text-white/60 hover:text-white px-6 py-3 h-auto">
-                    Meet Your RAD Agents
+                    Chat with RAD
                   </Button>
                 </Link>
               </div>
@@ -200,26 +192,52 @@ export default async function HostDashboardPage() {
         </div>
       </section>
 
-      {/* AI Agents Section */}
+      {/* RAD AI Assistant Section */}
       <section className="border-t border-white/10">
         <div className="container mx-auto px-4 py-16">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl font-bold text-white mb-2">Your AI Fleet Management Team</h2>
-            <p className="text-gray-400">Intelligent agents working 24/7 to maximize your earnings</p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {aiAgents.map((agent, index) => (
-              <Card key={index} className="bg-[#151c2c] border-white/10 hover:border-[#D62828]/50 transition-colors">
-                <CardContent className="p-6 text-center">
-                  <div className="h-12 w-12 rounded-full bg-[#D62828]/20 flex items-center justify-center mx-auto mb-4">
-                    <agent.icon className="h-6 w-6 text-[#D62828]" />
+          <div className="max-w-2xl mx-auto">
+            <Card className="bg-gradient-to-br from-[#151c2c] to-[#1a2235] border-[#D62828]/30 overflow-hidden">
+              <CardContent className="p-8">
+                <div className="flex items-start gap-6">
+                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#D62828] to-[#b82222] flex items-center justify-center flex-shrink-0 shadow-lg shadow-[#D62828]/20">
+                    <Shield className="h-8 w-8 text-white" />
                   </div>
-                  <h3 className="font-semibold text-white mb-2">{agent.name}</h3>
-                  <p className="text-sm text-gray-400">{agent.description}</p>
-                </CardContent>
-              </Card>
-            ))}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h2 className="text-2xl font-bold text-white">RAD</h2>
+                      <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs font-medium rounded-full">Active</span>
+                    </div>
+                    <p className="text-gray-400 mb-4">
+                      Your AI-powered fleet management assistant. RAD handles pricing optimization, guest communications, fleet tracking, reputation management, and market intelligence — all in one place.
+                    </p>
+                    <div className="grid grid-cols-2 gap-3 text-sm mb-6">
+                      <div className="flex items-center gap-2 text-gray-300">
+                        <DollarSign className="h-4 w-4 text-[#D62828]" />
+                        <span>Dynamic pricing</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-300">
+                        <MapPin className="h-4 w-4 text-[#D62828]" />
+                        <span>Fleet tracking</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-300">
+                        <MessageSquare className="h-4 w-4 text-[#D62828]" />
+                        <span>Auto messaging</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-300">
+                        <TrendingUp className="h-4 w-4 text-[#D62828]" />
+                        <span>Market intel</span>
+                      </div>
+                    </div>
+                    <Link href="/host/chat">
+                      <Button className="bg-[#D62828] hover:bg-[#b82222] text-white gap-2">
+                        <MessageSquare className="h-4 w-4" />
+                        Chat with RAD
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
@@ -295,7 +313,7 @@ export default async function HostDashboardPage() {
       <section className="bg-gradient-to-r from-[#1a237e] to-[#0d47a1] py-12">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Ready to maximize your fleet&apos;s potential?</h2>
-          <p className="text-blue-200 mb-6">Join RAD Hosts and let AI handle the heavy lifting</p>
+          <p className="text-blue-200 mb-6">Join RAD Hosts and let RAD handle the heavy lifting</p>
           <Link href="/host/vehicles/new">
             <Button className="bg-white text-[#1a237e] hover:bg-gray-100 px-8 py-3 h-auto font-semibold">
               List Your Vehicle
