@@ -26,7 +26,11 @@ import {
   Activity,
   ChevronRight,
   Zap,
+  Truck,
+  Phone,
 } from 'lucide-react'
+import { DeliveryStatusTracker } from '@/modules/delivery/DeliveryStatusTracker'
+import type { DeliveryRecord } from '@/modules/delivery/DeliveryStatusTracker'
 import { cn } from '@/lib/utils'
 
 const FleetMap = dynamic(() => import('@/components/fleet/fleet-map'), {
@@ -105,6 +109,7 @@ export default function HostFleetDashboard() {
   const [alerts, setAlerts] = useState<FleetAlert[]>([])
   const [tripHistory, setTripHistory] = useState<TripHistory[]>([])
   const [renterScores, setRenterScores] = useState<RenterScore[]>([])
+  const [deliveries, setDeliveries] = useState<DeliveryRecord[]>([])
   const [summary, setSummary] = useState({ total: 0, available: 0, rented: 0, needsAttention: 0, utilizationPercent: 0 })
   const [loading, setLoading] = useState(true)
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date())
@@ -113,11 +118,12 @@ export default function HostFleetDashboard() {
 
   const fetchFleetData = useCallback(async () => {
     try {
-      const [vehiclesRes, alertsRes, tripsRes, scoresRes] = await Promise.all([
+      const [vehiclesRes, alertsRes, tripsRes, scoresRes, deliveriesRes] = await Promise.all([
         fetch('/api/host/fleet/vehicles'),
         fetch('/api/host/fleet/alerts'),
         fetch('/api/host/fleet/trips?limit=10'),
         fetch('/api/host/fleet/renter-scores'),
+        fetch('/api/admin/concierge/rides?active=true'),
       ])
       if (vehiclesRes.ok) {
         const data = await vehiclesRes.json()
@@ -127,6 +133,25 @@ export default function HostFleetDashboard() {
       if (alertsRes.ok) setAlerts((await alertsRes.json()).alerts || [])
       if (tripsRes.ok) setTripHistory((await tripsRes.json()).trips || [])
       if (scoresRes.ok) setRenterScores((await scoresRes.json()).scores || [])
+      if (deliveriesRes.ok) {
+        const data = await deliveriesRes.json()
+        setDeliveries((data.rides || data.deliveries || []).map((d: Record<string, unknown>) => ({
+          id: d.id as string,
+          bookingId: (d.booking_id ?? d.bookingId) as string,
+          direction: ((d.ride_direction ?? d.direction) === 'pickup' ? 'to_renter' : 'from_renter') as 'to_renter' | 'from_renter',
+          provider: ((d.ride_type ?? d.provider) as string)?.includes('lyft') ? 'lyft' : 'uber_direct',
+          status: (d.ride_status ?? d.status ?? 'confirmed') as DeliveryRecord['status'],
+          pickupAddress: (d.pickup_address ?? '') as string,
+          dropoffAddress: (d.dropoff_address ?? '') as string,
+          scheduledAt: (d.scheduled_time ?? d.scheduled_at) as string | undefined,
+          driverName: (d.driver_name) as string | undefined,
+          driverPhone: (d.driver_phone) as string | undefined,
+          driverVehicle: (d.vehicle_description ?? d.driver_vehicle) as string | undefined,
+          etaMinutes: (d.eta_minutes) as number | undefined,
+          feeCents: ((d.cost_cents ?? d.fee_cents ?? 0) as number),
+          trackingUrl: (d.tracking_url) as string | undefined,
+        })))
+      }
       setLastRefresh(new Date())
     } catch (e) {
       console.error('Fleet data error:', e)
@@ -206,12 +231,20 @@ export default function HostFleetDashboard() {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6 grid w-full grid-cols-5">
+          <TabsList className="mb-6 grid w-full grid-cols-6">
             <TabsTrigger value="map"><MapPin className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Map</span></TabsTrigger>
             <TabsTrigger value="vehicles"><Car className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Vehicles</span></TabsTrigger>
             <TabsTrigger value="alerts" className="relative"><Bell className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Alerts</span>{alerts.filter(a => !a.is_acknowledged).length > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">{alerts.filter(a => !a.is_acknowledged).length}</span>}</TabsTrigger>
             <TabsTrigger value="trips"><Route className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Trips</span></TabsTrigger>
             <TabsTrigger value="renters"><User className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Renters</span></TabsTrigger>
+            <TabsTrigger value="delivery" className="relative">
+              <Truck className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">Delivery</span>
+              {deliveries.filter(d => ['pending','confirmed','en_route'].includes(d.status)).length > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[10px] text-white">
+                  {deliveries.filter(d => ['pending','confirmed','en_route'].includes(d.status)).length}
+                </span>
+              )}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="map" className="space-y-6">
@@ -306,6 +339,53 @@ export default function HostFleetDashboard() {
                     {!r.is_blocked && <Button variant="outline" size="sm" className="text-red-500" onClick={() => blockRenter(r.user_id)}><Flag className="h-4 w-4 mr-1" />Block</Button>}
                   </div>
                 ))}
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="delivery" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Truck className="h-5 w-5 text-[#CC0000]" />
+                  Active Deliveries
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {deliveries.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <Truck className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium">No Active Deliveries</h3>
+                    <p className="text-sm text-muted-foreground mt-1">Concierge delivery rides will appear here in real-time.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Summary row */}
+                    <div className="flex gap-4 flex-wrap">
+                      {(['pending','confirmed','en_route','arrived','completed','cancelled'] as const).map(s => {
+                        const count = deliveries.filter(d => d.status === s).length
+                        if (!count) return null
+                        const colors: Record<string, string> = {
+                          pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                          confirmed: 'bg-blue-100 text-blue-800 border-blue-200',
+                          en_route: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+                          arrived: 'bg-purple-100 text-purple-800 border-purple-200',
+                          completed: 'bg-green-100 text-green-800 border-green-200',
+                          cancelled: 'bg-gray-100 text-gray-600 border-gray-200',
+                        }
+                        return (
+                          <div key={s} className={cn('rounded-lg border px-3 py-2 text-sm font-medium capitalize', colors[s])}>
+                            {count} {s.replace('_', ' ')}
+                          </div>
+                        )
+                      })}
+                    </div>
+
+                    {/* Delivery cards */}
+                    {deliveries.map(d => (
+                      <DeliveryStatusTracker key={d.id} delivery={d} />
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
