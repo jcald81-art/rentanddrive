@@ -160,9 +160,6 @@ export async function getMVRReport(reportId: string): Promise<CheckrReport | { e
   }
 }
 
-// Re-export utility function from separate file (no "use server" needed for sync utils)
-export { parseMVRRecords } from "./checkr-utils"
-
 /**
  * Enroll driver in continuous monitoring
  */

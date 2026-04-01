@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { getInspectionReport, compareInspections } from "@/lib/verification/inspektlabs"
+import { getInspectionReport } from "@/lib/verification/inspektlabs"
+import { compareInspections } from "@/lib/verification/inspektlabs-utils"
 import { headers } from "next/headers"
 import crypto from "crypto"
 

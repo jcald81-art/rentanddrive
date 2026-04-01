@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { getMVRReport, parseMVRRecords } from "@/lib/verification/checkr"
+import { getMVRReport } from "@/lib/verification/checkr"
+import { parseMVRRecords } from "@/lib/verification/checkr-utils"
 import { calculateRentabilityScore } from "@/lib/verification/score-engine"
 import { headers } from "next/headers"
 import crypto from "crypto"

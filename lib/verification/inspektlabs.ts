@@ -146,9 +146,6 @@ export async function getInspectionReport(sessionId: string): Promise<InspektRep
   }
 }
 
-// Re-export utility function from separate file (no "use server" needed for sync utils)
-export { compareInspections } from "./inspektlabs-utils"
-
 /**
  * Send inspection link via SMS
  */
