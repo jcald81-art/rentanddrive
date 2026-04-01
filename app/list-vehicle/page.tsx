@@ -84,6 +84,14 @@ export default function ListVehiclePage() {
   const [loadingModels, setLoadingModels] = useState(false)
   
   const [category, setCategory] = useState('')
+  const [mileage, setMileage] = useState('')
+  const [mileageError, setMileageError] = useState<string | null>(null)
+  const [ageError, setAgeError] = useState<string | null>(null)
+  
+  // Vehicle features multi-select
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([])
+  const [otherFeature, setOtherFeature] = useState('')
+  
   const [dailyRate, setDailyRate] = useState('')
   const [aiPricingEnabled, setAiPricingEnabled] = useState(false)
   const [aiPricingLoading, setAiPricingLoading] = useState(false)
@@ -106,6 +114,30 @@ export default function ListVehiclePage() {
   // Generate year options (current year + 1 down to 1980)
   const currentYear = new Date().getFullYear()
   const yearOptions = Array.from({ length: currentYear + 2 - 1980 }, (_, i) => currentYear + 1 - i)
+
+  // Vehicle features options
+  const vehicleFeatures = [
+    { value: 'ski_rack', label: 'Ski Rack / Roof Rack' },
+    { value: 'snow_tires', label: 'Snow Tires / Winter Package' },
+    { value: 'floor_mats', label: 'All-Weather Floor Mats' },
+    { value: 'tow_hitch', label: 'Tow Hitch' },
+    { value: 'premium_audio', label: 'Premium Audio System' },
+    { value: 'leather_seats', label: 'Leather Seats' },
+    { value: 'sunroof', label: 'Sunroof / Moonroof' },
+    { value: 'backup_camera', label: 'Backup Camera' },
+    { value: 'heated_seats', label: 'Heated Seats' },
+    { value: 'navigation', label: 'Navigation System' },
+    { value: 'bluetooth', label: 'Bluetooth / Apple CarPlay' },
+  ]
+
+  // Toggle feature selection
+  const toggleFeature = (value: string) => {
+    setSelectedFeatures(prev => 
+      prev.includes(value) 
+        ? prev.filter(f => f !== value)
+        : [...prev, value]
+    )
+  }
 
   // Category options based on vehicle type
   const categoryOptions = vehicleType === 'motorcycle'
@@ -173,6 +205,30 @@ export default function ListVehiclePage() {
       setCategory('')
     }
   }, [vehicleType, vinDecoded])
+
+  // Validate mileage and vehicle age
+  useEffect(() => {
+    // Mileage validation
+    const miles = parseInt(mileage)
+    if (mileage && miles > 130000) {
+      setMileageError('Vehicle exceeds 130,000 mile limit')
+    } else {
+      setMileageError(null)
+    }
+
+    // Age validation
+    const vehicleYear = parseInt(year)
+    if (year && vehicleYear) {
+      const vehicleAge = currentYear - vehicleYear
+      if (vehicleAge > 12) {
+        setAgeError('Vehicles older than 12 years require manual approval — contact support')
+      } else {
+        setAgeError(null)
+      }
+    } else {
+      setAgeError(null)
+    }
+  }, [mileage, year, currentYear])
 
   // Fetch models when make or year changes
   useEffect(() => {
@@ -357,9 +413,22 @@ export default function ListVehiclePage() {
         return
       }
 
+      // Don't fetch if there are validation errors
+      if (mileageError || ageError) {
+        return
+      }
+
       setAiPricingLoading(true)
       setDailyRate('')
       try {
+        // Get feature labels for the selected features
+        const featureLabels = selectedFeatures
+          .map(f => vehicleFeatures.find(vf => vf.value === f)?.label)
+          .filter(Boolean)
+        if (otherFeature.trim()) {
+          featureLabels.push(otherFeature.trim())
+        }
+
         const res = await fetch('/api/vehicles/ai-pricing', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -372,6 +441,9 @@ export default function ListVehiclePage() {
             location,
             driveType,
             trim,
+            mileage: mileage ? parseInt(mileage) : null,
+            features: featureLabels,
+            description: description || null,
           }),
         })
 
@@ -392,8 +464,10 @@ export default function ListVehiclePage() {
       }
     }
 
-    fetchAiPricing()
-  }, [aiPricingEnabled, make, model, year, category, vehicleType, location, driveType, trim])
+    // Debounce the AI pricing call
+    const debounce = setTimeout(fetchAiPricing, 500)
+    return () => clearTimeout(debounce)
+  }, [aiPricingEnabled, make, model, year, category, vehicleType, location, driveType, trim, mileage, selectedFeatures, otherFeature, description, mileageError, ageError, vehicleFeatures])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -412,6 +486,15 @@ export default function ListVehiclePage() {
       // Validate required fields
       if (!year || !make || !model) {
         throw new Error('Please enter year, make, and model')
+      }
+      if (!mileage) {
+        throw new Error('Please enter vehicle mileage')
+      }
+      if (mileageError) {
+        throw new Error(mileageError)
+      }
+      if (ageError) {
+        throw new Error(ageError)
       }
       if (!category) {
         throw new Error('Please select a category')
@@ -438,6 +521,12 @@ export default function ListVehiclePage() {
       await uploadDocuments(user.id)
       setUploadingDocs(false)
 
+      // Prepare features array
+      const allFeatures = [...selectedFeatures]
+      if (otherFeature.trim()) {
+        allFeatures.push(`other:${otherFeature.trim()}`)
+      }
+
       const { data: vehicleData, error: insertError } = await supabase
         .from('vehicles')
         .insert({
@@ -457,6 +546,8 @@ export default function ListVehiclePage() {
           body_class: bodyClass || null,
           fuel_type: fuelType || null,
           engine_info: engineInfo || null,
+          mileage: parseInt(mileage),
+          features: allFeatures,
           recall_status: recallStatus === 'clear' ? 'clear' : recallStatus === 'warning' ? 'warning' : 'unchecked',
           recall_checked_at: recallStatus ? new Date().toISOString() : null,
           status: 'pending_photos'
@@ -897,25 +988,103 @@ export default function ListVehiclePage() {
                 </div>
               )}
 
-              {/* Category */}
-              <div className="space-y-2">
-                <Label>Category</Label>
-                <Select value={category} onValueChange={setCategory} disabled={isLoading}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categoryOptions.map(opt => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {decodedData?.suggested_category && (
-                  <p className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Info className="h-3 w-3" />
-                    Suggested based on VIN decode
+              {/* Mileage and Category row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Mileage */}
+                <div className="space-y-2">
+                  <Label htmlFor="mileage">Current Mileage *</Label>
+                  <Input
+                    id="mileage"
+                    type="number"
+                    placeholder="e.g., 45000"
+                    value={mileage}
+                    onChange={(e) => setMileage(e.target.value.replace(/\D/g, ''))}
+                    required
+                    min="0"
+                    max="130000"
+                    disabled={isLoading}
+                    className={mileageError ? 'border-red-500 focus-visible:ring-red-500' : ''}
+                  />
+                  {mileageError && (
+                    <div className="flex items-center gap-2 text-red-600 text-sm">
+                      <AlertTriangle className="h-4 w-4" />
+                      {mileageError}
+                    </div>
+                  )}
+                </div>
+
+                {/* Category */}
+                <div className="space-y-2">
+                  <Label>Category *</Label>
+                  <Select value={category} onValueChange={setCategory} disabled={isLoading}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categoryOptions.map(opt => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {decodedData?.suggested_category && (
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Info className="h-3 w-3" />
+                      Suggested based on VIN decode
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Age Error Alert */}
+              {ageError && (
+                <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                  <div className="flex items-start gap-2 text-amber-700">
+                    <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium">Vehicle Age Restriction</p>
+                      <p className="text-sm">{ageError}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Vehicle Features Multi-select */}
+              <div className="space-y-3">
+                <Label>Vehicle Features</Label>
+                <p className="text-xs text-muted-foreground -mt-1">Select features that may increase rental value</p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {vehicleFeatures.map(feature => (
+                    <button
+                      key={feature.value}
+                      type="button"
+                      onClick={() => toggleFeature(feature.value)}
+                      disabled={isLoading}
+                      className={`px-3 py-2 text-sm rounded-lg border transition-colors text-left ${
+                        selectedFeatures.includes(feature.value)
+                          ? 'bg-[#CC0000] text-white border-[#CC0000]'
+                          : 'bg-background border-border hover:border-[#CC0000]/50 text-foreground'
+                      }`}
+                    >
+                      {feature.label}
+                    </button>
+                  ))}
+                </div>
+                {/* Other feature input */}
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Other feature (optional)"
+                    value={otherFeature}
+                    onChange={(e) => setOtherFeature(e.target.value)}
+                    disabled={isLoading}
+                    className="flex-1"
+                  />
+                </div>
+                {selectedFeatures.length > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    {selectedFeatures.length} feature{selectedFeatures.length !== 1 ? 's' : ''} selected
+                    {otherFeature.trim() ? ` + "${otherFeature.trim()}"` : ''}
                   </p>
                 )}
               </div>
