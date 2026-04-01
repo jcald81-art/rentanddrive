@@ -764,11 +764,29 @@ export default function ListVehiclePage() {
     } catch (err: unknown) {
       console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Caught error:', err)
       console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Error type:', typeof err)
+      // Try to stringify the full error object
+      try {
+        console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Error JSON:', JSON.stringify(err, null, 2))
+      } catch {
+        console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Error not serializable')
+      }
       if (err instanceof Error) {
         console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Error message:', err.message)
         console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Error stack:', err.stack)
       }
-      setError(err instanceof Error ? err.message : 'Failed to list vehicle')
+      // Check if it's a Supabase error object
+      if (err && typeof err === 'object' && 'message' in err) {
+        const supaErr = err as { message?: string; code?: string; details?: string; hint?: string }
+        console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Supabase error details:', {
+          message: supaErr.message,
+          code: supaErr.code,
+          details: supaErr.details,
+          hint: supaErr.hint
+        })
+        setError(supaErr.message || 'Database error')
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to list vehicle')
+      }
     } finally {
       console.log('🏁 [RADCC VEHICLE SUBMIT DEBUG] Submit complete (finally block)')
       setIsLoading(false)
