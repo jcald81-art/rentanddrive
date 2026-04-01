@@ -19,7 +19,10 @@ import {
   ArrowRight,
   Download,
   Share2,
+  QrCode,
+  Smartphone,
 } from 'lucide-react'
+import QRCode from 'qrcode'
 
 interface BookingDetails {
   id: string
@@ -52,6 +55,7 @@ function BookingSuccessContent() {
   const bookingId = searchParams.get('booking_id')
   const [booking, setBooking] = useState<BookingDetails | null>(null)
   const [loading, setLoading] = useState(true)
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null)
 
   useEffect(() => {
     if (bookingId) {
@@ -65,6 +69,20 @@ function BookingSuccessContent() {
       if (response.ok) {
         const data = await response.json()
         setBooking(data.booking)
+        
+        // Generate QR code for mobile check-in
+        if (data.booking?.id) {
+          const checkInUrl = `${window.location.origin}/trip/${data.booking.id}/check-in?code=${data.booking.booking_number}`
+          const qrDataUrl = await QRCode.toDataURL(checkInUrl, {
+            width: 200,
+            margin: 2,
+            color: {
+              dark: '#0D0D0D',
+              light: '#FFFFFF',
+            },
+          })
+          setQrCodeUrl(qrDataUrl)
+        }
       }
     } catch (error) {
       console.error('Failed to fetch booking:', error)
@@ -235,6 +253,36 @@ function BookingSuccessContent() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Mobile Check-in QR Code */}
+        {qrCodeUrl && (
+          <Card className="mb-6">
+            <CardContent className="pt-6">
+              <div className="flex flex-col sm:flex-row items-center gap-6">
+                <div className="flex-shrink-0">
+                  <img
+                    src={qrCodeUrl}
+                    alt="Check-in QR Code"
+                    className="w-32 h-32 rounded-lg border"
+                  />
+                </div>
+                <div className="text-center sm:text-left">
+                  <div className="flex items-center gap-2 justify-center sm:justify-start mb-2">
+                    <QrCode className="h-5 w-5 text-[#CC0000]" />
+                    <h3 className="font-semibold">Mobile Check-in</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Scan this QR code at pickup for instant, contactless check-in. No paperwork required.
+                  </p>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 px-3 py-2 rounded-lg">
+                    <Smartphone className="h-4 w-4" />
+                    <span>Works with any phone camera</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Concierge Ride Request */}
         <ConciergeRequest
