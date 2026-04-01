@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 
-// carfidelity.ai branded colors (Inspector Cartegrity AI)
+// RADar branded colors (powered by Inspekt Labs)
 const BRAND_RED = '#CC0000'
 
 const INSPECTION_ANGLES = [
