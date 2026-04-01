@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -343,89 +343,8 @@ export default function ListVehiclePage() {
     fetchModels()
   }, [make, year, vehicleType, vinDecoded])
 
-  // VIN Decode function using server action
-  const decodeVin = useCallback(async () => {
-    if (vin.length !== 17) {
-      setVinError('VIN must be exactly 17 characters')
-      return
-    }
-
-    setIsDecoding(true)
-    setIsCheckingRecalls(true)
-    setVinError(null)
-    setDecodedData(null)
-    setRecallData(null)
-    setRecallStatus(null)
-
-    try {
-      // Call server action for VIN decode
-      const result = await decodeVinAction(vin)
-      
-      if (!result.success || !result.vehicle) {
-        setVinError(result.error || 'Could not decode this VIN. Please verify it is correct or enter details manually.')
-        return
-      }
-
-      const decoded = result.vehicle
-      setDecodedData(decoded)
-      setVinDecoded(true)
-      
-      // Auto-populate fields from VIN decode
-      setMake(decoded.make || '')
-      setModel(decoded.model || '')
-      setYear(decoded.year?.toString() || '')
-      setTrim(decoded.trim || '')
-      setDriveType(decoded.drive_type || '')
-      setBodyClass(decoded.body_class || '')
-      setFuelType(decoded.fuel_type || '')
-      
-      // Build engine info string
-      if (decoded.engine_cylinders || decoded.engine_displacement_l) {
-        const engineParts = []
-        if (decoded.engine_cylinders) engineParts.push(`${decoded.engine_cylinders} cyl`)
-        if (decoded.engine_displacement_l) engineParts.push(`${decoded.engine_displacement_l}L`)
-        if (decoded.fuel_type) engineParts.push(decoded.fuel_type)
-        setEngineInfo(engineParts.join(' / '))
-      }
-      
-      // Set suggested category
-      if (decoded.suggested_category) {
-        setCategory(decoded.suggested_category)
-      }
-      
-      // Determine vehicle type from body class
-      if (decoded.body_class?.toLowerCase().includes('motorcycle')) {
-        setVehicleType('motorcycle')
-      }
-
-      // Handle recall data from server action
-      if (result.recalls) {
-        setRecallData(result.recalls)
-        
-        // Determine recall status
-        if (result.recalls.total_recalls === 0) {
-          setRecallStatus('clear')
-        } else if (result.recalls.recalls?.some(r => 
-          r.Consequence?.toLowerCase().includes('crash') || 
-          r.Consequence?.toLowerCase().includes('fire')
-        )) {
-          setRecallStatus('critical')
-        } else {
-          setRecallStatus('warning')
-        }
-      } else {
-        setRecallStatus('clear')
-      }
-    } catch {
-      setVinError('Failed to decode VIN. Please try again or enter details manually.')
-    } finally {
-      setIsDecoding(false)
-      setIsCheckingRecalls(false)
-    }
-  }, [vin])
-
-  // Handle VIN input change
-  const handleVinChange = (value: string) => {
+  // Handle VIN input change with auto-decode
+  const handleVinChange = async (value: string) => {
     // Only allow alphanumeric, uppercase, exclude I, O, Q (invalid VIN chars)
     const cleaned = value.toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g, '').slice(0, 17)
     setVin(cleaned)
@@ -437,6 +356,83 @@ export default function ListVehiclePage() {
       setDecodedData(null)
       setRecallData(null)
       setRecallStatus(null)
+    }
+    
+    // Auto-decode when VIN reaches exactly 17 characters
+    if (cleaned.length === 17 && !isDecoding) {
+      // Trigger decode with the new VIN value directly
+      setIsDecoding(true)
+      setIsCheckingRecalls(true)
+      setVinError(null)
+      setDecodedData(null)
+      setRecallData(null)
+      setRecallStatus(null)
+
+      try {
+        const result = await decodeVinAction(cleaned)
+        
+        if (!result.success || !result.vehicle) {
+          setVinError(result.error || 'Could not decode this VIN. Please verify it is correct or enter details manually.')
+          return
+        }
+
+        const decoded = result.vehicle
+        setDecodedData(decoded)
+        setVinDecoded(true)
+        
+        // Auto-populate fields from VIN decode
+        setMake(decoded.make || '')
+        setModel(decoded.model || '')
+        setYear(decoded.year?.toString() || '')
+        setTrim(decoded.trim || '')
+        setDriveType(decoded.drive_type || '')
+        setBodyClass(decoded.body_class || '')
+        setFuelType(decoded.fuel_type || '')
+        
+        // Build engine info string
+        if (decoded.engine_cylinders || decoded.engine_displacement_l) {
+          const engineParts = []
+          if (decoded.engine_cylinders) engineParts.push(`${decoded.engine_cylinders} cyl`)
+          if (decoded.engine_displacement_l) engineParts.push(`${decoded.engine_displacement_l}L`)
+          if (decoded.fuel_type) engineParts.push(decoded.fuel_type)
+          setEngineInfo(engineParts.join(' / '))
+        }
+        
+        // Set suggested category
+        if (decoded.suggested_category) {
+          setCategory(decoded.suggested_category)
+        }
+        
+        // Determine vehicle type from body class
+        if (decoded.body_class?.toLowerCase().includes('motorcycle')) {
+          setVehicleType('motorcycle')
+        }
+        
+        // Handle recall data from server action
+        if (result.recalls) {
+          setRecallData(result.recalls)
+          
+          // Determine recall status
+          if (result.recalls.total_recalls === 0) {
+            setRecallStatus('clear')
+          } else if (result.recalls.recalls?.some((r: { Consequence?: string }) => 
+            r.Consequence?.toLowerCase().includes('crash') || 
+            r.Consequence?.toLowerCase().includes('fire')
+          )) {
+            setRecallStatus('critical')
+          } else {
+            setRecallStatus('warning')
+          }
+        } else {
+          setRecallStatus('clear')
+        }
+      } catch (err) {
+        console.error('VIN decode failed:', err)
+        setVinError('Failed to decode VIN. Please try again.')
+      } finally {
+        setIsDecoding(false)
+        setIsCheckingRecalls(false)
+      }
     }
   }
 
@@ -853,41 +849,42 @@ export default function ListVehiclePage() {
 
               <Card className="border-[#CC0000]/20 bg-[#CC0000]/5">
                 <CardContent className="pt-4">
-                  <div className="flex gap-2">
-                    <div className="relative flex-1">
-                      <Input
-                        placeholder="Enter 17-character VIN"
-                        value={vin}
-                        onChange={(e) => handleVinChange(e.target.value)}
-                        className="pr-16 font-mono tracking-wider uppercase text-lg h-12"
-                        maxLength={17}
-                        disabled={isDecoding}
-                      />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-mono">
-                        {vin.length}/17
-                      </span>
-                    </div>
-                    <Button 
-                      type="button"
-                      onClick={decodeVin}
-                      disabled={vin.length !== 17 || isDecoding}
-                      className="h-12 px-6 bg-[#CC0000] hover:bg-[#CC0000]/90"
-                    >
+                  <div className="relative">
+                    <Input
+                      placeholder="Enter 17-character VIN"
+                      value={vin}
+                      onChange={(e) => handleVinChange(e.target.value)}
+                      className="pr-24 font-mono tracking-wider uppercase text-lg h-12"
+                      maxLength={17}
+                      disabled={isDecoding}
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                       {isDecoding ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <div className="flex items-center gap-2 text-[#CC0000]">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span className="text-xs font-medium">Decoding...</span>
+                        </div>
+                      ) : vin.length === 17 && vinDecoded ? (
+                        <CheckCircle2 className="h-5 w-5 text-green-600" />
                       ) : (
-                        <>
-                          <Search className="h-5 w-5 mr-2" />
-                          Decode
-                        </>
+                        <span className="text-sm text-muted-foreground font-mono">
+                          {vin.length}/17
+                        </span>
                       )}
-                    </Button>
+                    </div>
                   </div>
 
                   {vinError && (
                     <div className="flex items-center gap-2 mt-3 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
                       <AlertTriangle className="h-4 w-4 flex-shrink-0" />
                       {vinError}
+                    </div>
+                  )}
+
+                  {isDecoding && (
+                    <div className="flex items-center gap-2 mt-3 text-sm text-[#CC0000] bg-[#CC0000]/10 p-3 rounded-lg">
+                      <Loader2 className="h-4 w-4 animate-spin flex-shrink-0" />
+                      <span>Decoding VIN and checking for recalls...</span>
                     </div>
                   )}
 
