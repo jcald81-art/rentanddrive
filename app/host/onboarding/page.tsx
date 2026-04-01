@@ -23,8 +23,10 @@ import {
   ExternalLink,
   Copy,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Shield
 } from 'lucide-react'
+import { MFAPromptBanner, MFAEnrollment } from '@/components/mfa-enrollment'
 
 const STEPS = [
   { id: 1, label: 'Account', icon: User },
@@ -62,6 +64,10 @@ export default function HostOnboardingPage() {
   // Step 2 - Identity
   const [identityVerified, setIdentityVerified] = useState(false)
   const [identitySkipped, setIdentitySkipped] = useState(false)
+  
+  // MFA Prompt
+  const [showMfaPrompt, setShowMfaPrompt] = useState(true)
+  const [showMfaSetup, setShowMfaSetup] = useState(false)
 
   // Step 3 - Payouts
   const [payoutsConnected, setPayoutsConnected] = useState(false)
@@ -909,6 +915,58 @@ export default function HostOnboardingPage() {
                 <ChevronRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
+
+            {/* MFA Security Prompt */}
+            {showMfaPrompt && !showMfaSetup && (
+              <div className="max-w-md mx-auto text-left">
+                <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl p-4">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                      <Shield className="h-5 w-5 text-green-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-white">
+                        Enable MFA for extra security
+                      </h3>
+                      <p className="text-sm text-white/60 mt-1">
+                        Protect your vehicles and earnings with two-factor authentication. Takes just 30 seconds.
+                      </p>
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        <Button 
+                          onClick={() => setShowMfaSetup(true)}
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          <Shield className="h-4 w-4 mr-1" />
+                          Enable Now
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => setShowMfaPrompt(false)}
+                          className="text-white/60 hover:text-white"
+                        >
+                          Maybe later
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* MFA Setup Modal */}
+            {showMfaSetup && (
+              <div className="max-w-md mx-auto text-left">
+                <MFAEnrollment 
+                  showAsCard={true} 
+                  onClose={() => {
+                    setShowMfaSetup(false)
+                    setShowMfaPrompt(false)
+                  }} 
+                />
+              </div>
+            )}
 
             {/* Reminder Card */}
             {(identitySkipped || payoutsSkipped) && (

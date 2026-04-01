@@ -24,6 +24,7 @@ import {
   Gift
 } from 'lucide-react'
 import { DashboardClient } from './dashboard-client'
+import { MFASecurityBadge } from '@/components/mfa-enrollment'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -182,9 +183,12 @@ export default async function DashboardPage() {
         <div className="mb-8">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-foreground">
-                Welcome back, {user.user_metadata?.full_name?.split(' ')[0] || 'Renter'}
-              </h1>
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-semibold text-foreground">
+                  Welcome back, {user.user_metadata?.full_name?.split(' ')[0] || 'Renter'}
+                </h1>
+                <MFASecurityBadge />
+              </div>
               <p className="text-muted-foreground mt-1">
                 Manage your trips, credits, and saved vehicles
               </p>

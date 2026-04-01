@@ -22,6 +22,7 @@ import {
   FileText,
   FolderOpen
 } from 'lucide-react'
+import { MFASecurityBadge } from '@/components/mfa-enrollment'
 
 export default async function HostDashboardPage() {
   const supabase = await createClient()
@@ -109,9 +110,12 @@ export default async function HostDashboardPage() {
                 Base Camp
               </h1>
               
-              <h2 className="text-2xl font-semibold text-[#D62828]">
-                Welcome to RAD Hosts
-              </h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-2xl font-semibold text-[#D62828]">
+                  Welcome to RAD Hosts
+                </h2>
+                <MFASecurityBadge />
+              </div>
               
               <p className="text-gray-400 text-lg leading-relaxed">
                 Your AI-powered command center. RAD Fleet Command tracking, RAD Pricing AI, RAD Comms automation, and real-time analytics.

@@ -25,7 +25,7 @@ import {
   ChevronRight
 } from 'lucide-react'
 import Link from 'next/link'
-
+import { MFAEnrollment } from '@/components/mfa-enrollment'
 
 interface Profile {
   id: string
@@ -337,6 +337,9 @@ export default function ProfilePage() {
                 )}
               </CardContent>
             </Card>
+
+            {/* MFA Security Section */}
+            <MFAEnrollment showAsCard={true} />
           </div>
 
           {/* Right column - Edit form */}
