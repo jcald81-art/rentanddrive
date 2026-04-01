@@ -692,35 +692,43 @@ export default function ListVehiclePage() {
         allFeatures.push(`other:${otherFeature.trim()}`)
       }
 
+      console.log('[v0] Inserting vehicle into database...')
+      const insertPayload = {
+        host_id: user.id,
+        make,
+        model,
+        year: parseInt(year),
+        trim: trim || null,
+        category,
+        vehicle_type: vehicleType,
+        daily_rate: parseFloat(dailyRate),
+        ai_pricing_enabled: aiPricingEnabled,
+        description,
+        location,
+        vin: vin || null,
+        drive_type: driveType || null,
+        body_class: bodyClass || null,
+        fuel_type: fuelType || null,
+        engine_info: engineInfo || null,
+        mileage: parseInt(mileage),
+        features: allFeatures,
+        recall_status: recallStatus === 'clear' ? 'clear' : recallStatus === 'warning' ? 'warning' : 'unchecked',
+        recall_checked_at: recallStatus ? new Date().toISOString() : null,
+        status: 'pending_photos'
+      }
+      console.log('[v0] Insert payload:', JSON.stringify(insertPayload, null, 2))
+      
       const { data: vehicleData, error: insertError } = await supabase
         .from('vehicles')
-        .insert({
-          host_id: user.id,
-          make,
-          model,
-          year: parseInt(year),
-          trim: trim || null,
-          category,
-          vehicle_type: vehicleType,
-          daily_rate: parseFloat(dailyRate),
-          ai_pricing_enabled: aiPricingEnabled,
-          description,
-          location,
-          vin: vin || null,
-          drive_type: driveType || null,
-          body_class: bodyClass || null,
-          fuel_type: fuelType || null,
-          engine_info: engineInfo || null,
-          mileage: parseInt(mileage),
-          features: allFeatures,
-          recall_status: recallStatus === 'clear' ? 'clear' : recallStatus === 'warning' ? 'warning' : 'unchecked',
-          recall_checked_at: recallStatus ? new Date().toISOString() : null,
-          status: 'pending_photos'
-        })
+        .insert(insertPayload)
         .select('id')
         .single()
 
-      if (insertError) throw insertError
+      if (insertError) {
+        console.error('[v0] Database insert error:', insertError)
+        throw insertError
+      }
+      console.log('[v0] Vehicle created successfully:', vehicleData)
       
       // Save vehicle ID and move to safety standards step
       setVehicleId(vehicleData?.id || null)

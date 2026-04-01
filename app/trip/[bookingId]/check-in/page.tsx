@@ -1,5 +1,5 @@
 'use client'
-
+// Force build cache invalidation - dynamic route uses [bookingId] param
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
