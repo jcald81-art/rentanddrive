@@ -4,7 +4,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { Menu, X, User, LogOut, Car, Home as HomeIcon, ArrowRightLeft } from 'lucide-react'
+import { Menu, X, User, LogOut, ArrowRightLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { ThemeSwitcher } from '@/components/theme-switcher'
@@ -24,6 +24,24 @@ export function Navbar() {
   const [user, setUser] = useState<{ email?: string; user_metadata?: { avatar_url?: string; full_name?: string } } | null>(null)
   const [authModalOpen, setAuthModalOpen] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
+  const [userMode, setUserMode] = useState<'renter' | 'host'>('renter')
+
+  // Load user mode from localStorage on mount
+  useEffect(() => {
+    const savedMode = localStorage.getItem('rad_user_mode') as 'renter' | 'host' | null
+    if (savedMode === 'renter' || savedMode === 'host') {
+      setUserMode(savedMode)
+    }
+  }, [])
+
+  // Toggle user mode and persist to localStorage
+  const toggleUserMode = () => {
+    const newMode = userMode === 'renter' ? 'host' : 'renter'
+    setUserMode(newMode)
+    localStorage.setItem('rad_user_mode', newMode)
+    // Redirect to appropriate dashboard
+    window.location.href = newMode === 'host' ? '/host/dashboard' : '/renter/suite'
+  }
 
   useEffect(() => {
     const supabase = createClient()
@@ -110,30 +128,13 @@ export function Navbar() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
-                    {/* Host Mode Toggle */}
-                    <DropdownMenuItem asChild>
-                      <Link 
-                        href="/hostslab/lobby" 
-                        className="flex items-center justify-between bg-[#CC0000]/5 text-[#CC0000] hover:bg-[#CC0000]/10"
-                      >
-                        <span className="flex items-center">
-                          <ArrowRightLeft className="h-4 w-4 mr-2" />
-                          Switch to Host Mode
-                        </span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/renter/suite" className="flex items-center">
-                        <Car className="h-4 w-4 mr-2" />
-                        RAD Renters
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/onboarding/host" className="flex items-center">
-                        <HomeIcon className="h-4 w-4 mr-2" />
-                        Become a Host
-                      </Link>
+                    {/* Mode Toggle */}
+                    <DropdownMenuItem 
+                      onClick={toggleUserMode}
+                      className="flex items-center bg-[#CC0000]/5 text-[#CC0000] hover:bg-[#CC0000]/10 cursor-pointer"
+                    >
+                      <ArrowRightLeft className="h-4 w-4 mr-2" />
+                      {userMode === 'renter' ? 'Switch to Host Mode' : 'Switch to Renter Mode'}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
@@ -225,34 +226,30 @@ export function Navbar() {
               <div className="border-t border-sidebar-border pt-4 mt-2">
                 {user ? (
                   <>
-                    {/* Host Mode Toggle - Mobile */}
-                    <Link 
-                      href="/hostslab/lobby" 
-                      className="text-sm font-medium text-[#CC0000] hover:text-[#CC0000]/80 py-3 px-3 mb-2 flex items-center gap-2 bg-[#CC0000]/5 rounded-lg"
-                      onClick={() => setMobileMenuOpen(false)}
+                    {/* Mode Toggle - Mobile */}
+                    <button 
+                      onClick={() => {
+                        setMobileMenuOpen(false)
+                        toggleUserMode()
+                      }}
+                      className="text-sm font-medium text-[#CC0000] hover:text-[#CC0000]/80 py-3 px-3 mb-2 flex items-center gap-2 bg-[#CC0000]/5 rounded-lg w-full text-left"
                     >
-                      <ArrowRightLeft className="h-4 w-4" /> Switch to Host Mode
-                    </Link>
-                    <Link 
-                      href="/renter/suite" 
-                      className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2 flex items-center gap-2"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Car className="h-4 w-4" /> RAD Renters
-                    </Link>
-                    <Link 
-                      href="/onboarding/host" 
-                      className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2 flex items-center gap-2"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <HomeIcon className="h-4 w-4" /> Become a Host
-                    </Link>
+                      <ArrowRightLeft className="h-4 w-4" /> 
+                      {userMode === 'renter' ? 'Switch to Host Mode' : 'Switch to Renter Mode'}
+                    </button>
                     <Link 
                       href="/profile" 
                       className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       My Profile
+                    </Link>
+                    <Link 
+                      href="/bookings" 
+                      className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      My Bookings
                     </Link>
                     <button 
                       className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2 text-left w-full flex items-center gap-2"
