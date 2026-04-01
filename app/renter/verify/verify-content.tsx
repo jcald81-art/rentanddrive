@@ -28,7 +28,38 @@ export default function VerifyContent() {
   const router = useRouter()
 
   useEffect(() => {
-    checkVerificationStatus()
+    let mounted = true
+    
+    async function checkVerificationStatus() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!mounted) return
+      
+      if (!user) {
+        // Use window.location to avoid router initialization issues
+        window.location.href = '/login?redirect=/renter/verify'
+        return
+      }
+
+      // Check if already verified
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('identity_verified, identity_verification_status')
+        .eq('id', user.id)
+        .single()
+
+      if (!mounted) return
+      
+      if (profile?.identity_verified) {
+        setVerified(true)
+      }
+      
+      setChecking(false)
+    }
+    
+    // Defer to next tick
+    const timeoutId = setTimeout(checkVerificationStatus, 0)
     
     // Check URL params for verification result
     if (searchParams.get('verified') === 'true') {
@@ -37,30 +68,12 @@ export default function VerifyContent() {
     if (searchParams.get('error') === 'true') {
       setError('Verification failed. Please try again.')
     }
+    
+    return () => {
+      mounted = false
+      clearTimeout(timeoutId)
+    }
   }, [searchParams])
-
-  async function checkVerificationStatus() {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) {
-      router.push('/login?redirect=/renter/verify')
-      return
-    }
-
-    // Check if already verified
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('identity_verified, identity_verification_status')
-      .eq('id', user.id)
-      .single()
-
-    if (profile?.identity_verified) {
-      setVerified(true)
-    }
-    
-    setChecking(false)
-  }
 
   async function startVerification() {
     setLoading(true)

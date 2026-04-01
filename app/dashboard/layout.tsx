@@ -15,14 +15,18 @@ export default function DashboardLayout({
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
+    let mounted = true
+    
     async function checkAuth() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       
+      if (!mounted) return
+      
       if (!user) {
-        // Store the intended destination
+        // Use window.location to avoid router initialization issues
         const currentPath = window.location.pathname
-        router.push(`/login?redirect=${encodeURIComponent(currentPath)}`)
+        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
         return
       }
       
@@ -30,8 +34,14 @@ export default function DashboardLayout({
       setIsLoading(false)
     }
     
-    checkAuth()
-  }, [router])
+    // Defer to next tick to ensure hydration is complete
+    const timeoutId = setTimeout(checkAuth, 0)
+    
+    return () => {
+      mounted = false
+      clearTimeout(timeoutId)
+    }
+  }, [])
 
   if (isLoading) {
     return (

@@ -22,11 +22,16 @@ export default function PayoutPage() {
 
   // Check Stripe Connect status
   useEffect(() => {
+    let mounted = true
+    
     const checkStatus = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       
+      if (!mounted) return
+      
       if (!user) {
-        router.push('/auth/signin?redirect=/host/vehicles/add/payout')
+        // Use window.location to avoid router initialization issues
+        window.location.href = '/auth/signin?redirect=/host/vehicles/add/payout'
         return
       }
 
@@ -36,11 +41,14 @@ export default function PayoutPage() {
         .eq('id', user.id)
         .single()
 
+      if (!mounted) return
+      
       setHasStripeConnect(profile?.stripe_onboarding_complete || false)
       setIsLoading(false)
     }
 
-    checkStatus()
+    // Defer to next tick to ensure hydration is complete
+    const timeoutId = setTimeout(checkStatus, 0)
 
     // Load draft
     const draft = localStorage.getItem('rad-listing-draft')
@@ -49,7 +57,12 @@ export default function PayoutPage() {
         setListingData(JSON.parse(draft))
       } catch {}
     }
-  }, [supabase, router])
+    
+    return () => {
+      mounted = false
+      clearTimeout(timeoutId)
+    }
+  }, [supabase])
 
   // Connect Stripe
   const handleConnectStripe = async () => {

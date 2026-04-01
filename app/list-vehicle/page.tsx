@@ -109,8 +109,10 @@ export default function ListVehiclePage() {
   const [otherFeature, setOtherFeature] = useState('')
   
   const [dailyRate, setDailyRate] = useState('')
+  const [manuallyEditedRate, setManuallyEditedRate] = useState(false) // Track if user manually edited
   const [aiPricingEnabled, setAiPricingEnabled] = useState(false)
   const [aiPricingLoading, setAiPricingLoading] = useState(false)
+  const [aiPriceUpdateMessage, setAiPriceUpdateMessage] = useState<string | null>(null) // Toast message
   const [aiRecommendation, setAiRecommendation] = useState<{
     rate: number
     reasoning: string
@@ -413,7 +415,7 @@ export default function ListVehiclePage() {
     async function fetchAiPricing() {
       if (!aiPricingEnabled) {
         setAiRecommendation(null)
-        setDailyRate('')
+        // Don't clear daily rate when disabling - let user keep their value
         return
       }
 
@@ -427,7 +429,6 @@ export default function ListVehiclePage() {
       }
 
       setAiPricingLoading(true)
-      setDailyRate('')
       try {
         // Get feature labels for the selected features
         const featureLabels = selectedFeatures
@@ -457,13 +458,31 @@ export default function ListVehiclePage() {
 
         if (res.ok) {
           const data = await res.json()
+          const newRate = data.recommendedRate
+          const currentRate = parseFloat(dailyRate) || 0
+          const priceDiff = Math.abs(newRate - currentRate)
+          
+          // Update recommendation always (for display purposes)
           setAiRecommendation({
-            rate: data.recommendedRate,
+            rate: newRate,
             reasoning: data.reasoning,
             confidence: data.confidence,
             marketRange: data.marketRange,
           })
-          setDailyRate(String(data.recommendedRate))
+          
+          // Only auto-update daily rate if:
+          // 1. User hasn't manually edited the rate, AND
+          // 2. Either no rate set OR price difference is $5 or more
+          if (!manuallyEditedRate && (currentRate === 0 || priceDiff >= 5)) {
+            setDailyRate(String(newRate))
+            
+            // Show toast only if rate was updated (not first time)
+            if (currentRate > 0 && priceDiff >= 5) {
+              setAiPriceUpdateMessage(`RAD updated price to $${newRate}/day based on your changes.`)
+              // Auto-dismiss after 4 seconds
+              setTimeout(() => setAiPriceUpdateMessage(null), 4000)
+            }
+          }
         }
       } catch (err) {
         console.error('Failed to fetch AI pricing:', err)
@@ -472,10 +491,10 @@ export default function ListVehiclePage() {
       }
     }
 
-    // Debounce the AI pricing call
-    const debounce = setTimeout(fetchAiPricing, 500)
+    // Debounce the AI pricing call (800ms for smoother experience)
+    const debounce = setTimeout(fetchAiPricing, 800)
     return () => clearTimeout(debounce)
-  }, [aiPricingEnabled, make, model, year, category, vehicleType, location, driveType, trim, mileage, selectedFeatures, otherFeature, description, mileageError, ageError])
+  }, [aiPricingEnabled, make, model, year, category, vehicleType, location, driveType, trim, mileage, selectedFeatures, otherFeature, description, mileageError, ageError, dailyRate, manuallyEditedRate])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -1114,7 +1133,13 @@ export default function ListVehiclePage() {
                       type="number"
                       placeholder="e.g., 75"
                       value={dailyRate}
-                      onChange={(e) => setDailyRate(e.target.value)}
+                      onChange={(e) => {
+                        setDailyRate(e.target.value)
+                        // Mark as manually edited if AI pricing is on and user changes value
+                        if (aiPricingEnabled && e.target.value !== String(aiRecommendation?.rate)) {
+                          setManuallyEditedRate(true)
+                        }
+                      }}
                       required
                       min="1"
                       disabled={isLoading || aiPricingLoading}
@@ -1164,6 +1189,31 @@ export default function ListVehiclePage() {
                       </div>
                     </div>
                   )}
+
+                  {/* AI Price Update Toast */}
+                  {aiPriceUpdateMessage && (
+                    <div className="mt-3 p-3 bg-green-500/10 border border-green-500/30 rounded-lg animate-in fade-in slide-in-from-top-2 duration-300">
+                      <div className="flex items-center gap-3">
+                        <Sparkles className="h-4 w-4 text-green-600 flex-shrink-0" />
+                        <p className="text-sm text-green-700">{aiPriceUpdateMessage}</p>
+                        <button 
+                          onClick={() => setAiPriceUpdateMessage(null)}
+                          className="ml-auto text-green-600 hover:text-green-700"
+                        >
+                          <span className="sr-only">Dismiss</span>
+                          &times;
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Manual edit notice */}
+                  {aiPricingEnabled && manuallyEditedRate && (
+                    <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1">
+                      <Info className="h-3 w-3" />
+                      You&apos;ve set a custom rate. Toggle AI pricing off and on to get a new recommendation.
+                    </p>
+                  )}
                 </div>
                 
                 <div className="space-y-2">
@@ -1203,7 +1253,13 @@ export default function ListVehiclePage() {
                       <Switch
                         id="aiPricing"
                         checked={aiPricingEnabled}
-                        onCheckedChange={setAiPricingEnabled}
+                        onCheckedChange={(checked) => {
+                          setAiPricingEnabled(checked)
+                          // Reset manual edit flag when turning on AI pricing
+                          if (checked) {
+                            setManuallyEditedRate(false)
+                          }
+                        }}
                         disabled={isLoading}
                         className="data-[state=checked]:bg-[#CC0000]"
                       />
