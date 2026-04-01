@@ -37,6 +37,7 @@ export default function ListVehiclePage() {
     rate: number
     reasoning: string
     confidence: string
+    marketRange?: { low: number; high: number }
   } | null>(null)
   const [description, setDescription] = useState('')
   const [location, setLocation] = useState('Reno, NV')
@@ -165,6 +166,8 @@ export default function ListVehiclePage() {
     async function fetchAiPricing() {
       if (!aiPricingEnabled) {
         setAiRecommendation(null)
+        // Clear daily rate when AI pricing is disabled so user enters manually
+        setDailyRate('')
         return
       }
 
@@ -174,6 +177,7 @@ export default function ListVehiclePage() {
       }
 
       setAiPricingLoading(true)
+      setDailyRate('') // Clear while loading
       try {
         const res = await fetch('/api/vehicles/ai-pricing', {
           method: 'POST',
@@ -194,8 +198,9 @@ export default function ListVehiclePage() {
             rate: data.recommendedRate,
             reasoning: data.reasoning,
             confidence: data.confidence,
+            marketRange: data.marketRange,
           })
-          // Auto-populate the daily rate field
+          // Auto-populate the daily rate field with AI recommendation
           setDailyRate(String(data.recommendedRate))
         }
       } catch (err) {
@@ -437,14 +442,40 @@ export default function ListVehiclePage() {
                   </div>
                   {/* AI Recommendation Message */}
                   {aiRecommendation && aiPricingEnabled && (
-                    <div className="flex items-start gap-2 mt-2 p-2 bg-[#CC0000]/5 rounded-md">
-                      <Sparkles className="h-4 w-4 text-[#CC0000] mt-0.5 flex-shrink-0" />
-                      <p className="text-xs text-muted-foreground">
-                        <span className="font-medium text-foreground">RAD recommends ${aiRecommendation.rate}</span>
-                        {' '}based on {aiRecommendation.reasoning.toLowerCase()}
-                        {aiRecommendation.confidence === 'high' && ' (high confidence)'}
-                        . You can still adjust manually.
-                      </p>
+                    <div className="mt-3 p-3 bg-[#CC0000]/5 border border-[#CC0000]/20 rounded-lg">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 bg-[#CC0000] rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Sparkles className="h-4 w-4 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground">
+                            RAD recommends ${aiRecommendation.rate}/day
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Based on {aiRecommendation.reasoning}
+                          </p>
+                          {aiRecommendation.marketRange && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Market range: ${aiRecommendation.marketRange.low} - ${aiRecommendation.marketRange.high}/day
+                            </p>
+                          )}
+                          <p className="text-xs text-[#CC0000] mt-2">
+                            You can still adjust manually.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {/* Loading state for AI pricing */}
+                  {aiPricingLoading && (
+                    <div className="mt-3 p-3 bg-muted/50 border border-border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Loader2 className="h-5 w-5 animate-spin text-[#CC0000]" />
+                        <div>
+                          <p className="text-sm font-medium text-foreground">Analyzing market data...</p>
+                          <p className="text-xs text-muted-foreground">RAD is checking Reno/Tahoe demand, similar listings, and seasonal factors</p>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
