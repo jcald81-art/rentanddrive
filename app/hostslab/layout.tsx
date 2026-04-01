@@ -35,6 +35,7 @@ import { PortalSwitcher } from '@/components/portal-switcher'
 const NAV_ITEMS = [
   { href: '/hostslab/lobby', label: 'The Lobby', icon: Home },
   { href: '/hostslab/workshop', label: 'The Garage', icon: Wrench },
+  { href: '/dashboard/command-center', label: 'Command Center', icon: Shield, badge: true },
   { href: '/hostslab/rad-fleet-command', label: 'RAD Fleet Command', icon: Radar },
   { href: '/hostslab/rd-navigator', label: 'RAD Intel', icon: Compass },
   { href: '/hostslab/briefing-room', label: 'The Briefing Room', icon: FileText },
@@ -187,7 +188,7 @@ function Sidebar({
               >
                 <Icon className="h-5 w-5 flex-shrink-0" />
                 <span className="truncate">{item.label}</span>
-                {item.href === '/hostslab/rad-fleet-command' && alertCount > 0 && (
+                {(item.href === '/hostslab/rad-fleet-command' || item.href === '/dashboard/command-center') && alertCount > 0 && (
                   <Badge variant="destructive" className="ml-auto">
                     {alertCount}
                   </Badge>
@@ -212,11 +213,11 @@ function Sidebar({
         
         {host?.is_admin && !collapsed && (
           <Link 
-            href="/hostslab/admin-override"
+            href="/management"
             className="flex items-center gap-2 p-3 mb-3 bg-purple-500/20 border border-purple-500/30 rounded-lg text-purple-400 hover:bg-purple-500/30 transition-colors"
           >
             <Shield className="h-4 w-4" />
-            <span className="text-sm">Admin Override</span>
+            <span className="text-sm">Management Platform</span>
           </Link>
         )}
 
@@ -309,7 +310,7 @@ function MobileNav({ host, alertCount }: { host: HostData | null; alertCount: nu
               >
                 <Icon className="h-5 w-5" />
                 <span>{item.label}</span>
-                {item.href === '/hostslab/rad-fleet-command' && alertCount > 0 && (
+                {(item.href === '/hostslab/rad-fleet-command' || item.href === '/dashboard/command-center') && alertCount > 0 && (
                   <Badge variant="destructive" className="ml-auto">
                     {alertCount}
                   </Badge>

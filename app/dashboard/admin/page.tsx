@@ -256,6 +256,20 @@ export default function AdminOverviewPage() {
             </CardContent>
           </Card>
         </Link>
+
+        <Link href="/management">
+          <Card className="hover:border-[#CC0000] transition-colors cursor-pointer border-dashed border-[#CC0000]/40">
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2 text-[#CC0000]">
+                <CheckCircle className="h-4 w-4" />
+                Management Platform
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">God-mode view — all hosts, vehicles, alerts &amp; revenue</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       {/* Recent Activity Tables */}
