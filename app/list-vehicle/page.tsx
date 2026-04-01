@@ -109,7 +109,6 @@ export default function ListVehiclePage() {
   const [otherFeature, setOtherFeature] = useState('')
   
   const [dailyRate, setDailyRate] = useState('')
-  const [manuallyEditedRate, setManuallyEditedRate] = useState(false) // Track if user manually edited
   const [aiPricingEnabled, setAiPricingEnabled] = useState(false)
   const [aiPricingLoading, setAiPricingLoading] = useState(false)
   const [aiPriceUpdateMessage, setAiPriceUpdateMessage] = useState<string | null>(null) // Toast message
@@ -128,6 +127,16 @@ export default function ListVehiclePage() {
   const [insurance, setInsurance] = useState<File | null>(null)
   const [insuranceVerified, setInsuranceVerified] = useState(false)
   const [uploadingDocs, setUploadingDocs] = useState(false)
+  
+  // AI Document validation states
+  const [dlValidation, setDlValidation] = useState<{
+    status: 'idle' | 'validating' | 'valid' | 'concerns'
+    message: string
+  }>({ status: 'idle', message: '' })
+  const [insuranceValidation, setInsuranceValidation] = useState<{
+    status: 'idle' | 'validating' | 'valid' | 'concerns'
+    message: string
+  }>({ status: 'idle', message: '' })
 
   // Generate year options (current year + 1 down to 1980)
   const currentYear = new Date().getFullYear()
@@ -376,16 +385,32 @@ export default function ListVehiclePage() {
     }
   }
 
-  // Handle document uploads
+  // Handle document uploads with AI validation
   const handleFileUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     setter: (file: File | null) => void,
-    verificationSetter?: (v: boolean) => void
+    docType?: 'dl_front' | 'dl_back' | 'insurance'
   ) => {
     const file = e.target.files?.[0] || null
     setter(file)
-    if (file && verificationSetter) {
-      setTimeout(() => verificationSetter(true), 800)
+    
+    // Trigger AI validation for documents
+    if (file && docType) {
+      if (docType === 'dl_front' || docType === 'dl_back') {
+        // Validate license when both front and back are uploaded
+        if (docType === 'dl_front') {
+          // Wait for potential back upload, or validate front alone after delay
+          setTimeout(() => {
+            if (dlBack) {
+              validateDocument(file, 'license')
+            }
+          }, 500)
+        } else if (docType === 'dl_back' && dlFront) {
+          validateDocument(dlFront, 'license')
+        }
+      } else if (docType === 'insurance') {
+        validateDocument(file, 'insurance')
+      }
     }
   }
 
@@ -410,91 +435,101 @@ export default function ListVehiclePage() {
     await Promise.all(uploads)
   }
 
-  // Fetch AI pricing recommendation when toggle is enabled and vehicle info is complete
-  useEffect(() => {
-    async function fetchAiPricing() {
-      if (!aiPricingEnabled) {
-        setAiRecommendation(null)
-        // Don't clear daily rate when disabling - let user keep their value
-        return
-      }
-
-      if (!make || !model || !year) {
-        return
-      }
-
-      // Don't fetch if there are validation errors
-      if (mileageError || ageError) {
-        return
-      }
-
-      setAiPricingLoading(true)
-      try {
-        // Get feature labels for the selected features
-        const featureLabels = selectedFeatures
-          .map(f => VEHICLE_FEATURES.find(vf => vf.value === f)?.label)
-          .filter(Boolean)
-        if (otherFeature.trim()) {
-          featureLabels.push(otherFeature.trim())
-        }
-
-        const res = await fetch('/api/vehicles/ai-pricing', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            make,
-            model,
-            year,
-            category,
-            vehicleType,
-            location,
-            driveType,
-            trim,
-            mileage: mileage ? parseInt(mileage) : null,
-            features: featureLabels,
-            description: description || null,
-          }),
-        })
-
-        if (res.ok) {
-          const data = await res.json()
-          const newRate = data.recommendedRate
-          const currentRate = parseFloat(dailyRate) || 0
-          const priceDiff = Math.abs(newRate - currentRate)
-          
-          // Update recommendation always (for display purposes)
-          setAiRecommendation({
-            rate: newRate,
-            reasoning: data.reasoning,
-            confidence: data.confidence,
-            marketRange: data.marketRange,
-          })
-          
-          // Only auto-update daily rate if:
-          // 1. User hasn't manually edited the rate, AND
-          // 2. Either no rate set OR price difference is $5 or more
-          if (!manuallyEditedRate && (currentRate === 0 || priceDiff >= 5)) {
-            setDailyRate(String(newRate))
-            
-            // Show toast only if rate was updated (not first time)
-            if (currentRate > 0 && priceDiff >= 5) {
-              setAiPriceUpdateMessage(`RAD updated price to $${newRate}/day based on your changes.`)
-              // Auto-dismiss after 4 seconds
-              setTimeout(() => setAiPriceUpdateMessage(null), 4000)
-            }
-          }
-        }
-      } catch (err) {
-        console.error('Failed to fetch AI pricing:', err)
-      } finally {
-        setAiPricingLoading(false)
-      }
+  // Manual AI pricing request - only triggered by button click
+  const fetchAiPricing = async () => {
+    if (!make || !model || !year) {
+      setAiPriceUpdateMessage('Please enter vehicle make, model, and year first.')
+      setTimeout(() => setAiPriceUpdateMessage(null), 3000)
+      return
     }
 
-    // Debounce the AI pricing call (800ms for smoother experience)
-    const debounce = setTimeout(fetchAiPricing, 800)
-    return () => clearTimeout(debounce)
-  }, [aiPricingEnabled, make, model, year, category, vehicleType, location, driveType, trim, mileage, selectedFeatures, otherFeature, description, mileageError, ageError, dailyRate, manuallyEditedRate])
+    setAiPricingLoading(true)
+    try {
+      // Get feature labels for the selected features
+      const featureLabels = selectedFeatures
+        .map(f => VEHICLE_FEATURES.find(vf => vf.value === f)?.label)
+        .filter(Boolean)
+      if (otherFeature.trim()) {
+        featureLabels.push(otherFeature.trim())
+      }
+
+      const res = await fetch('/api/vehicles/ai-pricing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          make,
+          model,
+          year,
+          category,
+          vehicleType,
+          location,
+          driveType,
+          trim,
+          mileage: mileage ? parseInt(mileage) : null,
+          features: featureLabels,
+          description: description || null,
+        }),
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        const newRate = data.recommendedRate
+        
+        setAiRecommendation({
+          rate: newRate,
+          reasoning: data.reasoning,
+          confidence: data.confidence,
+          marketRange: data.marketRange,
+        })
+        
+        // Update daily rate with recommendation
+        setDailyRate(String(newRate))
+        setAiPriceUpdateMessage(`RAD recommends $${newRate}/day based on your vehicle details.`)
+        setTimeout(() => setAiPriceUpdateMessage(null), 4000)
+      }
+    } catch (err) {
+      console.error('Failed to fetch AI pricing:', err)
+      setAiPriceUpdateMessage('Failed to get price recommendation. Please try again.')
+      setTimeout(() => setAiPriceUpdateMessage(null), 3000)
+    } finally {
+      setAiPricingLoading(false)
+    }
+  }
+
+  // AI Document validation function
+  const validateDocument = async (file: File, docType: 'license' | 'insurance') => {
+    const setValidation = docType === 'license' ? setDlValidation : setInsuranceValidation
+    setValidation({ status: 'validating', message: 'RAD is analyzing your document...' })
+    
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('type', docType)
+      if (docType === 'insurance' && make && model && year) {
+        formData.append('vehicleInfo', JSON.stringify({ make, model, year }))
+      }
+      
+      const res = await fetch('/api/documents/validate', {
+        method: 'POST',
+        body: formData,
+      })
+      
+      if (res.ok) {
+        const data = await res.json()
+        if (data.valid) {
+          setValidation({ status: 'valid', message: data.message || 'Document looks valid' })
+          if (docType === 'insurance') setInsuranceVerified(true)
+        } else {
+          setValidation({ status: 'concerns', message: data.message || 'Concerns detected - please review' })
+        }
+      } else {
+        setValidation({ status: 'concerns', message: 'Could not validate - please ensure image is clear' })
+      }
+    } catch (err) {
+      console.error('Document validation failed:', err)
+      setValidation({ status: 'concerns', message: 'Validation failed - please retry' })
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -1127,32 +1162,44 @@ export default function ListVehiclePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="dailyRate">Daily Rate ($)</Label>
-                  <div className="relative">
-                    <Input
-                      id="dailyRate"
-                      type="number"
-                      placeholder="e.g., 75"
-                      value={dailyRate}
-                      onChange={(e) => {
-                        setDailyRate(e.target.value)
-                        // Mark as manually edited if AI pricing is on and user changes value
-                        if (aiPricingEnabled && e.target.value !== String(aiRecommendation?.rate)) {
-                          setManuallyEditedRate(true)
-                        }
-                      }}
-                      required
-                      min="1"
-                      disabled={isLoading || aiPricingLoading}
-                    />
-                    {aiPricingLoading && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                        <Loader2 className="h-4 w-4 animate-spin text-[#CC0000]" />
-                      </div>
-                    )}
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        id="dailyRate"
+                        type="number"
+                        placeholder="e.g., 75"
+                        value={dailyRate}
+                        onChange={(e) => setDailyRate(e.target.value)}
+                        required
+                        min="1"
+                        disabled={isLoading || aiPricingLoading}
+                      />
+                      {aiPricingLoading && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          <Loader2 className="h-4 w-4 animate-spin text-[#CC0000]" />
+                        </div>
+                      )}
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={fetchAiPricing}
+                      disabled={isLoading || aiPricingLoading || !make || !model || !year}
+                      className="border-[#CC0000]/30 text-[#CC0000] hover:bg-[#CC0000]/10 whitespace-nowrap"
+                    >
+                      {aiPricingLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Sparkles className="h-4 w-4 mr-1" />
+                          Get RAD Price
+                        </>
+                      )}
+                    </Button>
                   </div>
                   
                   {/* AI Recommendation */}
-                  {aiRecommendation && aiPricingEnabled && (
+                  {aiRecommendation && (
                     <div className="mt-3 p-3 bg-[#CC0000]/5 border border-[#CC0000]/20 rounded-lg">
                       <div className="flex items-start gap-3">
                         <div className="w-8 h-8 bg-[#CC0000] rounded-lg flex items-center justify-center flex-shrink-0">
@@ -1171,20 +1218,8 @@ export default function ListVehiclePage() {
                             </p>
                           )}
                           <p className="text-xs text-[#CC0000] mt-2">
-                            You can still adjust manually.
+                            Click &quot;Get RAD Price&quot; again anytime to refresh.
                           </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {aiPricingLoading && (
-                    <div className="mt-3 p-3 bg-muted/50 border border-border rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <Loader2 className="h-5 w-5 animate-spin text-[#CC0000]" />
-                        <div>
-                          <p className="text-sm font-medium text-foreground">Analyzing market data...</p>
-                          <p className="text-xs text-muted-foreground">RAD is checking Reno/Tahoe demand and similar listings</p>
                         </div>
                       </div>
                     </div>
@@ -1206,14 +1241,6 @@ export default function ListVehiclePage() {
                       </div>
                     </div>
                   )}
-
-                  {/* Manual edit notice */}
-                  {aiPricingEnabled && manuallyEditedRate && (
-                    <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1">
-                      <Info className="h-3 w-3" />
-                      You&apos;ve set a custom rate. Toggle AI pricing off and on to get a new recommendation.
-                    </p>
-                  )}
                 </div>
                 
                 <div className="space-y-2">
@@ -1229,7 +1256,7 @@ export default function ListVehiclePage() {
                 </div>
               </div>
 
-              {/* RAD AI Pricing Toggle */}
+              {/* RAD AI Dynamic Pricing Toggle */}
               <div className={`p-4 rounded-lg border transition-colors ${
                 aiPricingEnabled 
                   ? 'bg-[#CC0000]/5 border-[#CC0000]/20' 
@@ -1247,27 +1274,21 @@ export default function ListVehiclePage() {
                         htmlFor="aiPricing" 
                         className="text-foreground font-medium cursor-pointer flex items-center gap-2"
                       >
-                        Let RAD manage my pricing
+                        Enable dynamic pricing after listing
                         {aiPricingEnabled && <Sparkles className="h-4 w-4 text-[#CC0000]" />}
                       </Label>
                       <Switch
                         id="aiPricing"
                         checked={aiPricingEnabled}
-                        onCheckedChange={(checked) => {
-                          setAiPricingEnabled(checked)
-                          // Reset manual edit flag when turning on AI pricing
-                          if (checked) {
-                            setManuallyEditedRate(false)
-                          }
-                        }}
+                        onCheckedChange={setAiPricingEnabled}
                         disabled={isLoading}
                         className="data-[state=checked]:bg-[#CC0000]"
                       />
                     </div>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {aiPricingEnabled 
-                        ? "RAD will analyze market demand, Tahoe events, airport traffic, and competitor pricing to set your optimal rate."
-                        : "Enable AI-powered dynamic pricing to maximize your earnings automatically."
+                        ? "After listing, RAD will automatically adjust your price based on demand, events, and competitor pricing."
+                        : "Enable to let RAD optimize your pricing automatically after your vehicle is listed."
                       }
                     </p>
                   </div>
@@ -1293,14 +1314,14 @@ export default function ListVehiclePage() {
               {/* Driver's License Upload */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Driver&apos;s License (Front)</Label>
+                  <Label>Driver&apos;s License (Front) <span className="text-red-500">*</span></Label>
                   <div className={`relative border-2 border-dashed rounded-lg p-4 transition-colors ${
                     dlFront ? 'border-green-500 bg-green-500/5' : 'border-border hover:border-[#CC0000]/50'
                   }`}>
                     <input
                       type="file"
                       accept="image/*,.pdf"
-                      onChange={(e) => handleFileUpload(e, setDlFront)}
+                      onChange={(e) => handleFileUpload(e, setDlFront, 'dl_front')}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       disabled={isLoading}
                     />
@@ -1321,14 +1342,14 @@ export default function ListVehiclePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Driver&apos;s License (Back)</Label>
+                  <Label>Driver&apos;s License (Back) <span className="text-red-500">*</span></Label>
                   <div className={`relative border-2 border-dashed rounded-lg p-4 transition-colors ${
                     dlBack ? 'border-green-500 bg-green-500/5' : 'border-border hover:border-[#CC0000]/50'
                   }`}>
                     <input
                       type="file"
                       accept="image/*,.pdf"
-                      onChange={(e) => handleFileUpload(e, setDlBack)}
+                      onChange={(e) => handleFileUpload(e, setDlBack, 'dl_back')}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       disabled={isLoading}
                     />
@@ -1348,28 +1369,37 @@ export default function ListVehiclePage() {
                   </div>
                 </div>
               </div>
-
-              {dlFront && dlBack && (
-                <Card className="p-3 bg-green-500/10 border-green-500/20">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    <p className="text-sm font-medium text-green-700">
-                      Driver&apos;s License verified - proceeding to next step.
-                    </p>
-                  </div>
-                </Card>
+              
+              {/* DL Validation Status */}
+              {dlFront && dlBack && dlValidation.status !== 'idle' && (
+                <div className={`p-3 rounded-lg flex items-center gap-3 ${
+                  dlValidation.status === 'validating' ? 'bg-blue-500/10 border border-blue-500/30' :
+                  dlValidation.status === 'valid' ? 'bg-green-500/10 border border-green-500/30' :
+                  'bg-amber-500/10 border border-amber-500/30'
+                }`}>
+                  {dlValidation.status === 'validating' && <Loader2 className="h-4 w-4 animate-spin text-blue-500" />}
+                  {dlValidation.status === 'valid' && <CheckCircle2 className="h-4 w-4 text-green-600" />}
+                  {dlValidation.status === 'concerns' && <AlertTriangle className="h-4 w-4 text-amber-600" />}
+                  <p className={`text-sm ${
+                    dlValidation.status === 'validating' ? 'text-blue-600' :
+                    dlValidation.status === 'valid' ? 'text-green-700' :
+                    'text-amber-700'
+                  }`}>
+                    {dlValidation.message}
+                  </p>
+                </div>
               )}
 
               {/* Insurance Upload */}
               <div className="space-y-2">
-                <Label>Proof of Insurance</Label>
+                <Label>Proof of Insurance <span className="text-red-500">*</span></Label>
                 <div className={`relative border-2 border-dashed rounded-lg p-4 transition-colors ${
                   insurance ? 'border-green-500 bg-green-500/5' : 'border-border hover:border-[#CC0000]/50'
                 }`}>
                   <input
                     type="file"
                     accept="image/*,.pdf"
-                    onChange={(e) => handleFileUpload(e, setInsurance, setInsuranceVerified)}
+                    onChange={(e) => handleFileUpload(e, setInsurance, 'insurance')}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     disabled={isLoading}
                   />
@@ -1389,15 +1419,24 @@ export default function ListVehiclePage() {
                 </div>
               </div>
 
-              {insuranceVerified && (
-                <Card className="p-3 bg-green-500/10 border-green-500/20">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    <p className="text-sm font-medium text-green-700">
-                      Insurance verified - minimum coverage met.
-                    </p>
-                  </div>
-                </Card>
+              {/* Insurance Validation Status */}
+              {insurance && insuranceValidation.status !== 'idle' && (
+                <div className={`p-3 rounded-lg flex items-center gap-3 ${
+                  insuranceValidation.status === 'validating' ? 'bg-blue-500/10 border border-blue-500/30' :
+                  insuranceValidation.status === 'valid' ? 'bg-green-500/10 border border-green-500/30' :
+                  'bg-amber-500/10 border border-amber-500/30'
+                }`}>
+                  {insuranceValidation.status === 'validating' && <Loader2 className="h-4 w-4 animate-spin text-blue-500" />}
+                  {insuranceValidation.status === 'valid' && <CheckCircle2 className="h-4 w-4 text-green-600" />}
+                  {insuranceValidation.status === 'concerns' && <AlertTriangle className="h-4 w-4 text-amber-600" />}
+                  <p className={`text-sm ${
+                    insuranceValidation.status === 'validating' ? 'text-blue-600' :
+                    insuranceValidation.status === 'valid' ? 'text-green-700' :
+                    'text-amber-700'
+                  }`}>
+                    {insuranceValidation.message}
+                  </p>
+                </div>
               )}
             </div>
 
@@ -1416,10 +1455,29 @@ export default function ListVehiclePage() {
               />
             </div>
 
+            {/* Missing Fields Warning */}
+            {(!vinDecoded || !year || !make || !model || !category || !mileage || !dailyRate || !dlFront || !dlBack || !insurance) && (
+              <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                <p className="text-sm font-medium text-amber-700 mb-2">Please complete the following to continue:</p>
+                <ul className="text-sm text-amber-600 space-y-1">
+                  {!vinDecoded && <li>• Decode your VIN or enter vehicle details manually</li>}
+                  {!year && <li>• Select vehicle year</li>}
+                  {!make && <li>• Select vehicle make</li>}
+                  {!model && <li>• Select vehicle model</li>}
+                  {!category && <li>• Select vehicle category</li>}
+                  {!mileage && <li>• Enter current mileage</li>}
+                  {!dailyRate && <li>• Set daily rental rate</li>}
+                  {!dlFront && <li>• Upload driver&apos;s license (front)</li>}
+                  {!dlBack && <li>• Upload driver&apos;s license (back)</li>}
+                  {!insurance && <li>• Upload proof of insurance</li>}
+                </ul>
+              </div>
+            )}
+
             {/* Submit Button */}
             <Button
               type="submit"
-              disabled={isLoading || uploadingDocs || !year || !make || !model || !category || !dlFront || !dlBack || !insurance || recallStatus === 'critical'}
+              disabled={isLoading || uploadingDocs || !vinDecoded || !year || !make || !model || !category || !mileage || !dailyRate || !dlFront || !dlBack || !insurance || recallStatus === 'critical'}
               className="w-full h-12 bg-[#CC0000] hover:bg-[#CC0000]/90 text-white font-medium text-lg disabled:opacity-50"
             >
               {isLoading || uploadingDocs ? (
