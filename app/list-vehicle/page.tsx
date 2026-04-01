@@ -135,14 +135,54 @@ export default function ListVehiclePage() {
   const [insuranceVerified, setInsuranceVerified] = useState(false)
   const [uploadingDocs, setUploadingDocs] = useState(false)
   
-  // AI Document validation states
+  // AI Document validation states with extracted data
   const [dlValidation, setDlValidation] = useState<{
     status: 'idle' | 'validating' | 'valid' | 'concerns'
     message: string
+    extractedData?: {
+      name?: string
+      address?: string
+      city?: string
+      state?: string
+      zipCode?: string
+      licenseNumber?: string
+      issueDate?: string
+      expirationDate?: string
+      dateOfBirth?: string
+      issuingState?: string
+    } | null
+    analysis?: {
+      isExpired?: boolean | null
+      isReadable?: boolean
+      appearsGenuine?: boolean
+      tamperingIndicators?: string[]
+    } | null
+    concerns?: string[]
   }>({ status: 'idle', message: '' })
+  
   const [insuranceValidation, setInsuranceValidation] = useState<{
     status: 'idle' | 'validating' | 'valid' | 'concerns'
     message: string
+    extractedData?: {
+      policyNumber?: string
+      insurerName?: string
+      effectiveDate?: string
+      expirationDate?: string
+      insuredName?: string
+      vehicleYear?: string
+      vehicleMake?: string
+      vehicleModel?: string
+      vehicleVin?: string
+      coverageTypes?: string[]
+    } | null
+    analysis?: {
+      isExpired?: boolean | null
+      isReadable?: boolean
+      appearsGenuine?: boolean
+      vehicleMatch?: 'match' | 'mismatch' | 'unknown'
+      vehicleMatchDetails?: string
+    } | null
+    concerns?: string[]
   }>({ status: 'idle', message: '' })
   
   // QR Code state for mobile upload
@@ -511,10 +551,10 @@ export default function ListVehiclePage() {
     }
   }
 
-  // AI Document validation function
+  // AI Document validation function with field extraction
   const validateDocument = async (file: File, docType: 'license' | 'insurance') => {
     const setValidation = docType === 'license' ? setDlValidation : setInsuranceValidation
-    setValidation({ status: 'validating', message: 'RAD is analyzing your document...' })
+    setValidation({ status: 'validating', message: 'RAD AI is analyzing your document...' })
     
     try {
       const formData = new FormData()
@@ -531,11 +571,32 @@ export default function ListVehiclePage() {
       
       if (res.ok) {
         const data = await res.json()
+        
         if (data.valid) {
-          setValidation({ status: 'valid', message: data.message || 'Document looks valid' })
+          setValidation({ 
+            status: 'valid', 
+            message: data.message || 'Document looks valid',
+            extractedData: data.extractedData,
+            analysis: data.analysis,
+            concerns: data.concerns
+          })
           if (docType === 'insurance') setInsuranceVerified(true)
+          
+          // Auto-populate location from DL if available and not already set
+          if (docType === 'license' && data.extractedData) {
+            const dlData = data.extractedData
+            if (dlData.city && dlData.state && location === 'Reno, NV') {
+              setLocation(`${dlData.city}, ${dlData.state}`)
+            }
+          }
         } else {
-          setValidation({ status: 'concerns', message: data.message || 'Concerns detected - please review' })
+          setValidation({ 
+            status: 'concerns', 
+            message: data.message || 'Concerns detected - please review',
+            extractedData: data.extractedData,
+            analysis: data.analysis,
+            concerns: data.concerns
+          })
         }
       } else {
         setValidation({ status: 'concerns', message: 'Could not validate - please ensure image is clear' })
@@ -1550,24 +1611,100 @@ export default function ListVehiclePage() {
                 </div>
               </div>
               
-              {/* DL Validation Status */}
+              {/* DL Validation Status - RAD AI Report */}
               {dlFront && dlBack && dlValidation.status !== 'idle' && (
-                <div className={`p-3 rounded-lg flex items-center gap-3 ${
-                  dlValidation.status === 'validating' ? 'bg-blue-500/10 border border-blue-500/30' :
-                  dlValidation.status === 'valid' ? 'bg-green-500/10 border border-green-500/30' :
-                  'bg-amber-500/10 border border-amber-500/30'
+                <Card className={`overflow-hidden ${
+                  dlValidation.status === 'validating' ? 'border-blue-500/30' :
+                  dlValidation.status === 'valid' ? 'border-green-500/30' :
+                  'border-amber-500/30'
                 }`}>
-                  {dlValidation.status === 'validating' && <Loader2 className="h-4 w-4 animate-spin text-blue-500" />}
-                  {dlValidation.status === 'valid' && <CheckCircle2 className="h-4 w-4 text-green-600" />}
-                  {dlValidation.status === 'concerns' && <AlertTriangle className="h-4 w-4 text-amber-600" />}
-                  <p className={`text-sm ${
-                    dlValidation.status === 'validating' ? 'text-blue-600' :
-                    dlValidation.status === 'valid' ? 'text-green-700' :
-                    'text-amber-700'
+                  <div className={`px-4 py-3 flex items-center gap-3 ${
+                    dlValidation.status === 'validating' ? 'bg-blue-500/10' :
+                    dlValidation.status === 'valid' ? 'bg-green-500/10' :
+                    'bg-amber-500/10'
                   }`}>
-                    {dlValidation.message}
-                  </p>
-                </div>
+                    {dlValidation.status === 'validating' && <Loader2 className="h-5 w-5 animate-spin text-blue-500" />}
+                    {dlValidation.status === 'valid' && <CheckCircle2 className="h-5 w-5 text-green-600" />}
+                    {dlValidation.status === 'concerns' && <AlertTriangle className="h-5 w-5 text-amber-600" />}
+                    <div className="flex-1">
+                      <p className={`text-sm font-semibold ${
+                        dlValidation.status === 'validating' ? 'text-blue-700' :
+                        dlValidation.status === 'valid' ? 'text-green-700' :
+                        'text-amber-700'
+                      }`}>
+                        {dlValidation.status === 'validating' ? 'RAD AI Analyzing Driver\'s License...' :
+                         dlValidation.status === 'valid' ? 'Driver\'s License Verified' :
+                         'Concerns Detected'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{dlValidation.message}</p>
+                    </div>
+                  </div>
+                  
+                  {/* Extracted Data Display */}
+                  {dlValidation.extractedData && dlValidation.status !== 'validating' && (
+                    <CardContent className="p-4 pt-3 space-y-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Brain className="h-4 w-4 text-[#CC0000]" />
+                        <span className="text-xs font-semibold text-[#CC0000]">RAD AI Extracted Data</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                        {dlValidation.extractedData.name && (
+                          <div>
+                            <span className="text-muted-foreground text-xs">Name</span>
+                            <p className="font-medium truncate">{dlValidation.extractedData.name}</p>
+                          </div>
+                        )}
+                        {dlValidation.extractedData.issuingState && (
+                          <div>
+                            <span className="text-muted-foreground text-xs">Issuing State</span>
+                            <p className="font-medium">{dlValidation.extractedData.issuingState}</p>
+                          </div>
+                        )}
+                        {dlValidation.extractedData.licenseNumber && (
+                          <div>
+                            <span className="text-muted-foreground text-xs">License #</span>
+                            <p className="font-medium font-mono text-xs">{dlValidation.extractedData.licenseNumber}</p>
+                          </div>
+                        )}
+                        {dlValidation.extractedData.expirationDate && (
+                          <div>
+                            <span className="text-muted-foreground text-xs">Expires</span>
+                            <p className={`font-medium ${dlValidation.analysis?.isExpired ? 'text-red-600' : ''}`}>
+                              {dlValidation.extractedData.expirationDate}
+                              {dlValidation.analysis?.isExpired && ' (EXPIRED)'}
+                            </p>
+                          </div>
+                        )}
+                        {dlValidation.extractedData.address && (
+                          <div className="col-span-2">
+                            <span className="text-muted-foreground text-xs">Address</span>
+                            <p className="font-medium text-xs">
+                              {dlValidation.extractedData.address}
+                              {dlValidation.extractedData.city && `, ${dlValidation.extractedData.city}`}
+                              {dlValidation.extractedData.state && `, ${dlValidation.extractedData.state}`}
+                              {dlValidation.extractedData.zipCode && ` ${dlValidation.extractedData.zipCode}`}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Concerns List */}
+                      {dlValidation.concerns && dlValidation.concerns.length > 0 && (
+                        <div className="mt-3 p-2 bg-amber-500/10 rounded-lg">
+                          <p className="text-xs font-semibold text-amber-700 mb-1">Concerns:</p>
+                          <ul className="text-xs text-amber-600 space-y-0.5">
+                            {dlValidation.concerns.map((concern, i) => (
+                              <li key={i} className="flex items-start gap-1">
+                                <span className="text-amber-500 mt-0.5">•</span>
+                                <span>{concern}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </CardContent>
+                  )}
+                </Card>
               )}
 
               {/* Insurance Upload */}
@@ -1599,24 +1736,140 @@ export default function ListVehiclePage() {
                 </div>
               </div>
 
-              {/* Insurance Validation Status */}
+              {/* Insurance Validation Status - RAD AI Report */}
               {insurance && insuranceValidation.status !== 'idle' && (
-                <div className={`p-3 rounded-lg flex items-center gap-3 ${
-                  insuranceValidation.status === 'validating' ? 'bg-blue-500/10 border border-blue-500/30' :
-                  insuranceValidation.status === 'valid' ? 'bg-green-500/10 border border-green-500/30' :
-                  'bg-amber-500/10 border border-amber-500/30'
+                <Card className={`overflow-hidden ${
+                  insuranceValidation.status === 'validating' ? 'border-blue-500/30' :
+                  insuranceValidation.status === 'valid' ? 'border-green-500/30' :
+                  'border-amber-500/30'
                 }`}>
-                  {insuranceValidation.status === 'validating' && <Loader2 className="h-4 w-4 animate-spin text-blue-500" />}
-                  {insuranceValidation.status === 'valid' && <CheckCircle2 className="h-4 w-4 text-green-600" />}
-                  {insuranceValidation.status === 'concerns' && <AlertTriangle className="h-4 w-4 text-amber-600" />}
-                  <p className={`text-sm ${
-                    insuranceValidation.status === 'validating' ? 'text-blue-600' :
-                    insuranceValidation.status === 'valid' ? 'text-green-700' :
-                    'text-amber-700'
+                  <div className={`px-4 py-3 flex items-center gap-3 ${
+                    insuranceValidation.status === 'validating' ? 'bg-blue-500/10' :
+                    insuranceValidation.status === 'valid' ? 'bg-green-500/10' :
+                    'bg-amber-500/10'
                   }`}>
-                    {insuranceValidation.message}
-                  </p>
-                </div>
+                    {insuranceValidation.status === 'validating' && <Loader2 className="h-5 w-5 animate-spin text-blue-500" />}
+                    {insuranceValidation.status === 'valid' && <CheckCircle2 className="h-5 w-5 text-green-600" />}
+                    {insuranceValidation.status === 'concerns' && <AlertTriangle className="h-5 w-5 text-amber-600" />}
+                    <div className="flex-1">
+                      <p className={`text-sm font-semibold ${
+                        insuranceValidation.status === 'validating' ? 'text-blue-700' :
+                        insuranceValidation.status === 'valid' ? 'text-green-700' :
+                        'text-amber-700'
+                      }`}>
+                        {insuranceValidation.status === 'validating' ? 'RAD AI Analyzing Insurance Document...' :
+                         insuranceValidation.status === 'valid' ? 'Insurance Verified' :
+                         'Concerns Detected'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{insuranceValidation.message}</p>
+                    </div>
+                  </div>
+                  
+                  {/* Extracted Insurance Data Display */}
+                  {insuranceValidation.extractedData && insuranceValidation.status !== 'validating' && (
+                    <CardContent className="p-4 pt-3 space-y-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Brain className="h-4 w-4 text-[#CC0000]" />
+                        <span className="text-xs font-semibold text-[#CC0000]">RAD AI Extracted Data</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                        {insuranceValidation.extractedData.insurerName && (
+                          <div className="col-span-2">
+                            <span className="text-muted-foreground text-xs">Insurance Company</span>
+                            <p className="font-medium">{insuranceValidation.extractedData.insurerName}</p>
+                          </div>
+                        )}
+                        {insuranceValidation.extractedData.policyNumber && (
+                          <div>
+                            <span className="text-muted-foreground text-xs">Policy #</span>
+                            <p className="font-medium font-mono text-xs">{insuranceValidation.extractedData.policyNumber}</p>
+                          </div>
+                        )}
+                        {insuranceValidation.extractedData.insuredName && (
+                          <div>
+                            <span className="text-muted-foreground text-xs">Insured</span>
+                            <p className="font-medium truncate">{insuranceValidation.extractedData.insuredName}</p>
+                          </div>
+                        )}
+                        {insuranceValidation.extractedData.effectiveDate && (
+                          <div>
+                            <span className="text-muted-foreground text-xs">Effective</span>
+                            <p className="font-medium">{insuranceValidation.extractedData.effectiveDate}</p>
+                          </div>
+                        )}
+                        {insuranceValidation.extractedData.expirationDate && (
+                          <div>
+                            <span className="text-muted-foreground text-xs">Expires</span>
+                            <p className={`font-medium ${insuranceValidation.analysis?.isExpired ? 'text-red-600' : ''}`}>
+                              {insuranceValidation.extractedData.expirationDate}
+                              {insuranceValidation.analysis?.isExpired && ' (EXPIRED)'}
+                            </p>
+                          </div>
+                        )}
+                        
+                        {/* Vehicle Info from Insurance */}
+                        {(insuranceValidation.extractedData.vehicleMake || insuranceValidation.extractedData.vehicleYear) && (
+                          <div className="col-span-2 mt-2 pt-2 border-t border-border">
+                            <span className="text-muted-foreground text-xs">Covered Vehicle</span>
+                            <div className="flex items-center gap-2 mt-1">
+                              <p className="font-medium text-sm">
+                                {[
+                                  insuranceValidation.extractedData.vehicleYear,
+                                  insuranceValidation.extractedData.vehicleMake,
+                                  insuranceValidation.extractedData.vehicleModel
+                                ].filter(Boolean).join(' ') || 'Not specified'}
+                              </p>
+                              {insuranceValidation.analysis?.vehicleMatch === 'match' && (
+                                <span className="px-2 py-0.5 bg-green-500/20 text-green-700 text-xs rounded-full font-medium">
+                                  Matches Listed Vehicle
+                                </span>
+                              )}
+                              {insuranceValidation.analysis?.vehicleMatch === 'mismatch' && (
+                                <span className="px-2 py-0.5 bg-red-500/20 text-red-700 text-xs rounded-full font-medium">
+                                  Vehicle Mismatch
+                                </span>
+                              )}
+                            </div>
+                            {insuranceValidation.analysis?.vehicleMatchDetails && insuranceValidation.analysis.vehicleMatch !== 'match' && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {insuranceValidation.analysis.vehicleMatchDetails}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* Coverage Types */}
+                        {insuranceValidation.extractedData.coverageTypes && insuranceValidation.extractedData.coverageTypes.length > 0 && (
+                          <div className="col-span-2">
+                            <span className="text-muted-foreground text-xs">Coverage</span>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {insuranceValidation.extractedData.coverageTypes.map((coverage, i) => (
+                                <span key={i} className="px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded">
+                                  {coverage}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Concerns List */}
+                      {insuranceValidation.concerns && insuranceValidation.concerns.length > 0 && (
+                        <div className="mt-3 p-2 bg-amber-500/10 rounded-lg">
+                          <p className="text-xs font-semibold text-amber-700 mb-1">Concerns:</p>
+                          <ul className="text-xs text-amber-600 space-y-0.5">
+                            {insuranceValidation.concerns.map((concern, i) => (
+                              <li key={i} className="flex items-start gap-1">
+                                <span className="text-amber-500 mt-0.5">•</span>
+                                <span>{concern}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </CardContent>
+                  )}
+                </Card>
               )}
             </div>
 
