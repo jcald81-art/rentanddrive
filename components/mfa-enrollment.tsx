@@ -438,3 +438,86 @@ export function MFASecurityBadge() {
     </Badge>
   ) : null
 }
+
+// Full-screen MFA prompt dialog for hosts
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+
+interface MFAPromptDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onDismiss: () => void
+  onSetupComplete: () => void
+}
+
+export function MFAPromptDialog({ open, onOpenChange, onDismiss, onSetupComplete }: MFAPromptDialogProps) {
+  const [showSetup, setShowSetup] = useState(false)
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        {!showSetup ? (
+          <>
+            <DialogHeader>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <ShieldCheck className="h-6 w-6 text-green-500" />
+                </div>
+                <div>
+                  <DialogTitle>Enable MFA for Extra Security</DialogTitle>
+                  <DialogDescription>
+                    Protect your vehicles and earnings
+                  </DialogDescription>
+                </div>
+              </div>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <p className="text-sm text-muted-foreground">
+                Two-factor authentication adds an extra layer of security to your account.
+                Even if someone gets your password, they won&apos;t be able to access your
+                account without your phone.
+              </p>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center gap-2 text-foreground">
+                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  <span>Protect your vehicle listings</span>
+                </div>
+                <div className="flex items-center gap-2 text-foreground">
+                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  <span>Secure your earnings and payouts</span>
+                </div>
+                <div className="flex items-center gap-2 text-foreground">
+                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  <span>Takes only 30 seconds to set up</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Button 
+                onClick={() => setShowSetup(true)}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Shield className="h-4 w-4 mr-2" />
+                Enable MFA Now
+              </Button>
+              <Button 
+                variant="ghost" 
+                onClick={onDismiss}
+                className="text-muted-foreground"
+              >
+                Maybe Later
+              </Button>
+            </div>
+          </>
+        ) : (
+          <MFAEnrollment 
+            showAsCard={false} 
+            onClose={() => {
+              setShowSetup(false)
+              onSetupComplete()
+            }}
+          />
+        )}
+      </DialogContent>
+    </Dialog>
+  )
+}

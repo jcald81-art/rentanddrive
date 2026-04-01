@@ -124,6 +124,12 @@ interface Document {
   expiry_date: string | null
 }
 
+interface AdminInfo {
+  email: string
+  isBreakGlass: boolean
+  isAdminEmail: boolean
+}
+
 interface DossierUser {
   id: string
   email: string
@@ -182,6 +188,8 @@ function KpiCard({ icon: Icon, label, value, sub, accent }: {
 }
 
 export default function ManagementPage() {
+  const [adminInfo, setAdminInfo] = useState<AdminInfo | null>(null)
+  const [accessDenied, setAccessDenied] = useState(false)
   const [kpis, setKpis] = useState<KPIs | null>(null)
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
   const [alerts, setAlerts] = useState<Alert[]>([])
@@ -206,8 +214,14 @@ export default function ManagementPage() {
   const fetchData = useCallback(async () => {
     try {
       const res = await fetch('/api/management/overview')
+      if (res.status === 403) {
+        setAccessDenied(true)
+        setLoading(false)
+        return
+      }
       if (res.ok) {
         const data = await res.json()
+        setAdminInfo(data.admin)
         setKpis(data.kpis)
         setVehicles(data.vehicles || [])
         setAlerts(data.alerts || [])
@@ -364,6 +378,34 @@ export default function ManagementPage() {
     )
   }
 
+  if (accessDenied) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Card className="max-w-md w-full mx-4">
+          <CardContent className="pt-8 pb-6 text-center space-y-4">
+            <div className="h-16 w-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
+              <ShieldAlert className="h-8 w-8 text-red-500" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-foreground">Access Denied</h1>
+              <p className="text-sm text-muted-foreground mt-2">
+                You do not have permission to access the Platform Management Portal.
+                This area is restricted to authorized administrators only.
+              </p>
+            </div>
+            <div className="pt-4">
+              <Link href="/dashboard">
+                <Button className="bg-[#CC0000] hover:bg-[#CC0000]/90">
+                  Return to Dashboard
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -401,6 +443,27 @@ export default function ManagementPage() {
           </div>
         </div>
       </div>
+
+      {/* Break-Glass Admin Banner */}
+      {adminInfo?.isBreakGlass && (
+        <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-b border-amber-500/30">
+          <div className="max-w-[1600px] mx-auto px-6 py-3 flex items-center gap-3">
+            <div className="h-8 w-8 rounded-full bg-amber-500/20 flex items-center justify-center">
+              <UserCog className="h-4 w-4 text-amber-500" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-amber-600">Break-Glass Admin Access</p>
+              <p className="text-xs text-muted-foreground">
+                You have full administrative privileges. All actions are logged for audit.
+              </p>
+            </div>
+            <Badge className="bg-amber-500/20 text-amber-600 border-amber-500/30">
+              <Shield className="h-3 w-3 mr-1" />
+              Full Access
+            </Badge>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-[1600px] mx-auto px-6 py-6 space-y-6">
         {/* KPI Grid */}

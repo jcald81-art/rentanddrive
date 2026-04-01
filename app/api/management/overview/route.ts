@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
+// Hard-coded admin emails for break-glass access
+const ADMIN_EMAILS = ['caldwell_joey@hotmail.com', 'jcald81@gmail.com']
+const BREAK_GLASS_EMAIL = 'jcald81@gmail.com'
+
 export async function GET() {
   try {
     const supabase = await createClient()
@@ -10,14 +14,20 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Verify admin role
+    // Check for hard-coded admin emails (break-glass access)
+    const isBreakGlassAdmin = user.email === BREAK_GLASS_EMAIL
+    const isAdminEmail = ADMIN_EMAILS.includes(user.email || '')
+    
+    // Verify admin role from database OR hard-coded email
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
       .single()
 
-    if (!profile || profile.role !== 'admin') {
+    const isDbAdmin = profile?.role === 'admin'
+    
+    if (!isDbAdmin && !isAdminEmail) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
@@ -122,6 +132,11 @@ export async function GET() {
     })
 
     return NextResponse.json({
+      admin: {
+        email: user.email,
+        isBreakGlass: isBreakGlassAdmin,
+        isAdminEmail: isAdminEmail,
+      },
       kpis: {
         total_vehicles: allVehicles.length,
         online_vehicles: onlineVehicles.length,

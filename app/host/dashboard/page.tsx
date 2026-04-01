@@ -23,6 +23,7 @@ import {
   FolderOpen
 } from 'lucide-react'
 import { MFASecurityBadge } from '@/components/mfa-enrollment'
+import { MFAHostPrompt } from '@/components/mfa-host-prompt'
 
 export default async function HostDashboardPage() {
   const supabase = await createClient()
@@ -57,6 +58,9 @@ export default async function HostDashboardPage() {
 
   return (
     <div className="min-h-svh bg-[#0a0f1a]">
+      {/* MFA Prompt for Hosts */}
+      <MFAHostPrompt />
+      
       {/* Header */}
       <header className="border-b border-white/10 bg-[#0D0D0D]">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
