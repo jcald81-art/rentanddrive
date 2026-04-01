@@ -38,6 +38,7 @@ import {
   CreditCard,
 } from 'lucide-react'
 import { CryptoPaymentOption } from '@/components/crypto'
+import InsuranceSelector, { type SelectedInsurance } from './insurance-selector'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -105,7 +106,10 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
   const [promoError, setPromoError] = useState<string | null>(null)
   const [validatingPromo, setValidatingPromo] = useState(false)
   
-  // Step 4: Payment
+  // Step 3: Insurance
+  const [selectedInsurance, setSelectedInsurance] = useState<SelectedInsurance | null>(null)
+
+  // Step 5: Payment
   const [clientSecret, setClientSecret] = useState<string | null>(null)
   const [bookingData, setBookingData] = useState<any>(null)
 
@@ -120,8 +124,9 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
   const platformFee = Math.round(subtotal * 0.10)
   const lyftPickupFee = lyftPickup ? 20 : 0
   const lyftReturnFee = lyftReturn ? 20 : 0
+  const insuranceFee = selectedInsurance ? Math.round(selectedInsurance.plan.premium_cents / 100) : 0
   const discount = promoApplied?.discount || 0
-  const total = subtotal + mileageFee + cleaningFee + platformFee + lyftPickupFee + lyftReturnFee - discount
+  const total = subtotal + mileageFee + cleaningFee + platformFee + lyftPickupFee + lyftReturnFee + insuranceFee - discount
 
   // Calculate Turo comparison
   const turoEstimate = Math.round(total * 1.15) // Turo typically charges ~15% more in fees
@@ -161,7 +166,7 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
   const createBooking = async () => {
     setIsLoading(true)
     setError(null)
-    
+
     try {
       const res = await fetch('/api/bookings/create', {
         method: 'POST',
@@ -176,16 +181,43 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
           promo_code: promoApplied?.code || null,
         }),
       })
-      
+
       const data = await res.json()
-      
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to create booking')
+      if (!res.ok) throw new Error(data.error || 'Failed to create booking')
+
+      // Bind insurance right after booking is created
+      if (selectedInsurance) {
+        const bindRes = await fetch('/api/insurance/bind', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            bookingId: data.booking.id,
+            vehicleId: vehicle.id,
+            quoteId: selectedInsurance.quote_id,
+            planId: selectedInsurance.plan.plan_id,
+            planName: selectedInsurance.plan.name,
+            provider: selectedInsurance.provider,
+            premiumCents: selectedInsurance.plan.premium_cents,
+            deductibleCents: selectedInsurance.plan.deductible_cents,
+            liabilityLimitCents: selectedInsurance.plan.liability_limit_cents,
+            collision: selectedInsurance.plan.collision,
+            comprehensive: selectedInsurance.plan.comprehensive,
+            roadsideAssistance: selectedInsurance.plan.roadside_assistance,
+            personalEffects: selectedInsurance.plan.personal_effects,
+            uninsuredMotorist: selectedInsurance.plan.uninsured_motorist,
+            startDate,
+            endDate,
+          }),
+        })
+        if (!bindRes.ok) {
+          const bindData = await bindRes.json()
+          throw new Error(bindData.error || 'Failed to bind insurance policy')
+        }
       }
-      
+
       setClientSecret(data.payment_intent_client_secret)
       setBookingData(data.booking)
-      setCurrentStep(4)
+      setCurrentStep(5)
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -194,14 +226,20 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
   }
 
   const nextStep = () => {
-    if (currentStep === 3) {
+    if (currentStep === 3 && !selectedInsurance) {
+      setError('Please select an insurance plan to continue.')
+      return
+    }
+    setError(null)
+    if (currentStep === 4) {
       createBooking()
     } else {
-      setCurrentStep(prev => Math.min(prev + 1, 4))
+      setCurrentStep(prev => Math.min(prev + 1, 5))
     }
   }
 
   const prevStep = () => {
+    setError(null)
     setCurrentStep(prev => Math.max(prev - 1, 1))
   }
 
@@ -232,14 +270,14 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
 
         {/* Progress Steps */}
         <div className="mb-8">
-          <div className="flex items-center justify-between max-w-2xl">
-            {['Dates & Mileage', 'Add-ons', 'Review', 'Payment'].map((label, index) => (
+          <div className="flex items-center justify-between max-w-3xl">
+            {['Dates', 'Add-ons', 'Insurance', 'Review', 'Payment'].map((label, index) => (
               <div key={label} className="flex items-center">
                 <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
-                  currentStep > index + 1 
-                    ? 'bg-[#D62828] text-white' 
-                    : currentStep === index + 1 
-                      ? 'bg-[#0D0D0D] text-white' 
+                  currentStep > index + 1
+                    ? 'bg-[#D62828] text-white'
+                    : currentStep === index + 1
+                      ? 'bg-[#0D0D0D] text-white'
                       : 'bg-muted text-muted-foreground'
                 }`}>
                   {currentStep > index + 1 ? <Check className="h-4 w-4" /> : index + 1}
@@ -249,8 +287,8 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
                 }`}>
                   {label}
                 </span>
-                {index < 3 && (
-                  <div className={`w-8 sm:w-16 h-0.5 mx-2 ${
+                {index < 4 && (
+                  <div className={`w-6 sm:w-10 h-0.5 mx-2 ${
                     currentStep > index + 1 ? 'bg-[#D62828]' : 'bg-muted'
                   }`} />
                 )}
@@ -440,8 +478,20 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
               </Card>
             )}
 
-            {/* Step 3: Review */}
+            {/* Step 3: Insurance */}
             {currentStep === 3 && (
+              <InsuranceSelector
+                vehicleId={vehicle.id}
+                startDate={startDate}
+                endDate={endDate}
+                days={days}
+                selected={selectedInsurance}
+                onSelect={setSelectedInsurance}
+              />
+            )}
+
+            {/* Step 4: Review */}
+            {currentStep === 4 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -499,6 +549,25 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
                       <p className="font-medium">{selectedPlan.name} — {selectedPlan.description}</p>
                     </div>
                   </div>
+
+                  {/* Insurance Summary */}
+                  {selectedInsurance && (
+                    <div className="space-y-2">
+                      <h4 className="font-medium">Insurance</h4>
+                      <div className="flex items-center justify-between p-3 bg-[#CC0000]/5 border border-[#CC0000]/20 rounded-lg">
+                        <span className="flex items-center gap-2 text-sm">
+                          <Shield className="h-4 w-4 text-[#CC0000]" />
+                          {selectedInsurance.plan.name.charAt(0).toUpperCase() + selectedInsurance.plan.name.slice(1)} Coverage
+                          {selectedInsurance.provider === 'roamly' && (
+                            <span className="text-xs text-muted-foreground">(Roamly)</span>
+                          )}
+                        </span>
+                        <span className="font-medium text-sm">
+                          ${(selectedInsurance.plan.premium_cents / 100).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Add-ons Summary */}
                   {(lyftPickup || lyftReturn) && (
@@ -560,6 +629,12 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
                         <span>{formatCurrency(lyftReturnFee * 100)}</span>
                       </div>
                     )}
+                    {selectedInsurance && (
+                      <div className="flex justify-between text-sm">
+                        <span>{selectedInsurance.plan.name.charAt(0).toUpperCase() + selectedInsurance.plan.name.slice(1)} Insurance</span>
+                        <span>{formatCurrency(selectedInsurance.plan.premium_cents)}</span>
+                      </div>
+                    )}
                     {discount > 0 && (
                       <div className="flex justify-between text-sm text-green-600">
                         <span>Promo: {promoApplied?.code}</span>
@@ -569,7 +644,7 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
                     <Separator />
                     <div className="flex justify-between font-semibold text-lg">
                       <span>Total</span>
-                      <span>{formatCurrency(total)}</span>
+                      <span>{formatCurrency(total * 100)}</span>
                     </div>
                   </div>
 
@@ -587,8 +662,8 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
               </Card>
             )}
 
-            {/* Step 4: Payment */}
-            {currentStep === 4 && clientSecret && (
+            {/* Step 5: Payment */}
+            {currentStep === 5 && clientSecret && (
               <div className="space-y-6">
                 {/* Payment Method Selection */}
                 <Card>
@@ -668,7 +743,7 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
             )}
 
             {/* Navigation Buttons */}
-            {currentStep < 4 && (
+            {currentStep < 5 && (
               <div className="flex justify-between">
                 <Button
                   variant="outline"
@@ -680,13 +755,17 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
                 </Button>
                 <Button
                   onClick={nextStep}
-                  disabled={isLoading}
-                  className="bg-[#D62828] hover:bg-[#D62828]/90 text-white"
+                  disabled={isLoading || (currentStep === 3 && !selectedInsurance)}
+                  className="bg-[#D62828] hover:bg-[#D62828]/90 text-white disabled:opacity-50"
                 >
                   {isLoading ? (
                     <Spinner className="h-4 w-4 mr-2" />
                   ) : null}
-                  {currentStep === 3 ? 'Continue to Payment' : 'Continue'}
+                  {currentStep === 3 && !selectedInsurance
+                    ? 'Select a plan to continue'
+                    : currentStep === 4
+                      ? 'Continue to Payment'
+                      : 'Continue'}
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
@@ -758,6 +837,15 @@ export default function BookingCheckout({ vehicle, initialStartDate, initialEndD
                   <div className="flex justify-between">
                     <span>Lyft services</span>
                     <span>{formatCurrency((lyftPickupFee + lyftReturnFee) * 100)}</span>
+                  </div>
+                )}
+                {selectedInsurance && (
+                  <div className="flex justify-between">
+                    <span className="flex items-center gap-1">
+                      <Shield className="h-3 w-3 text-[#D62828]" />
+                      Insurance
+                    </span>
+                    <span>{formatCurrency(selectedInsurance.plan.premium_cents)}</span>
                   </div>
                 )}
                 {discount > 0 && (

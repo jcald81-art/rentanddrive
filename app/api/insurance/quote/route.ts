@@ -1,54 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-
-// Insurance rate calculation
-function calculatePremium(vehicle: any, days: number, coverageType: string) {
-  const baseRates: Record<string, number> = {
-    basic: 8,      // $8/day
-    standard: 15,  // $15/day
-    premium: 25,   // $25/day
-    full: 35,      // $35/day
-  }
-
-  let baseRate = baseRates[coverageType] || baseRates.standard
-  
-  // Adjust for vehicle value
-  const vehicleValue = vehicle.daily_rate_cents / 100 * 30 // Estimate monthly rental value
-  if (vehicleValue > 3000) baseRate *= 1.2
-  if (vehicleValue > 5000) baseRate *= 1.3
-  
-  // Adjust for vehicle age
-  const age = new Date().getFullYear() - vehicle.year
-  if (age > 5) baseRate *= 0.9
-  if (age > 10) baseRate *= 0.85
-  
-  // Adjust for category
-  if (vehicle.category === 'luxury') baseRate *= 1.5
-  if (vehicle.category === 'rv') baseRate *= 1.3
-  if (vehicle.category === 'motorcycle') baseRate *= 1.4
-  
-  return Math.round(baseRate * days * 100) // Return in cents
-}
+import { roamly, buildInternalQuotes } from '@/integrations/roamly'
 
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    
+
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { vehicleId, startDate, endDate, coverageType } = await request.json()
+    const { vehicleId, startDate, endDate } = await request.json()
 
     if (!vehicleId || !startDate || !endDate) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Get vehicle details
+    // Fetch vehicle
     const { data: vehicle, error: vehicleError } = await supabase
       .from('vehicles')
-      .select('*')
+      .select('id, make, model, year, daily_rate, daily_rate_cents, category')
       .eq('id', vehicleId)
       .single()
 
@@ -58,51 +30,92 @@ export async function POST(request: NextRequest) {
 
     const start = new Date(startDate)
     const end = new Date(endDate)
-    const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+    const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)))
+    const dailyRateCents = vehicle.daily_rate_cents ?? (vehicle.daily_rate ?? 0) * 100
 
-    const coverageOptions = ['basic', 'standard', 'premium', 'full']
-    const quotes = coverageOptions.map(type => ({
-      coverageType: type,
-      premiumCents: calculatePremium(vehicle, days, type),
-      deductible: type === 'basic' ? 2500 : type === 'standard' ? 1500 : type === 'premium' ? 500 : 0,
-      liabilityLimit: type === 'basic' ? 100000 : type === 'standard' ? 300000 : type === 'premium' ? 500000 : 1000000,
-      collisionCoverage: type !== 'basic',
-      comprehensiveCoverage: type === 'premium' || type === 'full',
-      roadsideAssistance: type === 'premium' || type === 'full',
-      personalEffects: type === 'full',
-    }))
+    // ── Try Roamly first ──────────────────────────────────────────────────────
+    if (process.env.ROAMLY_API_KEY) {
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user.id)
+          .single()
 
-    // Store quote for reference
-    const selectedQuote = quotes.find(q => q.coverageType === (coverageType || 'standard'))
-    
+        const nameParts = (profile?.full_name ?? '').split(' ')
+
+        const roamlyQuote = await roamly.getQuote({
+          vehicle: {
+            year: vehicle.year,
+            make: vehicle.make,
+            model: vehicle.model,
+            category: vehicle.category as never,
+            daily_value_cents: dailyRateCents,
+          },
+          driver: {
+            first_name: nameParts[0] ?? '',
+            last_name: nameParts.slice(1).join(' ') || 'Guest',
+            email: user.email ?? '',
+          },
+          rental_start: startDate,
+          rental_end: endDate,
+          external_booking_ref: vehicleId,
+        })
+
+        // Normalise Roamly plan names to basic/standard/premium only
+        const plans = roamlyQuote.plans
+          .filter(p => ['basic', 'standard', 'premium'].includes(p.name))
+          .map(p => ({
+            ...p,
+            premium_cents: p.premium_cents,
+            deductible_cents: p.deductible_cents,
+            liability_limit_cents: p.liability_limit_cents,
+            collision: p.collision,
+            comprehensive: p.comprehensive,
+            roadside_assistance: p.roadside_assistance,
+            personal_effects: p.personal_effects,
+            uninsured_motorist: p.uninsured_motorist,
+          }))
+
+        return NextResponse.json({
+          quote_id: roamlyQuote.quote_id,
+          plans,
+          recommended: 'standard',
+          provider: 'roamly',
+          vehicle: { id: vehicle.id, make: vehicle.make, model: vehicle.model, year: vehicle.year },
+          days,
+        })
+      } catch (roamlyErr) {
+        console.error('[Roamly quote failed, falling back to internal]:', roamlyErr)
+      }
+    }
+
+    // ── Internal fallback ─────────────────────────────────────────────────────
+    const plans = buildInternalQuotes(dailyRateCents, days)
+
+    // Store quote for audit log
     await supabase.from('insurance_quotes').insert({
       vehicle_id: vehicleId,
       user_id: user.id,
-      coverage_type: coverageType || 'standard',
-      premium_cents: selectedQuote?.premiumCents,
-      deductible_cents: (selectedQuote?.deductible || 0) * 100,
+      coverage_type: 'standard',
+      premium_cents: plans.find(p => p.name === 'standard')?.premium_cents ?? 0,
+      deductible_cents: plans.find(p => p.name === 'standard')?.deductible_cents ?? 0,
       start_date: startDate,
       end_date: endDate,
       days,
-      expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hour expiry
-    })
+      expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    }).throwOnError()
 
     return NextResponse.json({
-      quotes,
-      vehicle: {
-        id: vehicle.id,
-        make: vehicle.make,
-        model: vehicle.model,
-        year: vehicle.year,
-      },
-      days,
+      quote_id: null,
+      plans,
       recommended: 'standard',
+      provider: 'rad_internal',
+      vehicle: { id: vehicle.id, make: vehicle.make, model: vehicle.model, year: vehicle.year },
+      days,
     })
   } catch (error) {
     console.error('[Insurance Quote Error]:', error)
-    return NextResponse.json(
-      { error: 'Failed to generate insurance quote' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to generate insurance quote' }, { status: 500 })
   }
 }
