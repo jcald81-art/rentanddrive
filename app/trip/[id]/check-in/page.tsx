@@ -1,5 +1,5 @@
 'use client'
-// Force build cache invalidation - dynamic route uses [bookingId] param
+
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -51,7 +51,7 @@ interface CheckInData {
 export default function MobileCheckInPage() {
   const params = useParams()
   const searchParams = useSearchParams()
-  const bookingId = params.bookingId as string
+  const tripId = params.id as string
   const bookingCode = searchParams.get('code')
 
   const [checkInData, setCheckInData] = useState<CheckInData | null>(null)
@@ -63,7 +63,7 @@ export default function MobileCheckInPage() {
   useEffect(() => {
     async function fetchCheckInData() {
       try {
-        const res = await fetch(`/api/bookings/${bookingId}`)
+        const res = await fetch(`/api/bookings/${tripId}`)
         if (!res.ok) throw new Error('Booking not found')
         
         const data = await res.json()
@@ -81,18 +81,18 @@ export default function MobileCheckInPage() {
       }
     }
 
-    if (bookingId && bookingCode) {
+    if (tripId && bookingCode) {
       fetchCheckInData()
     } else {
       setError('Invalid check-in link')
       setLoading(false)
     }
-  }, [bookingId, bookingCode])
+  }, [tripId, bookingCode])
 
   async function handleCheckIn() {
     setCheckingIn(true)
     try {
-      const res = await fetch(`/api/bookings/${bookingId}/check-in`, {
+      const res = await fetch(`/api/bookings/${tripId}/check-in`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code: bookingCode }),

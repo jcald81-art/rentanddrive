@@ -1,5 +1,5 @@
 'use client'
-// Force build cache invalidation - dynamic route uses [bookingId] param
+
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
@@ -13,9 +13,6 @@ import {
   Key, 
   Phone, 
   Mail, 
-  Clock, 
-  Fuel, 
-  Gauge, 
   AlertTriangle,
   CheckCircle,
   Copy,
@@ -23,7 +20,6 @@ import {
   ArrowLeft,
   Navigation,
   Shield,
-  Info
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -57,14 +53,14 @@ interface TripDetails {
 
 export default function TripInstructionsPage() {
   const params = useParams()
-  const bookingId = params.bookingId as string
+  const tripId = params.id as string
   const [trip, setTrip] = useState<TripDetails | null>(null)
   const [loading, setLoading] = useState(true)
   const [copiedPin, setCopiedPin] = useState(false)
 
   useEffect(() => {
     fetchTripDetails()
-  }, [bookingId])
+  }, [tripId])
 
   async function fetchTripDetails() {
     const supabase = createClient()
@@ -104,7 +100,7 @@ export default function TripInstructionsPage() {
           email
         )
       `)
-      .eq('id', bookingId)
+      .eq('id', tripId)
       .eq('renter_id', user.id)
       .single()
 
