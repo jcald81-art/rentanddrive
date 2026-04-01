@@ -70,8 +70,8 @@ export function ExpeditionHero() {
       {/* Hero Vehicle Image - positioned on right side */}
       <div className="absolute right-0 bottom-0 w-full lg:w-[60%] h-[50%] lg:h-[80%]">
         <Image
-          src="/images/hero-audi-q5.png"
-          alt="2014 Audi Q5 - Premium adventure SUV"
+          src="/images/hero-car.jpg"
+          alt="Premium SUV - Your next adventure awaits"
           fill
           sizes="(max-width: 1024px) 100vw, 60vw"
           className="object-contain object-right-bottom"
