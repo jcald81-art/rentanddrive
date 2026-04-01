@@ -27,7 +27,6 @@ import {
   ChevronRight,
   Zap,
   Truck,
-  Phone,
 } from 'lucide-react'
 import { DeliveryStatusTracker } from '@/modules/delivery/DeliveryStatusTracker'
 import type { DeliveryRecord } from '@/modules/delivery/DeliveryStatusTracker'
@@ -123,7 +122,7 @@ export default function HostFleetDashboard() {
         fetch('/api/host/fleet/alerts'),
         fetch('/api/host/fleet/trips?limit=10'),
         fetch('/api/host/fleet/renter-scores'),
-        fetch('/api/admin/concierge/rides?active=true'),
+        fetch('/api/host/fleet/rides?active=true'),
       ])
       if (vehiclesRes.ok) {
         const data = await vehiclesRes.json()
@@ -135,21 +134,34 @@ export default function HostFleetDashboard() {
       if (scoresRes.ok) setRenterScores((await scoresRes.json()).scores || [])
       if (deliveriesRes.ok) {
         const data = await deliveriesRes.json()
-        setDeliveries((data.rides || data.deliveries || []).map((d: Record<string, unknown>) => ({
-          id: d.id as string,
-          bookingId: (d.booking_id ?? d.bookingId) as string,
-          direction: ((d.ride_direction ?? d.direction) === 'pickup' ? 'to_renter' : 'from_renter') as 'to_renter' | 'from_renter',
-          provider: ((d.ride_type ?? d.provider) as string)?.includes('lyft') ? 'lyft' : 'uber_direct',
-          status: (d.ride_status ?? d.status ?? 'confirmed') as DeliveryRecord['status'],
-          pickupAddress: (d.pickup_address ?? '') as string,
-          dropoffAddress: (d.dropoff_address ?? '') as string,
-          scheduledAt: (d.scheduled_time ?? d.scheduled_at) as string | undefined,
-          driverName: (d.driver_name) as string | undefined,
-          driverPhone: (d.driver_phone) as string | undefined,
-          driverVehicle: (d.vehicle_description ?? d.driver_vehicle) as string | undefined,
-          etaMinutes: (d.eta_minutes) as number | undefined,
-          feeCents: ((d.cost_cents ?? d.fee_cents ?? 0) as number),
-          trackingUrl: (d.tracking_url) as string | undefined,
+        // Map ride_concierge columns → DeliveryRecord
+        type RideRow = {
+          id: string; booking_id: string; ride_direction: string; ride_type: string;
+          ride_status: string; pickup_address: string; dropoff_address: string;
+          scheduled_time?: string; driver_name?: string; driver_phone?: string;
+          vehicle_description?: string; eta_minutes?: number; cost_cents?: number;
+        }
+        setDeliveries((data.rides || []).map((d: RideRow) => ({
+          id: d.id,
+          bookingId: d.booking_id,
+          direction: d.ride_direction === 'pickup' ? 'to_renter' : 'from_renter',
+          provider: d.ride_type === 'lyft' ? 'lyft' : 'uber_direct',
+          status: (() => {
+            const map: Record<string, DeliveryRecord['status']> = {
+              scheduled: 'confirmed', dispatched: 'dispatched',
+              en_route: 'en_route', arrived: 'arrived',
+              completed: 'delivered', cancelled: 'cancelled', failed: 'failed',
+            }
+            return map[d.ride_status] ?? 'confirmed'
+          })(),
+          pickupAddress: d.pickup_address,
+          dropoffAddress: d.dropoff_address,
+          scheduledAt: d.scheduled_time,
+          driverName: d.driver_name,
+          driverPhone: d.driver_phone,
+          driverVehicle: d.vehicle_description,
+          etaMinutes: d.eta_minutes,
+          feeCents: d.cost_cents ?? 0,
         })))
       }
       setLastRefresh(new Date())
