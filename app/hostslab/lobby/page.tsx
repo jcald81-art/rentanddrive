@@ -87,13 +87,31 @@ export default function LobbyPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const safeFetch = async (url: string) => {
+      console.log('🔍 [RADCC DEBUG] Fetching:', url)
+      try {
+        const res = await fetch(url)
+        console.log('📥 [RADCC DEBUG] Response:', res.status, 'for', url)
+        if (!res.ok) {
+          const text = await res.text()
+          console.error('❌ [RADCC DEBUG] API ERROR:', res.status, url, text.substring(0, 200))
+          return {}
+        }
+        const data = await res.json()
+        return data
+      } catch (e) {
+        console.error('❌ [RADCC DEBUG] Fetch failed:', url, e)
+        return {}
+      }
+    }
+
     Promise.all([
-      fetch('/api/hostslab/morning-brief').then(r => r.json()),
-      fetch('/api/hostslab/stats').then(r => r.json()),
-      fetch('/api/hostslab/agents').then(r => r.json()),
-      fetch('/api/hostslab/upcoming-bookings').then(r => r.json()),
-      fetch('/api/hostslab/break-room/recent').then(r => r.json()),
-      fetch('/api/host/fleet/vehicles').then(r => r.json()),
+      safeFetch('/api/radcc/morning-brief'),
+      safeFetch('/api/radcc/stats'),
+      safeFetch('/api/hostslab/agents'),
+      safeFetch('/api/radcc/upcoming-bookings'),
+      safeFetch('/api/radcc/break-room/recent'),
+      safeFetch('/api/radcc/fleet/vehicles'),
     ])
       .then(([briefData, statsData, agentsData, bookingsData, activityData, vehiclesData]) => {
         if (briefData.brief) setBrief(briefData.brief)

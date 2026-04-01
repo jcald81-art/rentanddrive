@@ -71,7 +71,17 @@ export default function ListVehiclePage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [apiErrors, setApiErrors] = useState<string[]>([])
+  const [debugMode, setDebugMode] = useState(false)
   const router = useRouter()
+  
+  // Initialize debug mode from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedDebug = localStorage.getItem('radcc_debug') === 'true'
+      setDebugMode(savedDebug)
+    }
+  }, [])
   
   // Multi-step flow: 'form' -> 'safety' -> 'payouts' -> 'photos'
   const [flowStep, setFlowStep] = useState<'form' | 'safety' | 'payouts' | 'complete'>('form')
@@ -258,8 +268,11 @@ export default function ListVehiclePage() {
   useEffect(() => {
     async function fetchMakes() {
       setLoadingMakes(true)
+      const url = `/api/vehicles/makes?type=${vehicleType}`
+      console.log('🔍 [RADCC DEBUG] Fetching makes:', url)
       try {
-        const res = await fetch(`/api/vehicles/makes?type=${vehicleType}`)
+        const res = await fetch(url)
+        console.log('📥 [RADCC DEBUG] Makes response:', res.status)
         if (res.ok) {
           const data = await res.json()
           // Sort makes alphabetically A-Z
@@ -267,9 +280,12 @@ export default function ListVehiclePage() {
             a.name.localeCompare(b.name)
           )
           setAvailableMakes(sortedMakes)
+        } else {
+          const text = await res.text()
+          console.error('❌ [RADCC DEBUG] Makes error:', res.status, text.substring(0, 200))
         }
       } catch (err) {
-        console.error('Failed to fetch makes:', err)
+        console.error('❌ [RADCC DEBUG] Failed to fetch makes:', err)
       } finally {
         setLoadingMakes(false)
       }
@@ -319,13 +335,16 @@ export default function ListVehiclePage() {
       }
 
       setLoadingModels(true)
+      const params = new URLSearchParams({ make })
+      if (year) {
+        params.set('year', year)
+      }
+      params.set('type', vehicleType)
+      const url = `/api/vehicles/models?${params}`
+      console.log('🔍 [RADCC DEBUG] Fetching models:', url)
       try {
-        const params = new URLSearchParams({ make })
-        if (year) {
-          params.set('year', year)
-        }
-        params.set('type', vehicleType)
-        const res = await fetch(`/api/vehicles/models?${params}`)
+        const res = await fetch(url)
+        console.log('📥 [RADCC DEBUG] Models response:', res.status)
         if (res.ok) {
           const data = await res.json()
           // Sort models alphabetically A-Z
@@ -333,9 +352,12 @@ export default function ListVehiclePage() {
             a.name.localeCompare(b.name)
           )
           setAvailableModels(sortedModels)
+        } else {
+          const text = await res.text()
+          console.error('❌ [RADCC DEBUG] Models error:', res.status, text.substring(0, 200))
         }
       } catch (err) {
-        console.error('Failed to fetch models:', err)
+        console.error('❌ [RADCC DEBUG] Failed to fetch models:', err)
       } finally {
         setLoadingModels(false)
       }
@@ -504,6 +526,7 @@ export default function ListVehiclePage() {
         featureLabels.push(otherFeature.trim())
       }
 
+      console.log('🔍 [RADCC DEBUG] Fetching AI pricing...')
       const res = await fetch('/api/vehicles/ai-pricing', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -521,6 +544,7 @@ export default function ListVehiclePage() {
           description: description || null,
         }),
       })
+      console.log('📥 [RADCC DEBUG] AI pricing response:', res.status)
 
       if (res.ok) {
         const data = await res.json()
@@ -537,9 +561,12 @@ export default function ListVehiclePage() {
         setDailyRate(String(newRate))
         setAiPriceUpdateMessage(`RAD recommends $${newRate}/day based on your vehicle details.`)
         setTimeout(() => setAiPriceUpdateMessage(null), 4000)
+      } else {
+        const text = await res.text()
+        console.error('❌ [RADCC DEBUG] AI pricing error:', res.status, text.substring(0, 200))
       }
     } catch (err) {
-      console.error('Failed to fetch AI pricing:', err)
+      console.error('❌ [RADCC DEBUG] Failed to fetch AI pricing:', err)
       setAiPriceUpdateMessage('Failed to get price recommendation. Please try again.')
       setTimeout(() => setAiPriceUpdateMessage(null), 3000)
     } finally {
@@ -560,10 +587,12 @@ export default function ListVehiclePage() {
         formData.append('vehicleInfo', JSON.stringify({ make, model, year }))
       }
       
+      console.log('🔍 [RADCC DEBUG] Validating document:', docType)
       const res = await fetch('/api/documents/validate', {
         method: 'POST',
         body: formData,
       })
+      console.log('📥 [RADCC DEBUG] Document validation response:', res.status)
       
       if (res.ok) {
         const data = await res.json()
@@ -595,10 +624,12 @@ export default function ListVehiclePage() {
           })
         }
       } else {
+        const text = await res.text()
+        console.error('❌ [RADCC DEBUG] Document validation error:', res.status, text.substring(0, 200))
         setValidation({ status: 'concerns', message: 'Could not validate - please ensure image is clear' })
       }
     } catch (err) {
-      console.error('Document validation failed:', err)
+      console.error('❌ [RADCC DEBUG] Document validation failed:', err)
       setValidation({ status: 'concerns', message: 'Validation failed - please retry' })
     }
   }
@@ -712,6 +743,49 @@ export default function ListVehiclePage() {
   return (
     <div className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-2xl mx-auto">
+        {/* API Error Banner */}
+        {apiErrors.length > 0 && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-red-800">API Errors Detected</h3>
+                <ul className="mt-2 text-sm text-red-700 space-y-1">
+                  {apiErrors.map((err, i) => (
+                    <li key={i}>• {err}</li>
+                  ))}
+                </ul>
+                <button 
+                  onClick={() => setApiErrors([])}
+                  className="mt-2 text-xs text-red-600 underline"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Debug Mode Toggle */}
+        <div className="mb-4 flex items-center justify-end gap-2">
+          <span className="text-xs text-muted-foreground">Debug Mode</span>
+          <Switch
+            checked={debugMode}
+            onCheckedChange={(checked) => {
+              setDebugMode(checked)
+              if (typeof window !== 'undefined') {
+                if (checked) {
+                  localStorage.setItem('radcc_debug', 'true')
+                  console.log('🔧 [RADCC] Debug mode ENABLED')
+                } else {
+                  localStorage.removeItem('radcc_debug')
+                  console.log('🔧 [RADCC] Debug mode DISABLED')
+                }
+              }
+            }}
+          />
+        </div>
+
         <div className="mb-8">
           <Link href="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
             <ArrowLeft className="h-4 w-4" />

@@ -117,13 +117,21 @@ export default function HostFleetDashboard() {
 
   const fetchFleetData = useCallback(async () => {
     try {
+      console.log('🔍 [RADCC DEBUG] Fetching fleet data...')
       const [vehiclesRes, alertsRes, tripsRes, scoresRes, deliveriesRes] = await Promise.all([
-        fetch('/api/host/fleet/vehicles'),
-        fetch('/api/host/fleet/alerts'),
-        fetch('/api/host/fleet/trips?limit=10'),
-        fetch('/api/host/fleet/renter-scores'),
-        fetch('/api/host/fleet/rides?active=true'),
+        fetch('/api/radcc/fleet/vehicles'),
+        fetch('/api/radcc/fleet/alerts'),
+        fetch('/api/radcc/fleet/trips?limit=10'),
+        fetch('/api/radcc/fleet/renter-scores'),
+        fetch('/api/radcc/fleet/rides?active=true'),
       ])
+      console.log('📥 [RADCC DEBUG] Fleet responses:', { 
+        vehicles: vehiclesRes.status, 
+        alerts: alertsRes.status, 
+        trips: tripsRes.status, 
+        scores: scoresRes.status,
+        deliveries: deliveriesRes.status 
+      })
       if (vehiclesRes.ok) {
         const data = await vehiclesRes.json()
         setVehicles(data.vehicles || [])
@@ -179,12 +187,15 @@ export default function HostFleetDashboard() {
   }, [fetchFleetData])
 
   const acknowledgeAlert = async (alertId: string) => {
-    const res = await fetch(`/api/host/fleet/alerts/${alertId}/acknowledge`, { method: 'POST' })
+    console.log('🔍 [RADCC DEBUG] Acknowledging alert:', alertId)
+    const res = await fetch(`/api/radcc/fleet/alerts/${alertId}/acknowledge`, { method: 'POST' })
+    console.log('📥 [RADCC DEBUG] Acknowledge response:', res.status)
     if (res.ok) setAlerts(prev => prev.filter(a => a.id !== alertId))
   }
 
   const blockRenter = async (userId: string) => {
-    const res = await fetch('/api/host/fleet/block-renter', {
+    console.log('🔍 [RADCC DEBUG] Blocking renter:', userId)
+    const res = await fetch('/api/radcc/fleet/block-renter', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id: userId }),

@@ -144,7 +144,9 @@ export default function CommandCenterPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      const res = await fetch('/api/host/command-center')
+      console.log('🔍 [RADCC DEBUG] Fetching command center data...')
+      const res = await fetch('/api/radcc/command-center')
+      console.log('📥 [RADCC DEBUG] Command center response:', res.status)
       if (res.ok) {
         const data = await res.json()
         setKpis(data.kpis)
@@ -152,9 +154,12 @@ export default function CommandCenterPage() {
         setAlerts(data.alerts || [])
         setBookings(data.bookings || [])
         setLastRefresh(new Date())
+      } else {
+        const text = await res.text()
+        console.error('❌ [RADCC DEBUG] Command center error:', res.status, text.substring(0, 200))
       }
     } catch (e) {
-      console.error('[CommandCenter] fetch error:', e)
+      console.error('❌ [RADCC DEBUG] CommandCenter fetch error:', e)
     } finally {
       setLoading(false)
     }
@@ -167,7 +172,8 @@ export default function CommandCenterPage() {
   }, [fetchData])
 
   const markAlertRead = async (alertId: string) => {
-    await fetch(`/api/host/command-center/alerts/${alertId}/read`, { method: 'PATCH' })
+    console.log('🔍 [RADCC DEBUG] Marking alert read:', alertId)
+    await fetch(`/api/radcc/command-center/alerts/${alertId}/read`, { method: 'PATCH' })
     setAlerts(prev => prev.map(a => a.id === alertId ? { ...a, is_read: true } : a))
   }
 

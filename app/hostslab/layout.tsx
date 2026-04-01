@@ -330,14 +330,22 @@ export default function HostsLabLayout({ children }: { children: React.ReactNode
   const [alertCount, setAlertCount] = useState(0)
 
   useEffect(() => {
-    // Fetch host data
-    fetch('/api/hostslab/me')
-      .then(res => res.json())
+    // Fetch host data with debug logging
+    console.log('🔍 [RADCC DEBUG] Fetching host data...')
+    fetch('/api/radcc/me')
+      .then(res => {
+        console.log('📥 [RADCC DEBUG] Host data response:', res.status)
+        if (!res.ok) {
+          console.error('❌ [RADCC DEBUG] Host data error:', res.status)
+          return {}
+        }
+        return res.json()
+      })
       .then(data => {
         if (data.host) setHost(data.host)
         if (data.alertCount) setAlertCount(data.alertCount)
       })
-      .catch(console.error)
+      .catch(e => console.error('❌ [RADCC DEBUG] Host data fetch failed:', e))
   }, [])
 
   return (
