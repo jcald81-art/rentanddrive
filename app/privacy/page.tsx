@@ -64,9 +64,9 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">Eagle GPS Data Usage and Retention</h2>
+            <h2 className="text-2xl font-semibold mb-4">RADar Data Usage and Retention</h2>
             <p>
-              Our Eagle Fleet Monitoring System, powered by Bouncie GPS devices, collects the following 
+              Our RADar Fleet Tracking System, powered by Bouncie GPS devices, collects the following 
               telematics data during rental periods:
             </p>
             <ul className="list-disc pl-6 space-y-2">
@@ -102,7 +102,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">Cartegrity Inspection Photo Storage</h2>
+            <h2 className="text-2xl font-semibold mb-4">AI Vehicle Inspection Photo Storage</h2>
             <p>
               Pre-trip and post-trip inspection photos are:
             </p>

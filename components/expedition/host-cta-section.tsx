@@ -4,17 +4,17 @@ import { Button } from '@/components/ui/button'
 
 export function HostCTASection() {
   return (
-    <section className="bg-[#2D4A2D] py-24 lg:py-32">
+    <section className="bg-card py-24 lg:py-32">
       <div className="mx-auto max-w-[1280px] px-6 lg:px-20">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Text Content */}
           <div>
-            <h2 className="font-serif text-4xl lg:text-5xl xl:text-6xl text-[#F5F2EC] leading-tight mb-6">
+            <h2 className="font-serif text-4xl lg:text-5xl xl:text-6xl text-foreground leading-tight mb-6">
               Your vehicle.<br />
               Working for you.
             </h2>
             
-            <p className="text-lg text-[#8BAF7C] mb-8 max-w-lg leading-relaxed">
+            <p className="text-lg text-muted-foreground mb-8 max-w-lg leading-relaxed">
               List on Rent and Drive and keep 90% of every booking. 
               RAD Fleet tracks your vehicle. igloohome handles the keys. 
               You collect the revenue.
@@ -23,7 +23,7 @@ export function HostCTASection() {
             <div className="flex flex-wrap gap-4">
               <Button
                 asChild
-                className="bg-[#C4813A] hover:bg-[#A66B2E] text-[#1C1F1A] font-medium px-8 py-6 rounded-full text-lg"
+                className="bg-accent hover:bg-accent/90 text-accent-foreground font-medium px-8 py-6 rounded-full text-lg"
               >
                 <Link href="/list-vehicle">
                   Become a founding host
@@ -33,7 +33,7 @@ export function HostCTASection() {
               
               <Link
                 href="/how-it-works"
-                className="inline-flex items-center text-[#F5F2EC] font-medium underline underline-offset-4 hover:text-[#8BAF7C] transition-colors"
+                className="inline-flex items-center text-foreground font-medium underline underline-offset-4 hover:text-muted-foreground transition-colors"
               >
                 See how it works
               </Link>
@@ -41,21 +41,21 @@ export function HostCTASection() {
           </div>
 
           {/* Revenue Comparison */}
-          <div className="bg-[#1C1F1A] rounded-2xl p-8 lg:p-10">
-            <h3 className="text-sm uppercase tracking-wider text-[#9A9589] mb-8">
+          <div className="bg-muted rounded-2xl p-8 lg:p-10">
+            <h3 className="text-sm uppercase tracking-wider text-muted-foreground mb-8">
               Monthly Earnings Comparison
             </h3>
 
             {/* RAD */}
             <div className="mb-8">
               <div className="flex items-baseline justify-between mb-2">
-                <span className="text-[#F5F2EC] font-medium">Rent and Drive</span>
-                <span className="font-serif text-3xl text-[#8BAF7C]">$1,620</span>
+                <span className="text-foreground font-medium">Rent and Drive</span>
+                <span className="font-serif text-3xl text-primary">$1,620</span>
               </div>
-              <div className="h-3 bg-[#2D4A2D] rounded-full overflow-hidden">
-                <div className="h-full w-[90%] bg-[#8BAF7C] rounded-full" />
+              <div className="h-3 bg-border rounded-full overflow-hidden">
+                <div className="h-full w-[90%] bg-primary rounded-full" />
               </div>
-              <p className="text-sm text-[#9A9589] mt-2">
+              <p className="text-sm text-muted-foreground mt-2">
                 You keep 90% of $1,800 gross
               </p>
             </div>
@@ -63,22 +63,22 @@ export function HostCTASection() {
             {/* Turo */}
             <div>
               <div className="flex items-baseline justify-between mb-2">
-                <span className="text-[#F5F2EC] font-medium">Turo</span>
-                <span className="font-serif text-3xl text-[#9A9589]">$1,170</span>
+                <span className="text-foreground font-medium">Turo</span>
+                <span className="font-serif text-3xl text-muted-foreground">$1,170</span>
               </div>
-              <div className="h-3 bg-[#2D4A2D] rounded-full overflow-hidden">
-                <div className="h-full w-[65%] bg-[#9A9589] rounded-full" />
+              <div className="h-3 bg-border rounded-full overflow-hidden">
+                <div className="h-full w-[65%] bg-muted-foreground rounded-full" />
               </div>
-              <p className="text-sm text-[#9A9589] mt-2">
+              <p className="text-sm text-muted-foreground mt-2">
                 You keep 65% of $1,800 gross
               </p>
             </div>
 
             {/* Difference */}
-            <div className="mt-8 pt-8 border-t border-[#F5F2EC]/10">
+            <div className="mt-8 pt-8 border-t border-border">
               <div className="flex items-baseline justify-between">
-                <span className="text-[#9A9589]">Annual difference</span>
-                <span className="font-serif text-2xl text-[#C4813A]">+$5,400/yr</span>
+                <span className="text-muted-foreground">Annual difference</span>
+                <span className="font-serif text-2xl text-accent">+$5,400/yr</span>
               </div>
             </div>
           </div>

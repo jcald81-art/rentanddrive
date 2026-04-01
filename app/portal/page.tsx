@@ -143,7 +143,7 @@ export default function PortalPage() {
               </CardHeader>
               <CardContent className="text-center">
                 <ul className="text-sm text-slate-500 space-y-2 mb-6">
-                  <li>Manage your fleet with Eagle GPS tracking</li>
+                  <li>Manage your fleet with RADar tracking</li>
                   <li>View earnings and payouts in The Vault</li>
                   <li>Connect with AI agents (Dollar, Shield, Eagle)</li>
                   <li>Earn XP and badges in The Game Room</li>

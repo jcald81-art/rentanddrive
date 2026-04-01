@@ -42,11 +42,11 @@ const FAQ_ITEMS = [
   },
   {
     question: 'What if the vehicle isn\'t where it\'s supposed to be?',
-    answer: 'Use the Eagle tracking feature in My Trips to see the vehicle\'s live location. If there\'s a significant discrepancy, contact the host directly or reach out to our support team.'
+    answer: 'Use the RADar tracking feature in My Trips to see the vehicle\'s live location. If there\'s a significant discrepancy, contact the host directly or reach out to our support team.'
   },
   {
-    question: 'How does Eagle GPS tracking work?',
-    answer: 'Eagle is our GPS monitoring system powered by Bouncie devices. It tracks vehicle location in real-time, monitors driving behavior for your Road Score, and helps locate vehicles if there are any issues.'
+    question: 'How does RADar tracking work?',
+    answer: 'RADar is RAD\'s fleet tracking system powered by Bouncie devices. It tracks vehicle location in real-time, monitors driving behavior for your Road Score, and helps locate vehicles if there are any issues.'
   },
   {
     question: 'What insurance coverage is included?',

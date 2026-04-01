@@ -51,14 +51,14 @@ export function MarketsSection() {
               />
               
               {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1C1F1A] via-[#1C1F1A]/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-sidebar via-sidebar/40 to-transparent" />
               
               {/* Content */}
               <div className="absolute bottom-0 left-0 right-0 p-6">
-                <h3 className="font-serif text-3xl text-[#F5F2EC] mb-1">
+                <h3 className="font-serif text-3xl text-sidebar-foreground mb-1">
                   {market.name}
                 </h3>
-                <p className="text-sm text-[#9A9589]">
+                <p className="text-sm text-muted-foreground">
                   {market.tagline}
                 </p>
               </div>

@@ -1,11 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import Stripe from 'stripe'
+import { getStripeServer } from '@/lib/stripe'
 
 export async function POST() {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2024-06-20',
-  })
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -27,7 +24,7 @@ export async function POST() {
 
     // Create Stripe Identity VerificationSession
     // Real implementation:
-    const verificationSession = await stripe.identity.verificationSessions.create({
+    const verificationSession = await getStripeServer().identity.verificationSessions.create({
       type: 'document',
       options: {
         document: {

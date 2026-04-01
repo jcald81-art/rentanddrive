@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import Stripe from 'stripe'
+import { getStripeServer } from '@/lib/stripe'
 
 export async function POST(req: NextRequest) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-    apiVersion: '2024-06-20',
-  })
   try {
     const supabase = await createClient()
     const { disputeId } = await req.json()
@@ -56,7 +53,7 @@ export async function POST(req: NextRequest) {
 
           if (booking?.stripe_payment_intent_id) {
             try {
-              await stripe.refunds.create({
+              await getStripeServer().refunds.create({
                 payment_intent: booking.stripe_payment_intent_id,
                 amount: Math.round(refundAmount * 100),
                 reason: 'requested_by_customer',

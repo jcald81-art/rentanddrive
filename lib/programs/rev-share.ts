@@ -27,7 +27,7 @@ export const REV_SHARE_TIERS: RevShareTier[] = [
     perks: [
       'Standard support',
       'Basic analytics',
-      'Eagle GPS monitoring',
+      'RADar fleet tracking',
     ],
   },
   {

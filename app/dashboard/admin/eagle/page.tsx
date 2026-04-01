@@ -357,7 +357,7 @@ export default function EagleNetworkPage() {
               <Zap className="h-5 w-5 text-amber-500" />
               Recent Alerts
             </CardTitle>
-            <CardDescription>Fleet alerts from Eagle system</CardDescription>
+            <CardDescription>Fleet alerts from RADar</CardDescription>
           </CardHeader>
           <CardContent className="max-h-[500px] overflow-auto">
             <div className="space-y-4">

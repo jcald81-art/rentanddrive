@@ -24,8 +24,8 @@ const FAQ_CATEGORIES = [
         a: 'Most vehicles use contactless pickup via igloo lockboxes. You\'ll receive a unique PIN code before your trip starts. The lockbox contains the vehicle keys. Some hosts offer in-person handoff instead.'
       },
       {
-        q: 'What is the Cartegrity inspection?',
-        a: 'Before and after each rental, you\'ll take photos of the vehicle from 8 angles using our app. This documents the vehicle\'s condition and protects both you and the host from unfair damage claims.'
+        q: 'What is the AI vehicle inspection?',
+        a: 'Before and after each rental, you\'ll complete a guided walkaround using your phone. Our AI scans for damage and documents the vehicle\'s condition, protecting both you and the host from unfair damage claims.'
       },
     ]
   },
@@ -68,32 +68,36 @@ const FAQ_CATEGORIES = [
     ]
   },
   {
-    name: 'Eagle GPS',
+    name: 'RADar — Fleet Tracking',
     questions: [
       {
-        q: 'What is the Eagle system?',
-        a: 'Eagle is our GPS fleet monitoring system using Bouncie devices. It tracks vehicle location, trip data, and driving behavior in real-time to ensure safety for hosts and renters.'
+        q: 'What is RADar?',
+        a: 'RADar is RAD\'s real-time fleet tracking system built into every vehicle on the platform. Each RAD vehicle has a Bouncie OBD2 device plugged into the diagnostics port under the dashboard. It provides live GPS location, trip history, geofencing, driving behavior monitoring, and vehicle health data. Hosts can monitor their vehicles 24/7 from the RAD Command Center. Renters see a RADar Tracked badge on any vehicle that has the device installed.'
       },
       {
         q: 'Is my location tracked during rentals?',
-        a: 'Yes. By using our platform, you consent to GPS tracking during rental periods. This data is used for safety, geofencing, and trip verification. Data is retained for 90 days after each rental.'
+        a: 'Yes. Every RAD vehicle with a RADar device tracks GPS location, speed, and trip data throughout the rental period. This data is used to verify trips, enforce geofence boundaries, and resolve any disputes. Location data is stored securely and only accessible to the host and RAD platform administrators. Tracking begins when the trip starts and ends when the vehicle is returned.'
       },
       {
         q: 'What happens if I exceed speed limits?',
-        a: 'The Eagle system monitors speed. Excessive speeding may trigger alerts to the host and affect your Renter Road score. Repeated violations can impact your ability to rent on our platform.'
+        a: 'RADar monitors driving behavior including speed, hard braking, and rapid acceleration throughout your trip. Hosts are notified of significant speed violations. Repeated or severe violations may result in booking restrictions or removal from the platform. Safe driving is tracked through your RAD Road Score — good scores earn rewards and unlock better vehicles.'
       },
     ]
   },
   {
-    name: 'Cartegrity Inspections',
+    name: 'AI Vehicle Inspections',
     questions: [
       {
-        q: 'Why are inspections required?',
-        a: 'Inspections protect both parties by documenting vehicle condition. Without inspections, it\'s impossible to determine when damage occurred. Hosts and renters both benefit from this transparency.'
+        q: 'Why are inspections required for every trip?',
+        a: 'RAD uses AI-powered vehicle inspections on every trip to protect both hosts and renters. Before your trip begins you will receive a text message with a link to complete a guided vehicle walkaround on your phone — no app download required. The same process happens when you return the vehicle. Our AI scans photos for any damage, documents the vehicle condition with a timestamped report, and automatically compares pre and post-trip state. This protects renters from being charged for pre-existing damage and gives hosts documented proof if new damage occurs.'
       },
       {
-        q: 'What if I forget to complete an inspection?',
-        a: 'Failure to complete inspections may result in you being held responsible for any damage claims. We send reminders via SMS and push notifications. The app won\'t release the lockbox PIN until pre-trip inspection is complete.'
+        q: 'What if I forget to complete my inspection?',
+        a: 'You will receive a text message reminder 24 hours before pickup and again 2 hours after your return. The inspection link stays active for 24 hours. If you do not complete the pre-trip inspection, your security deposit hold may remain in place until the vehicle condition is verified by the host. If you do not complete the return inspection, RAD may initiate a manual review of the vehicle before releasing your deposit. Inspections take about 3 minutes and protect you from dispute liability.'
+      },
+      {
+        q: 'What does the AI inspection check for?',
+        a: 'The inspection scans for dents, scratches, paint damage, glass chips or cracks, tire condition, and interior wear. It also reads and records the vehicle odometer and VIN at each inspection. The AI detects 21 types of damage at 95-99% accuracy. Both the pre and post-trip reports are stored with timestamps and are available to both the host and renter through the RAD platform.'
       },
     ]
   },
@@ -177,7 +181,7 @@ export default function FAQPage() {
         <div className="space-y-8">
           {filteredCategories.map((category) => (
             <div key={category.name}>
-              <h2 className="text-xl font-semibold mb-4 text-[#CC0000]">
+              <h2 className="text-xl font-semibold mb-4 text-primary">
                 {category.name}
               </h2>
               <div className="space-y-2">

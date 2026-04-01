@@ -77,7 +77,7 @@ export default function AboutPage() {
               <Card className="border-blue-500/30">
                 <CardContent className="pt-6">
                   <Radar className="h-10 w-10 text-blue-500 mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Eagle Fleet Monitoring</h3>
+                  <h3 className="text-xl font-semibold mb-2">RADar Fleet Tracking</h3>
                   <p className="text-sm text-muted-foreground">
                     Real-time GPS tracking with Bouncie devices on every vehicle. Geofencing, 
                     trip logging, driving behavior analysis, and instant alerts keep everyone safe.

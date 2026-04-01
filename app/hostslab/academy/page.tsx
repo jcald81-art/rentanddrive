@@ -109,14 +109,14 @@ export default function AcademyPage() {
     },
     {
       id: '2',
-      title: 'Eagle Fleet Tracking',
-      description: 'Master the Eagle system for real-time GPS tracking and fleet monitoring.',
-      category: 'eagle',
+      title: 'RADar Fleet Tracking',
+      description: 'Master RADar for real-time GPS tracking and fleet monitoring.',
+      category: 'radar',
       lessons_count: 8,
       completed_lessons: 4,
       duration_minutes: 45,
       is_locked: false,
-      certification: 'Eagle Operator',
+      certification: 'RADar Operator',
     },
     {
       id: '3',
@@ -164,7 +164,7 @@ export default function AcademyPage() {
 
   const displayCertifications = certifications.length > 0 ? certifications : [
     { id: '1', name: 'Certified Host', description: 'Completed basic training', course_id: '1', earned: true, earned_at: '2024-01-01', badge_color: 'bg-green-500' },
-    { id: '2', name: 'Eagle Operator', description: 'Mastered fleet tracking', course_id: '2', earned: false, badge_color: 'bg-blue-500' },
+    { id: '2', name: 'RADar Operator', description: 'Mastered fleet tracking', course_id: '2', earned: false, badge_color: 'bg-blue-500' },
     { id: '3', name: 'Pricing Pro', description: 'Dynamic pricing expert', course_id: '3', earned: false, badge_color: 'bg-amber-500' },
     { id: '4', name: 'Reputation Master', description: 'Review management guru', course_id: '6', earned: false, badge_color: 'bg-purple-500' },
   ]

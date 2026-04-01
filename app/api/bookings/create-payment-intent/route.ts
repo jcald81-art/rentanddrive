@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
+import { getStripeServer } from '@/lib/stripe'
 
 export async function POST(req: NextRequest) {
   try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: '2024-06-20',
-    })
 
     const body = await req.json()
     const { amount, vehicle_id, start_date, end_date } = body

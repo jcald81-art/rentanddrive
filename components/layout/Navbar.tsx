@@ -46,7 +46,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="h-16 bg-[#0a0f1e] border-b border-white/10 fixed top-0 left-0 right-0 z-50">
+      <header className="h-16 bg-sidebar border-b border-sidebar-border fixed top-0 left-0 right-0 z-50">
         <div className="h-full max-w-[1400px] mx-auto px-4 md:px-6 flex items-center justify-between">
           {/* LEFT: Logo + Ask RAD */}
           <div className="flex items-center gap-4">
@@ -70,16 +70,16 @@ export function Navbar() {
 
           {/* CENTER: Navigation Links (hidden on mobile) */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="/vehicles" className="text-sm text-gray-300 hover:text-white transition-colors">
+            <Link href="/vehicles" className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors">
               Browse Vehicles
             </Link>
-            <Link href="/how-it-works" className="text-sm text-gray-300 hover:text-white transition-colors">
+            <Link href="/how-it-works" className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors">
               How It Works
             </Link>
-            <Link href="/list-vehicle" className="text-sm text-gray-300 hover:text-white transition-colors">
+            <Link href="/list-vehicle" className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors">
               List Your Car
             </Link>
-            <Link href="/help" className="text-sm text-gray-300 hover:text-white transition-colors">
+            <Link href="/help" className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors">
               Help
             </Link>
           </nav>
@@ -87,14 +87,14 @@ export function Navbar() {
           {/* RIGHT: Actions */}
           <div className="flex items-center gap-3">
             {/* Theme Toggle */}
-            <ThemeSwitcher variant="default" className="text-gray-400 hover:text-white" />
+            <ThemeSwitcher variant="default" className="text-sidebar-foreground/60 hover:text-sidebar-foreground" />
 
             {/* Auth - Desktop */}
             <div className="hidden md:flex items-center gap-3">
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10">
+                    <Button variant="ghost" size="sm" className="text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-foreground/10">
                       {user.user_metadata?.avatar_url ? (
                         <Image
                           src={user.user_metadata.avatar_url}
@@ -141,7 +141,7 @@ export function Navbar() {
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    className="text-gray-300 hover:text-white hover:bg-white/10"
+                    className="text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-foreground/10"
                     onClick={() => {
                       setAuthMode('signin')
                       setAuthModalOpen(true)
@@ -151,7 +151,7 @@ export function Navbar() {
                   </Button>
                   <Button 
                     size="sm"
-                    className="bg-[#2D4A2D] hover:bg-[#3D5A3D] text-white rounded-full px-5"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-5"
                     onClick={() => {
                       setAuthMode('signup')
                       setAuthModalOpen(true)
@@ -165,7 +165,7 @@ export function Navbar() {
 
             {/* Mobile Menu Button */}
             <button 
-              className="md:hidden text-gray-300 hover:text-white"
+              className="md:hidden text-sidebar-foreground/70 hover:text-sidebar-foreground"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -175,66 +175,66 @@ export function Navbar() {
 
         {/* Mobile Menu Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden absolute top-16 left-0 right-0 bg-[#0a0f1e] border-b border-white/10 py-4 px-4 shadow-xl">
+          <div className="md:hidden absolute top-16 left-0 right-0 bg-sidebar border-b border-sidebar-border py-4 px-4 shadow-xl">
             <nav className="flex flex-col gap-4">
               {/* Ask RAD Button - Mobile */}
               <AskRADButton />
               
               <Link 
                 href="/vehicles" 
-                className="text-sm text-gray-300 hover:text-white py-2"
+                className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Browse Vehicles
               </Link>
               <Link 
                 href="/how-it-works" 
-                className="text-sm text-gray-300 hover:text-white py-2"
+                className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 How It Works
               </Link>
               <Link 
                 href="/list-vehicle" 
-                className="text-sm text-gray-300 hover:text-white py-2"
+                className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 List Your Car
               </Link>
               <Link 
                 href="/help" 
-                className="text-sm text-gray-300 hover:text-white py-2"
+                className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Help
               </Link>
 
-              <div className="border-t border-white/10 pt-4 mt-2">
+              <div className="border-t border-sidebar-border pt-4 mt-2">
                 {user ? (
                   <>
                     <Link 
                       href="/renter/suite" 
-                      className="text-sm text-gray-300 hover:text-white py-2 flex items-center gap-2"
+                      className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2 flex items-center gap-2"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Car className="h-4 w-4" /> RAD Renters
                     </Link>
                     <Link 
                       href="/host/dashboard" 
-                      className="text-sm text-gray-300 hover:text-white py-2 flex items-center gap-2"
+                      className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2 flex items-center gap-2"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <HomeIcon className="h-4 w-4" /> RAD Hosts
                     </Link>
                     <Link 
                       href="/profile" 
-                      className="text-sm text-gray-300 hover:text-white py-2"
+                      className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       My Profile
                     </Link>
                     <button 
-                      className="text-sm text-gray-300 hover:text-white py-2 text-left w-full flex items-center gap-2"
+                      className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2 text-left w-full flex items-center gap-2"
                       onClick={handleSignOut}
                     >
                       <LogOut className="h-4 w-4" /> Sign Out
@@ -244,7 +244,7 @@ export function Navbar() {
                   <div className="flex flex-col gap-3">
                     <Button 
                       variant="outline"
-                      className="w-full border-white/20 text-white hover:bg-white/10"
+                      className="w-full border-sidebar-border text-sidebar-foreground hover:bg-sidebar-foreground/10"
                       onClick={() => {
                         setMobileMenuOpen(false)
                         setAuthMode('signin')
@@ -254,7 +254,7 @@ export function Navbar() {
                       Login
                     </Button>
                     <Button 
-                      className="w-full bg-[#2D4A2D] hover:bg-[#3D5A3D] text-white"
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                       onClick={() => {
                         setMobileMenuOpen(false)
                         setAuthMode('signup')

@@ -171,7 +171,7 @@ export function DeliveryChoice({
               </li>
               <li className="flex items-center gap-2">
                 <Shield className="h-4 w-4 text-[#CC0000]" />
-                <span>Real-time Eagle GPS tracking</span>
+                <span>Real-time RADar tracking</span>
               </li>
             </ul>
             <Button className="w-full bg-[#CC0000] hover:bg-[#AA0000]">
@@ -296,12 +296,12 @@ export function DeliveryChoice({
                 ))}
               </div>
 
-              {/* Eagle Tracking Notice */}
+              {/* RADar Tracking Notice */}
               <div className="p-4 bg-slate-900 text-white rounded-lg">
                 <div className="flex items-center gap-3">
                   <Shield className="h-8 w-8 text-[#CC0000]" />
                   <div>
-                    <p className="font-medium">Eagle GPS Tracking Included</p>
+                    <p className="font-medium">RADar Tracking Included</p>
                     <p className="text-sm text-slate-400">
                       Track your vehicle in real-time during transport
                     </p>

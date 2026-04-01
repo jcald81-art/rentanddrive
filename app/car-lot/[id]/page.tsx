@@ -249,7 +249,7 @@ export default function CarLotListingPage() {
                     <div className="flex items-start gap-3">
                       <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
                       <div>
-                        <p className="font-medium">Eagle GPS Tracked</p>
+                        <p className="font-medium">RADar Tracked</p>
                         <p className="text-sm text-muted-foreground">
                           Complete trip history available
                         </p>
@@ -258,7 +258,7 @@ export default function CarLotListingPage() {
                     <div className="flex items-start gap-3">
                       <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
                       <div>
-                        <p className="font-medium">Cartegrity Inspected</p>
+                        <p className="font-medium">AI Inspected</p>
                         <p className="text-sm text-muted-foreground">
                           AI-verified condition reports
                         </p>
@@ -287,7 +287,7 @@ export default function CarLotListingPage() {
                     <Button variant="outline" size="sm" asChild>
                       <Link href={`/api/car-lot/listings/${listing.id}/report`} target="_blank">
                         <FileText className="h-4 w-4 mr-2" />
-                        Get Cartegrity Report
+                        Get Inspection Report
                       </Link>
                     </Button>
                   </div>

@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import Stripe from 'stripe'
+import { getStripeServer } from '@/lib/stripe'
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2024-06-20',
-  })
   const { id } = await params
   const supabase = await createClient()
   
@@ -47,13 +44,13 @@ export async function POST(
     try {
       if (resolution === 'refund_renter') {
         // Full refund to renter
-        await stripe.refunds.create({
+        await getStripeServer().refunds.create({
           payment_intent: booking.payment_intent_id,
         })
         refundedAmount = booking.total_amount
       } else if (resolution === 'split' && refund_amount) {
         // Partial refund
-        await stripe.refunds.create({
+        await getStripeServer().refunds.create({
           payment_intent: booking.payment_intent_id,
           amount: Math.round(refund_amount * 100), // Convert to cents
         })

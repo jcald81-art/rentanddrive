@@ -62,9 +62,9 @@ export function ExpeditionHero() {
   }, [])
 
   return (
-    <section className="relative min-h-screen bg-card dark:bg-[#1C1F1A] overflow-hidden">
+    <section className="relative min-h-screen bg-card overflow-hidden">
       {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-card via-muted to-card dark:from-[#1C1F1A] dark:via-[#252923] dark:to-[#1C1F1A]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-card via-muted to-card" />
       <div className="absolute inset-0 grain-overlay" />
       
       {/* Hero Vehicle Image - positioned on right side */}
@@ -77,7 +77,7 @@ export function ExpeditionHero() {
           className="object-contain object-right-bottom"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1C1F1A] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-card via-transparent to-transparent" />
       </div>
 
       {/* Content */}

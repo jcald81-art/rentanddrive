@@ -77,34 +77,34 @@ export default function ListVehiclePage() {
 
   if (isAuthenticated === null) {
     return (
-      <div className="min-h-screen bg-[#0f172a] flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#f97316]" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#0f172a] py-8 px-4">
+    <div className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
-          <Link href="/" className="flex items-center gap-2 text-slate-400 hover:text-white mb-6">
+          <Link href="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
             <ArrowLeft className="h-4 w-4" />
             Back to home
           </Link>
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-[#f97316] rounded-lg flex items-center justify-center">
-              <Car className="h-6 w-6 text-white" />
+            <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+              <Car className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">List Your Vehicle</h1>
-              <p className="text-slate-400">Start earning money by sharing your vehicle</p>
+              <h1 className="text-2xl font-bold text-foreground">List Your Vehicle</h1>
+              <p className="text-muted-foreground">Start earning money by sharing your vehicle</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-[#1e293b] rounded-xl p-8 shadow-2xl border border-slate-700">
+        <div className="bg-card rounded-xl p-8 shadow-2xl border border-border">
           {error && (
-            <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+            <div className="mb-6 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
               {error}
             </div>
           )}
@@ -112,7 +112,7 @@ export default function ListVehiclePage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="make" className="text-slate-300">Make</Label>
+                <Label htmlFor="make" className="text-foreground">Make</Label>
                 <Input
                   id="make"
                   placeholder="e.g., Toyota"
@@ -120,11 +120,10 @@ export default function ListVehiclePage() {
                   onChange={(e) => setMake(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-500"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="model" className="text-slate-300">Model</Label>
+                <Label htmlFor="model" className="text-foreground">Model</Label>
                 <Input
                   id="model"
                   placeholder="e.g., Camry"
@@ -132,14 +131,13 @@ export default function ListVehiclePage() {
                   onChange={(e) => setModel(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-500"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="year" className="text-slate-300">Year</Label>
+                <Label htmlFor="year" className="text-foreground">Year</Label>
                 <Input
                   id="year"
                   type="number"
@@ -150,13 +148,12 @@ export default function ListVehiclePage() {
                   min="1990"
                   max={new Date().getFullYear() + 1}
                   disabled={isLoading}
-                  className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-500"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="category" className="text-slate-300">Category</Label>
+                <Label htmlFor="category" className="text-foreground">Category</Label>
                 <Select value={category} onValueChange={setCategory} disabled={isLoading}>
-                  <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
+                  <SelectTrigger>
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -173,7 +170,7 @@ export default function ListVehiclePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="dailyRate" className="text-slate-300">Daily Rate ($)</Label>
+                <Label htmlFor="dailyRate" className="text-foreground">Daily Rate ($)</Label>
                 <Input
                   id="dailyRate"
                   type="number"
@@ -183,11 +180,10 @@ export default function ListVehiclePage() {
                   required
                   min="1"
                   disabled={isLoading}
-                  className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-500"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="location" className="text-slate-300">Location</Label>
+                <Label htmlFor="location" className="text-foreground">Location</Label>
                 <Input
                   id="location"
                   placeholder="e.g., Reno, NV"
@@ -195,13 +191,12 @@ export default function ListVehiclePage() {
                   onChange={(e) => setLocation(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-500"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description" className="text-slate-300">Description</Label>
+              <Label htmlFor="description" className="text-foreground">Description</Label>
               <Textarea
                 id="description"
                 placeholder="Describe your vehicle, features, and any rules for renters..."
@@ -209,14 +204,14 @@ export default function ListVehiclePage() {
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
                 disabled={isLoading}
-                className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-500 resize-none"
+                className="resize-none"
               />
             </div>
 
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 bg-[#f97316] hover:bg-[#ea580c] text-white font-medium text-lg"
+              className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-lg"
             >
               {isLoading ? (
                 <>
@@ -229,9 +224,9 @@ export default function ListVehiclePage() {
             </Button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-slate-400">
+          <p className="mt-6 text-center text-sm text-muted-foreground">
             By listing your vehicle, you agree to our{' '}
-            <Link href="/terms" className="text-[#f97316] hover:text-[#fb923c]">
+            <Link href="/terms" className="text-primary hover:text-primary/80">
               Terms of Service
             </Link>
           </p>

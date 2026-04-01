@@ -276,7 +276,7 @@ const COURSES: Record<string, Course> = {
             content: 'Your hosting journey has just begun! Here is what to do next:',
             bulletPoints: [
               'List your first vehicle if you have not already',
-              'Take the Eagle Fleet Tracking course',
+              'Take the RADar Fleet Tracking course',
               'Master Dollar Dynamic Pricing',
               'Join the host community forum',
               'Set a goal for your first month of earnings'
@@ -288,14 +288,14 @@ const COURSES: Record<string, Course> = {
   },
   '2': {
     id: '2',
-    title: 'Eagle Fleet Tracking',
-    description: 'Master the Eagle system for real-time GPS tracking and fleet monitoring.',
-    category: 'eagle',
-    certification: 'Eagle Operator',
+    title: 'RADar Fleet Tracking',
+    description: 'Master RADar for real-time GPS tracking and fleet monitoring.',
+    category: 'radar',
+    certification: 'RADar Operator',
     lessons: [
       {
         id: '2-1',
-        title: 'Introduction to Eagle System',
+        title: 'Introduction to RADar',
         description: 'Understanding real-time fleet monitoring',
         duration_minutes: 6,
         completed: false,

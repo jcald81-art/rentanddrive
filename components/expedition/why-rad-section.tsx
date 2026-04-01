@@ -18,10 +18,10 @@ export function WhyRADSection() {
   ]
 
   return (
-    <section className="bg-[#1C1F1A] py-24 lg:py-32">
+    <section className="bg-muted py-24 lg:py-32">
       <div className="mx-auto max-w-[1280px] px-6 lg:px-20">
         {/* Header */}
-        <h2 className="font-serif text-4xl lg:text-5xl text-[#F5F2EC] mb-16">
+        <h2 className="font-serif text-4xl lg:text-5xl text-foreground mb-16">
           Built different.
         </h2>
 
@@ -30,15 +30,15 @@ export function WhyRADSection() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="bg-[#252822] rounded-2xl p-8 border-l-4 border-[#2D4A2D]"
+              className="bg-card rounded-2xl p-8 border-l-4 border-primary"
             >
-              <p className="font-serif text-5xl lg:text-6xl text-[#F5F2EC] mb-4">
+              <p className="font-serif text-5xl lg:text-6xl text-foreground mb-4">
                 {feature.stat}
               </p>
-              <h3 className="text-xl font-medium text-[#F5F2EC] mb-3">
+              <h3 className="text-xl font-medium text-foreground mb-3">
                 {feature.title}
               </h3>
-              <p className="text-[#9A9589] leading-relaxed">
+              <p className="text-muted-foreground leading-relaxed">
                 {feature.description}
               </p>
             </div>

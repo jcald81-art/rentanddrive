@@ -36,27 +36,27 @@
   --border-light: rgba(28,31,26,0.12);
   --border-strong: rgba(28,31,26,0.25);
 
-  /* Shadcn semantic tokens mapped to Expedition palette */
-  --background: #F5F2EC;
-  --foreground: #1C1F1A;
-  --card: #FFFFFF;
-  --card-foreground: #1C1F1A;
+  /* Shadcn semantic tokens — Light theme */
+  --background: #FFFFFF;
+  --foreground: #111827;
+  --card: #F9FAFB;
+  --card-foreground: #111827;
   --popover: #FFFFFF;
-  --popover-foreground: #1C1F1A;
-  --primary: #2D4A2D;
-  --primary-foreground: #F5F2EC;
-  --secondary: #ECEAE3;
-  --secondary-foreground: #1C1F1A;
-  --muted: #ECEAE3;
-  --muted-foreground: #9A9589;
+  --popover-foreground: #111827;
+  --primary: #CC0000;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F3F4F6;
+  --secondary-foreground: #111827;
+  --muted: #F3F4F6;
+  --muted-foreground: #6B7280;
   --accent: #C4813A;
-  --accent-foreground: #1C1F1A;
-  --destructive: #B91C1C;
+  --accent-foreground: #FFFFFF;
+  --destructive: #DC2626;
   --destructive-foreground: #FFFFFF;
-  --border: rgba(28,31,26,0.12);
-  --input: rgba(28,31,26,0.12);
-  --ring: #2D4A2D;
-  --radius: 1rem;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #CC0000;
+  --radius: 0.5rem;
 
   /* Charts */
   --chart-1: #2D4A2D;
@@ -66,94 +66,81 @@
   --chart-5: #9A9589;
 
   /* Sidebar */
-  --sidebar: #1C1F1A;
-  --sidebar-foreground: #F5F2EC;
-  --sidebar-primary: #C4813A;
-  --sidebar-primary-foreground: #1C1F1A;
-  --sidebar-accent: #2D4A2D;
-  --sidebar-accent-foreground: #F5F2EC;
-  --sidebar-border: rgba(245,242,236,0.12);
-  --sidebar-ring: #C4813A;
+  --sidebar: #111827;
+  --sidebar-foreground: #F9FAFB;
+  --sidebar-primary: #CC0000;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #C4813A;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(17,24,39,0.12);
+  --sidebar-ring: #CC0000;
 }
 
 .dark {
-  --background: #1C1F1A;
+  --background: #0A0A0A;
   --foreground: #F5F2EC;
-  --card: #252822;
+  --card: #141414;
   --card-foreground: #F5F2EC;
-  --popover: #252822;
+  --popover: #141414;
   --popover-foreground: #F5F2EC;
-  --primary: #C4813A;
-  --primary-foreground: #1C1F1A;
-  --secondary: #2D4A2D;
+  --primary: #CC0000;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1C1C1C;
   --secondary-foreground: #F5F2EC;
-  --muted: #2D4A2D;
+  --muted: #1C1C1C;
   --muted-foreground: #9A9589;
   --accent: #C4813A;
-  --accent-foreground: #1C1F1A;
+  --accent-foreground: #FFFFFF;
   --destructive: #DC2626;
   --destructive-foreground: #FFFFFF;
-  --border: rgba(245,242,236,0.12);
-  --input: rgba(245,242,236,0.12);
-  --ring: #C4813A;
-  --sidebar: #151815;
+  --border: rgba(255,255,255,0.08);
+  --input: #1C1C1C;
+  --ring: #CC0000;
+  --sidebar: #0A0A0A;
   --sidebar-foreground: #F5F2EC;
-  --sidebar-primary: #C4813A;
-  --sidebar-primary-foreground: #1C1F1A;
-  --sidebar-accent: #2D4A2D;
-  --sidebar-accent-foreground: #F5F2EC;
-  --sidebar-border: rgba(245,242,236,0.08);
-  --sidebar-ring: #C4813A;
+  --sidebar-primary: #CC0000;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #C4813A;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(255,255,255,0.08);
+  --sidebar-ring: #CC0000;
 }
 
-/* RAD Mode - Deep navy with red/gold accents */
+/* RAD Theme - Deep black with red-tinted cards and gold accent */
 .rad {
-  /* Core backgrounds per spec */
-  --background: #0a0f1e;             /* deep navy primary */
-  --foreground: #FFFFFF;             /* text primary */
-  --card: #111827;                   /* background secondary */
-  --card-foreground: #FFFFFF;
-  --popover: #111827;
-  --popover-foreground: #FFFFFF;
-  
-  /* Brand colors - RAD red and gold */
-  --primary: #e63946;                /* RAD red CTA */
+  --background: #0A0A0A;
+  --foreground: #F5F2EC;
+  --card: #1A0A0A;
+  --card-foreground: #F5F2EC;
+  --popover: #1A0A0A;
+  --popover-foreground: #F5F2EC;
+  --primary: #CC0000;
   --primary-foreground: #FFFFFF;
-  --secondary: #F4A722;              /* RAD gold/amber */
-  --secondary-foreground: #0a0f1e;
-  
-  /* Surfaces */
-  --muted: #1a2235;                  /* background tertiary */
-  --muted-foreground: #B0B8C8;       /* text secondary */
-  --accent: #F4A722;                 /* RAD gold accent */
-  --accent-foreground: #0a0f1e;
-  --destructive: #e63946;
+  --secondary: #1C0F0F;
+  --secondary-foreground: #F5F2EC;
+  --muted: #1C0F0F;
+  --muted-foreground: #9A8A80;
+  --accent: #C4813A;
+  --accent-foreground: #FFFFFF;
+  --destructive: #DC2626;
   --destructive-foreground: #FFFFFF;
-  
-  /* Borders - red tinted */
-  --border: rgba(230, 57, 70, 0.25);
-  --input: rgba(230, 57, 70, 0.15);
-  --ring: #F4A722;
-  
-  /* Sidebar */
-  --sidebar: #0a0f1e;
-  --sidebar-foreground: #FFFFFF;
-  --sidebar-primary: #e63946;
+  --border: rgba(204,0,0,0.25);
+  --input: #1C0F0F;
+  --ring: #CC0000;
+
+  /* RAD-specific extras */
+  --rad-gold: #C4813A;
+  --rad-red: #CC0000;
+  --rad-glow: rgba(204,0,0,0.15);
+
+  --sidebar: #0A0A0A;
+  --sidebar-foreground: #F5F2EC;
+  --sidebar-primary: #CC0000;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F4A722;
-  --sidebar-accent-foreground: #0a0f1e;
-  --sidebar-border: rgba(244, 167, 34, 0.2);
-  --sidebar-ring: #F4A722;
-  
-  /* RAD mode brand overrides */
-  --color-forest: #e63946;
-  --color-trail: #F4A722;
-  --color-summit: #FFD166;
-  --color-amber: #F4A722;
-  
-  /* RAD-specific text colors */
-  --text-secondary: #B0B8C8;
-  --text-tertiary: #6B7A8D;
+  --sidebar-accent: #C4813A;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(204,0,0,0.2);
+  --sidebar-ring: #CC0000;
 }
 
 @theme inline {

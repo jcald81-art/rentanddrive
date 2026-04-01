@@ -99,17 +99,17 @@ const EXPEDITION_AGENTS = [
 
 export function AgentsSection() {
   return (
-    <section className="py-20 md:py-28 bg-[var(--color-bg-parchment)]">
+    <section className="py-20 md:py-28 bg-background">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <span className="text-xs font-medium tracking-[0.08em] uppercase text-[var(--color-text-muted)] mb-3 block">
+          <span className="text-xs font-medium tracking-[0.08em] uppercase text-muted-foreground mb-3 block">
             RAD Intelligence
           </span>
-          <h2 className="font-serif text-4xl md:text-5xl text-[var(--color-text-primary)] mb-4">
+          <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-4">
             10 RAD Agents. One Fleet.
           </h2>
-          <p className="text-[var(--color-text-secondary)] font-light text-base max-w-2xl mx-auto">
+          <p className="text-muted-foreground font-light text-base max-w-2xl mx-auto">
             Every booking, every vehicle, every renter — monitored, priced, verified, and protected by the RAD agent suite.
           </p>
         </div>

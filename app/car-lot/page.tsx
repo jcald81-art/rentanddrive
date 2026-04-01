@@ -15,7 +15,7 @@ import {
 
 export const metadata: Metadata = {
   title: 'The Car Lot | Buy Verified Vehicles | Rent and Drive',
-  description: 'Shop Eagle-verified vehicles from trusted hosts. Every car has rental history, Cartegrity inspections, and GPS tracking records. Buy with confidence.',
+  description: 'Shop RADar-verified vehicles from trusted hosts. Every car has rental history, AI vehicle inspections, and GPS tracking records. Buy with confidence.',
   openGraph: {
     title: 'The Car Lot | Rent and Drive',
     description: 'Eagle-verified vehicles with complete history',
@@ -88,20 +88,20 @@ return (
               The Car Lot
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Buy Eagle-Verified Vehicles
+              Buy RADar-Verified Vehicles
             </h1>
             <p className="text-xl text-slate-300 mb-6">
-              Every vehicle comes with complete rental history, Cartegrity inspection reports, 
+              Every vehicle comes with complete rental history, AI inspection reports, 
               and GPS tracking records. No surprises, just verified vehicles.
             </p>
             <div className="flex flex-wrap gap-4">
               <div className="flex items-center gap-2 text-sm">
                 <Radar className="h-4 w-4 text-[#CC0000]" />
-                <span>Eagle GPS Verified</span>
+                <span>RADar Verified</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Shield className="h-4 w-4 text-[#CC0000]" />
-                <span>Cartegrity Inspected</span>
+                <span>AI Inspected</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <CheckCircle2 className="h-4 w-4 text-[#CC0000]" />
