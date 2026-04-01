@@ -1,4 +1,4 @@
-// CACHE-BUST-2026-04-01-SYNTAX-FIX-FINAL
+// CACHE-BUST-2026-04-01-V2-SYNTAX-VERIFIED
 'use client'
 
 import { useState, useEffect } from 'react'
