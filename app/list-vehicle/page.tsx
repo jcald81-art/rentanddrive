@@ -1,20 +1,52 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { VehicleMakeModelSelector } from '@/components/vehicles/VehicleMakeModelSelector'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Loader2, Car, ArrowLeft, Brain, Sparkles, Shield, CheckCircle2, AlertTriangle, Upload, FileText } from 'lucide-react'
+import { Loader2, Car, ArrowLeft, Brain, Sparkles, Shield, CheckCircle2, AlertTriangle, Upload, FileText, Search, Info, Zap } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
-import { Card } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 type VehicleType = 'car' | 'motorcycle'
+
+interface DecodedVehicle {
+  vin: string
+  is_valid: boolean
+  make: string | null
+  model: string | null
+  year: number | null
+  trim: string | null
+  body_class: string | null
+  doors: number | null
+  engine_cylinders: number | null
+  engine_displacement_l: number | null
+  fuel_type: string | null
+  drive_type: string | null
+  transmission: string | null
+  manufacturer: string | null
+  plant_country: string | null
+  vehicle_type: string | null
+  suggested_category: string
+  is_awd: boolean
+}
+
+interface RecallData {
+  total_recalls: number
+  recalls: Array<{
+    Component: string
+    Summary: string
+    Consequence: string
+    Remedy: string
+    NHTSACampaignNumber: string
+  }>
+}
 
 export default function ListVehiclePage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -22,13 +54,29 @@ export default function ListVehiclePage() {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  // Vehicle info state
-  const [vehicleInfo, setVehicleInfo] = useState({
-    vehicleType: 'car' as VehicleType,
-    year: '',
-    make: '',
-    model: '',
-  })
+  // VIN Decode states (FIRST STEP)
+  const [vin, setVin] = useState('')
+  const [isDecoding, setIsDecoding] = useState(false)
+  const [vinDecoded, setVinDecoded] = useState(false)
+  const [decodedData, setDecodedData] = useState<DecodedVehicle | null>(null)
+  const [vinError, setVinError] = useState<string | null>(null)
+  
+  // Recall states
+  const [isCheckingRecalls, setIsCheckingRecalls] = useState(false)
+  const [recallData, setRecallData] = useState<RecallData | null>(null)
+  const [recallStatus, setRecallStatus] = useState<'clear' | 'warning' | 'critical' | null>(null)
+
+  // Vehicle info state (auto-populated from VIN or manual)
+  const [vehicleType, setVehicleType] = useState<VehicleType>('car')
+  const [year, setYear] = useState('')
+  const [make, setMake] = useState('')
+  const [model, setModel] = useState('')
+  const [trim, setTrim] = useState('')
+  const [driveType, setDriveType] = useState('')
+  const [engineInfo, setEngineInfo] = useState('')
+  const [bodyClass, setBodyClass] = useState('')
+  const [fuelType, setFuelType] = useState('')
+  
   const [category, setCategory] = useState('')
   const [dailyRate, setDailyRate] = useState('')
   const [aiPricingEnabled, setAiPricingEnabled] = useState(false)
@@ -42,22 +90,15 @@ export default function ListVehiclePage() {
   const [description, setDescription] = useState('')
   const [location, setLocation] = useState('Reno, NV')
 
-  // VIN and Safety states
-  const [vin, setVin] = useState('')
-  const [vinChecking, setVinChecking] = useState(false)
-  const [recallStatus, setRecallStatus] = useState<'unchecked' | 'checking' | 'clear' | 'recall' | null>(null)
-  const [recallMessage, setRecallMessage] = useState('')
-
   // Document upload states
   const [dlFront, setDlFront] = useState<File | null>(null)
   const [dlBack, setDlBack] = useState<File | null>(null)
   const [insurance, setInsurance] = useState<File | null>(null)
-  const [dlVerified, setDlVerified] = useState(false)
   const [insuranceVerified, setInsuranceVerified] = useState(false)
   const [uploadingDocs, setUploadingDocs] = useState(false)
 
   // Category options based on vehicle type
-  const categoryOptions = vehicleInfo.vehicleType === 'motorcycle'
+  const categoryOptions = vehicleType === 'motorcycle'
     ? [
         { value: 'cruiser', label: 'Cruiser' },
         { value: 'sportbike', label: 'Sport Bike' },
@@ -74,8 +115,8 @@ export default function ListVehiclePage() {
         { value: 'convertible', label: 'Convertible' },
         { value: 'van', label: 'Van / Minivan' },
         { value: 'wagon', label: 'Wagon' },
-        { value: 'rv', label: 'RV / Campervan' },
-        { value: 'atv', label: 'ATV / Side-by-Side' },
+        { value: 'sports', label: 'Sports Car' },
+        { value: 'luxury', label: 'Luxury' },
       ]
 
   useEffect(() => {
@@ -91,40 +132,108 @@ export default function ListVehiclePage() {
     checkAuth()
   }, [router])
 
-  // Reset category when vehicle type changes
-  useEffect(() => {
-    setCategory('')
-  }, [vehicleInfo.vehicleType])
+  // VIN Decode function
+  const decodeVin = useCallback(async () => {
+    if (vin.length !== 17) {
+      setVinError('VIN must be exactly 17 characters')
+      return
+    }
 
-  // Check VIN for recalls when VIN is entered (17 characters)
-  useEffect(() => {
-    async function checkVinRecalls() {
-      if (vin.length !== 17) {
-        setRecallStatus(null)
+    setIsDecoding(true)
+    setVinError(null)
+    setDecodedData(null)
+    setRecallData(null)
+    setRecallStatus(null)
+
+    try {
+      // Decode VIN via NHTSA API
+      const decodeRes = await fetch(`/api/nhtsa/decode/${vin}`)
+      if (!decodeRes.ok) {
+        throw new Error('Failed to decode VIN')
+      }
+      const decoded: DecodedVehicle = await decodeRes.json()
+      
+      if (!decoded.make || !decoded.model || !decoded.year) {
+        setVinError('Could not decode this VIN. Please verify it is correct or enter details manually.')
         return
       }
 
-      setVinChecking(true)
-      setRecallStatus('checking')
-
-      try {
-        // Placeholder recall check - full NHTSA integration coming soon
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        
-        // Simulate AI-powered recall check response
-        setRecallStatus('clear')
-        setRecallMessage('Recall check completed - No active recalls found. Full NHTSA integration coming soon.')
-      } catch {
-        setRecallStatus('clear')
-        setRecallMessage('Recall check completed - Unable to verify at this time.')
-      } finally {
-        setVinChecking(false)
+      setDecodedData(decoded)
+      setVinDecoded(true)
+      
+      // Auto-populate fields from VIN decode
+      setMake(decoded.make || '')
+      setModel(decoded.model || '')
+      setYear(decoded.year?.toString() || '')
+      setTrim(decoded.trim || '')
+      setDriveType(decoded.drive_type || '')
+      setBodyClass(decoded.body_class || '')
+      setFuelType(decoded.fuel_type || '')
+      
+      // Build engine info string
+      if (decoded.engine_cylinders || decoded.engine_displacement_l) {
+        const engineParts = []
+        if (decoded.engine_cylinders) engineParts.push(`${decoded.engine_cylinders} cyl`)
+        if (decoded.engine_displacement_l) engineParts.push(`${decoded.engine_displacement_l}L`)
+        if (decoded.fuel_type) engineParts.push(decoded.fuel_type)
+        setEngineInfo(engineParts.join(' / '))
       }
-    }
+      
+      // Set suggested category
+      if (decoded.suggested_category) {
+        setCategory(decoded.suggested_category)
+      }
+      
+      // Determine vehicle type from body class
+      if (decoded.body_class?.toLowerCase().includes('motorcycle')) {
+        setVehicleType('motorcycle')
+      }
 
-    const debounce = setTimeout(checkVinRecalls, 500)
-    return () => clearTimeout(debounce)
+      // Check recalls simultaneously
+      setIsCheckingRecalls(true)
+      try {
+        const recallRes = await fetch(`/api/nhtsa/recalls/${vin}`)
+        if (recallRes.ok) {
+          const recalls = await recallRes.json()
+          setRecallData(recalls)
+          
+          // Determine recall status
+          if (recalls.total_recalls === 0) {
+            setRecallStatus('clear')
+          } else if (recalls.recalls?.some((r: { Consequence?: string }) => r.Consequence?.toLowerCase().includes('crash') || r.Consequence?.toLowerCase().includes('fire'))) {
+            setRecallStatus('critical')
+          } else {
+            setRecallStatus('warning')
+          }
+        }
+      } catch {
+        // Recall check failed but decode succeeded
+        setRecallStatus('clear')
+      } finally {
+        setIsCheckingRecalls(false)
+      }
+    } catch {
+      setVinError('Failed to decode VIN. Please try again or enter details manually.')
+    } finally {
+      setIsDecoding(false)
+    }
   }, [vin])
+
+  // Handle VIN input change
+  const handleVinChange = (value: string) => {
+    // Only allow alphanumeric, uppercase, exclude I, O, Q (invalid VIN chars)
+    const cleaned = value.toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g, '').slice(0, 17)
+    setVin(cleaned)
+    setVinError(null)
+    
+    // Clear previous results if VIN changed
+    if (cleaned.length < 17) {
+      setVinDecoded(false)
+      setDecodedData(null)
+      setRecallData(null)
+      setRecallStatus(null)
+    }
+  }
 
   // Handle document uploads
   const handleFileUpload = (
@@ -135,7 +244,6 @@ export default function ListVehiclePage() {
     const file = e.target.files?.[0] || null
     setter(file)
     if (file && verificationSetter) {
-      // Simulate verification delay
       setTimeout(() => verificationSetter(true), 800)
     }
   }
@@ -166,29 +274,29 @@ export default function ListVehiclePage() {
     async function fetchAiPricing() {
       if (!aiPricingEnabled) {
         setAiRecommendation(null)
-        // Clear daily rate when AI pricing is disabled so user enters manually
         setDailyRate('')
         return
       }
 
-      // Need make, model, year to get pricing
-      if (!vehicleInfo.make || !vehicleInfo.model || !vehicleInfo.year) {
+      if (!make || !model || !year) {
         return
       }
 
       setAiPricingLoading(true)
-      setDailyRate('') // Clear while loading
+      setDailyRate('')
       try {
         const res = await fetch('/api/vehicles/ai-pricing', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            make: vehicleInfo.make,
-            model: vehicleInfo.model,
-            year: vehicleInfo.year,
+            make,
+            model,
+            year,
             category,
-            vehicleType: vehicleInfo.vehicleType,
+            vehicleType,
             location,
+            driveType,
+            trim,
           }),
         })
 
@@ -200,7 +308,6 @@ export default function ListVehiclePage() {
             confidence: data.confidence,
             marketRange: data.marketRange,
           })
-          // Auto-populate the daily rate field with AI recommendation
           setDailyRate(String(data.recommendedRate))
         }
       } catch (err) {
@@ -211,7 +318,7 @@ export default function ListVehiclePage() {
     }
 
     fetchAiPricing()
-  }, [aiPricingEnabled, vehicleInfo.make, vehicleInfo.model, vehicleInfo.year, category, vehicleInfo.vehicleType, location])
+  }, [aiPricingEnabled, make, model, year, category, vehicleType, location, driveType, trim])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -228,8 +335,8 @@ export default function ListVehiclePage() {
       }
 
       // Validate required fields
-      if (!vehicleInfo.year || !vehicleInfo.make || !vehicleInfo.model) {
-        throw new Error('Please select year, make, and model')
+      if (!year || !make || !model) {
+        throw new Error('Please enter year, make, and model')
       }
       if (!category) {
         throw new Error('Please select a category')
@@ -246,6 +353,11 @@ export default function ListVehiclePage() {
         throw new Error('Please upload your proof of insurance')
       }
 
+      // Check for critical recalls
+      if (recallStatus === 'critical') {
+        throw new Error('Vehicle has critical safety recalls that must be resolved before listing')
+      }
+
       // Upload documents
       setUploadingDocs(true)
       await uploadDocuments(user.id)
@@ -255,18 +367,23 @@ export default function ListVehiclePage() {
         .from('vehicles')
         .insert({
           host_id: user.id,
-          make: vehicleInfo.make,
-          model: vehicleInfo.model,
-          year: parseInt(vehicleInfo.year),
+          make,
+          model,
+          year: parseInt(year),
+          trim: trim || null,
           category,
-          vehicle_type: vehicleInfo.vehicleType,
+          vehicle_type: vehicleType,
           daily_rate: parseFloat(dailyRate),
           ai_pricing_enabled: aiPricingEnabled,
           description,
           location,
           vin: vin || null,
-          recall_status: recallStatus === 'clear' ? 'clear' : 'unchecked',
-          recall_checked_at: recallStatus === 'clear' ? new Date().toISOString() : null,
+          drive_type: driveType || null,
+          body_class: bodyClass || null,
+          fuel_type: fuelType || null,
+          engine_info: engineInfo || null,
+          recall_status: recallStatus === 'clear' ? 'clear' : recallStatus === 'warning' ? 'warning' : 'unchecked',
+          recall_checked_at: recallStatus ? new Date().toISOString() : null,
           status: 'pending_photos'
         })
         .select('id')
@@ -318,110 +435,331 @@ export default function ListVehiclePage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Vehicle Type, Year, Make, Model - Cascading Selector */}
+            {/* STEP 1: VIN DECODE - MOST IMPORTANT */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <span className="w-6 h-6 bg-[#CC0000] text-white rounded-full flex items-center justify-center text-sm">1</span>
-                Vehicle Information
-              </h3>
-              <VehicleMakeModelSelector
-                value={vehicleInfo}
-                onChange={setVehicleInfo}
-                disabled={isLoading}
-                showVehicleType={true}
-                className="grid-cols-1"
-              />
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-[#CC0000] text-white rounded-full flex items-center justify-center font-bold">1</div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-[#CC0000]" />
+                    Quick Start with VIN
+                  </h3>
+                  <p className="text-sm text-muted-foreground">Decode your VIN to auto-fill vehicle details</p>
+                </div>
+              </div>
 
-              {/* VIN Field */}
-              <div className="space-y-2 mt-4">
-                <Label htmlFor="vin" className="text-foreground">VIN (Vehicle Identification Number)</Label>
-                <div className="relative">
+              <Card className="border-[#CC0000]/20 bg-[#CC0000]/5">
+                <CardContent className="pt-4">
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        placeholder="Enter 17-character VIN"
+                        value={vin}
+                        onChange={(e) => handleVinChange(e.target.value)}
+                        className="pr-16 font-mono tracking-wider uppercase text-lg h-12"
+                        maxLength={17}
+                        disabled={isDecoding}
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-mono">
+                        {vin.length}/17
+                      </span>
+                    </div>
+                    <Button 
+                      type="button"
+                      onClick={decodeVin}
+                      disabled={vin.length !== 17 || isDecoding}
+                      className="h-12 px-6 bg-[#CC0000] hover:bg-[#CC0000]/90"
+                    >
+                      {isDecoding ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        <>
+                          <Search className="h-5 w-5 mr-2" />
+                          Decode
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
+                  {vinError && (
+                    <div className="flex items-center gap-2 mt-3 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
+                      <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+                      {vinError}
+                    </div>
+                  )}
+
+                  <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+                    <Info className="h-3 w-3" />
+                    VIN is typically found on your registration, insurance card, or driver-side dashboard
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Decoded Vehicle Info */}
+              {vinDecoded && decodedData && (
+                <Card className="border-green-200 bg-green-50/50">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        Vehicle Decoded Successfully
+                      </CardTitle>
+                      {isCheckingRecalls && (
+                        <Badge variant="secondary" className="animate-pulse">
+                          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          Checking recalls...
+                        </Badge>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Year</p>
+                        <p className="font-semibold text-lg">{decodedData.year}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Make</p>
+                        <p className="font-semibold text-lg">{decodedData.make}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Model</p>
+                        <p className="font-semibold text-lg">{decodedData.model}</p>
+                      </div>
+                      {decodedData.trim && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Trim</p>
+                          <p className="font-medium">{decodedData.trim}</p>
+                        </div>
+                      )}
+                      {decodedData.body_class && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Body Style</p>
+                          <p className="font-medium">{decodedData.body_class}</p>
+                        </div>
+                      )}
+                      {decodedData.drive_type && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Drivetrain</p>
+                          <p className="font-medium flex items-center gap-1">
+                            {decodedData.drive_type}
+                            {decodedData.is_awd && (
+                              <Badge variant="secondary" className="text-xs">AWD</Badge>
+                            )}
+                          </p>
+                        </div>
+                      )}
+                      {decodedData.engine_cylinders && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Engine</p>
+                          <p className="font-medium">
+                            {decodedData.engine_cylinders} cyl 
+                            {decodedData.engine_displacement_l && ` / ${decodedData.engine_displacement_l}L`}
+                          </p>
+                        </div>
+                      )}
+                      {decodedData.fuel_type && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Fuel Type</p>
+                          <p className="font-medium">{decodedData.fuel_type}</p>
+                        </div>
+                      )}
+                      {decodedData.plant_country && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Made In</p>
+                          <p className="font-medium">{decodedData.plant_country}</p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Recall Status Card */}
+              {recallStatus && !isCheckingRecalls && (
+                <Card className={`${
+                  recallStatus === 'clear' 
+                    ? 'border-green-200 bg-green-50/50' 
+                    : recallStatus === 'critical'
+                    ? 'border-red-300 bg-red-50'
+                    : 'border-amber-200 bg-amber-50/50'
+                }`}>
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      {recallStatus === 'clear' ? (
+                        <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0" />
+                      ) : (
+                        <AlertTriangle className={`h-6 w-6 flex-shrink-0 ${
+                          recallStatus === 'critical' ? 'text-red-600' : 'text-amber-600'
+                        }`} />
+                      )}
+                      <div>
+                        <p className={`font-semibold ${
+                          recallStatus === 'clear' ? 'text-green-700' 
+                          : recallStatus === 'critical' ? 'text-red-700' 
+                          : 'text-amber-700'
+                        }`}>
+                          {recallStatus === 'clear' 
+                            ? 'No Open Recalls Found' 
+                            : recallStatus === 'critical'
+                            ? `${recallData?.total_recalls || 0} Critical Recall(s) Found`
+                            : `${recallData?.total_recalls || 0} Recall(s) Found`
+                          }
+                        </p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {recallStatus === 'clear' 
+                            ? 'This vehicle has passed the NHTSA safety recall check.'
+                            : recallStatus === 'critical'
+                            ? 'Critical safety recalls must be resolved at an authorized dealership before listing.'
+                            : 'We recommend getting these recalls fixed at an authorized dealership (free of charge).'
+                          }
+                        </p>
+                        {recallData && recallData.total_recalls > 0 && (
+                          <div className="mt-3 space-y-2">
+                            {recallData.recalls.slice(0, 2).map((recall, idx) => (
+                              <div key={idx} className="text-xs bg-white/60 p-2 rounded border">
+                                <p className="font-medium">{recall.Component}</p>
+                                <p className="text-muted-foreground mt-1 line-clamp-2">{recall.Summary}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* STEP 2: Vehicle Details (Manual entry or edit decoded values) */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-[#CC0000] text-white rounded-full flex items-center justify-center font-bold">2</div>
+                <h3 className="text-lg font-semibold text-foreground">
+                  {vinDecoded ? 'Confirm Vehicle Details' : 'Vehicle Details'}
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="year">Year</Label>
                   <Input
-                    id="vin"
-                    placeholder="Enter 17-character VIN"
-                    value={vin}
-                    onChange={(e) => setVin(e.target.value.toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g, ''))}
-                    maxLength={17}
+                    id="year"
+                    placeholder="e.g., 2022"
+                    value={year}
+                    onChange={(e) => setYear(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                    required
                     disabled={isLoading}
-                    className="font-mono uppercase"
                   />
-                  {vinChecking && (
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                      <Loader2 className="h-4 w-4 animate-spin text-[#CC0000]" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="make">Make</Label>
+                  <Input
+                    id="make"
+                    placeholder="e.g., Toyota"
+                    value={make}
+                    onChange={(e) => setMake(e.target.value)}
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="model">Model</Label>
+                  <Input
+                    id="model"
+                    placeholder="e.g., 4Runner"
+                    value={model}
+                    onChange={(e) => setModel(e.target.value)}
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              {/* Additional decoded fields */}
+              {(trim || driveType || engineInfo || bodyClass) && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {trim && (
+                    <div className="space-y-2">
+                      <Label htmlFor="trim">Trim</Label>
+                      <Input
+                        id="trim"
+                        value={trim}
+                        onChange={(e) => setTrim(e.target.value)}
+                        disabled={isLoading}
+                      />
+                    </div>
+                  )}
+                  {driveType && (
+                    <div className="space-y-2">
+                      <Label htmlFor="driveType">Drivetrain</Label>
+                      <Input
+                        id="driveType"
+                        value={driveType}
+                        onChange={(e) => setDriveType(e.target.value)}
+                        disabled={isLoading}
+                      />
+                    </div>
+                  )}
+                  {engineInfo && (
+                    <div className="space-y-2">
+                      <Label htmlFor="engine">Engine</Label>
+                      <Input
+                        id="engine"
+                        value={engineInfo}
+                        onChange={(e) => setEngineInfo(e.target.value)}
+                        disabled={isLoading}
+                      />
+                    </div>
+                  )}
+                  {bodyClass && (
+                    <div className="space-y-2">
+                      <Label htmlFor="bodyClass">Body Style</Label>
+                      <Input
+                        id="bodyClass"
+                        value={bodyClass}
+                        onChange={(e) => setBodyClass(e.target.value)}
+                        disabled={isLoading}
+                      />
                     </div>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  VIN helps us verify your vehicle and check for safety recalls
-                </p>
+              )}
 
-                {/* Recall Status Card */}
-                {recallStatus && recallStatus !== 'checking' && (
-                  <Card className={`mt-3 p-3 ${
-                    recallStatus === 'clear' 
-                      ? 'bg-green-500/10 border-green-500/20' 
-                      : 'bg-amber-500/10 border-amber-500/20'
-                  }`}>
-                    <div className="flex items-start gap-3">
-                      {recallStatus === 'clear' ? (
-                        <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                      ) : (
-                        <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                      )}
-                      <div>
-                        <p className={`text-sm font-medium ${
-                          recallStatus === 'clear' ? 'text-green-700' : 'text-amber-700'
-                        }`}>
-                          {recallStatus === 'clear' ? 'No Active Recalls' : 'Recall Alert'}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {recallMessage}
-                        </p>
-                      </div>
-                    </div>
-                  </Card>
-                )}
-
-                {recallStatus === 'checking' && (
-                  <Card className="mt-3 p-3 bg-muted/50">
-                    <div className="flex items-center gap-3">
-                      <Loader2 className="h-5 w-5 animate-spin text-[#CC0000]" />
-                      <p className="text-sm text-muted-foreground">Checking for safety recalls...</p>
-                    </div>
-                  </Card>
+              {/* Category */}
+              <div className="space-y-2">
+                <Label>Category</Label>
+                <Select value={category} onValueChange={setCategory} disabled={isLoading}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categoryOptions.map(opt => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {decodedData?.suggested_category && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Info className="h-3 w-3" />
+                    Suggested based on VIN decode
+                  </p>
                 )}
               </div>
             </div>
 
-            {/* Category */}
+            {/* STEP 3: Pricing & Location */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <span className="w-6 h-6 bg-[#CC0000] text-white rounded-full flex items-center justify-center text-sm">2</span>
-                Category
-              </h3>
-              <Select value={category} onValueChange={setCategory} disabled={isLoading}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoryOptions.map(opt => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-[#CC0000] text-white rounded-full flex items-center justify-center font-bold">3</div>
+                <h3 className="text-lg font-semibold text-foreground">Pricing & Location</h3>
+              </div>
 
-            {/* Pricing & Location */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <span className="w-6 h-6 bg-[#CC0000] text-white rounded-full flex items-center justify-center text-sm">3</span>
-                Pricing & Location
-              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="dailyRate" className="text-foreground">Daily Rate ($)</Label>
+                  <Label htmlFor="dailyRate">Daily Rate ($)</Label>
                   <div className="relative">
                     <Input
                       id="dailyRate"
@@ -432,7 +770,6 @@ export default function ListVehiclePage() {
                       required
                       min="1"
                       disabled={isLoading || aiPricingLoading}
-                      className={aiRecommendation ? 'pr-10' : ''}
                     />
                     {aiPricingLoading && (
                       <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -440,7 +777,8 @@ export default function ListVehiclePage() {
                       </div>
                     )}
                   </div>
-                  {/* AI Recommendation Message */}
+                  
+                  {/* AI Recommendation */}
                   {aiRecommendation && aiPricingEnabled && (
                     <div className="mt-3 p-3 bg-[#CC0000]/5 border border-[#CC0000]/20 rounded-lg">
                       <div className="flex items-start gap-3">
@@ -452,7 +790,7 @@ export default function ListVehiclePage() {
                             RAD recommends ${aiRecommendation.rate}/day
                           </p>
                           <p className="text-xs text-muted-foreground mt-1">
-                            Based on {aiRecommendation.reasoning}
+                            {aiRecommendation.reasoning}
                           </p>
                           {aiRecommendation.marketRange && (
                             <p className="text-xs text-muted-foreground mt-1">
@@ -466,21 +804,22 @@ export default function ListVehiclePage() {
                       </div>
                     </div>
                   )}
-                  {/* Loading state for AI pricing */}
+                  
                   {aiPricingLoading && (
                     <div className="mt-3 p-3 bg-muted/50 border border-border rounded-lg">
                       <div className="flex items-center gap-3">
                         <Loader2 className="h-5 w-5 animate-spin text-[#CC0000]" />
                         <div>
                           <p className="text-sm font-medium text-foreground">Analyzing market data...</p>
-                          <p className="text-xs text-muted-foreground">RAD is checking Reno/Tahoe demand, similar listings, and seasonal factors</p>
+                          <p className="text-xs text-muted-foreground">RAD is checking Reno/Tahoe demand and similar listings</p>
                         </div>
                       </div>
                     </div>
                   )}
                 </div>
+                
                 <div className="space-y-2">
-                  <Label htmlFor="location" className="text-foreground">Location</Label>
+                  <Label htmlFor="location">Location</Label>
                   <Input
                     id="location"
                     placeholder="e.g., Reno, NV"
@@ -493,7 +832,7 @@ export default function ListVehiclePage() {
               </div>
 
               {/* RAD AI Pricing Toggle */}
-              <div className={`mt-4 p-4 rounded-lg border transition-colors ${
+              <div className={`p-4 rounded-lg border transition-colors ${
                 aiPricingEnabled 
                   ? 'bg-[#CC0000]/5 border-[#CC0000]/20' 
                   : 'bg-muted/50 border-border'
@@ -523,7 +862,7 @@ export default function ListVehiclePage() {
                     </div>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {aiPricingEnabled 
-                        ? "RAD will monitor market demand, Tahoe events, airport traffic, seasonality, and competitor pricing to suggest or auto-adjust your daily rate on a regular basis."
+                        ? "RAD will analyze market demand, Tahoe events, airport traffic, and competitor pricing to set your optimal rate."
                         : "Enable AI-powered dynamic pricing to maximize your earnings automatically."
                       }
                     </p>
@@ -532,21 +871,25 @@ export default function ListVehiclePage() {
               </div>
             </div>
 
-            {/* Safety Documents */}
+            {/* STEP 4: Safety Documents */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <span className="w-6 h-6 bg-[#CC0000] text-white rounded-full flex items-center justify-center text-sm">4</span>
-                <Shield className="h-5 w-5" />
-                Safety Verification
-              </h3>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-[#CC0000] text-white rounded-full flex items-center justify-center font-bold">4</div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                    <Shield className="h-5 w-5" />
+                    Safety Verification
+                  </h3>
+                </div>
+              </div>
               <p className="text-sm text-muted-foreground">
-                We require verification documents to protect you and renters. All documents are securely stored.
+                Required documents to protect you and renters. All documents are securely stored.
               </p>
 
               {/* Driver's License Upload */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-foreground">Driver&apos;s License (Front)</Label>
+                  <Label>Driver&apos;s License (Front)</Label>
                   <div className={`relative border-2 border-dashed rounded-lg p-4 transition-colors ${
                     dlFront ? 'border-green-500 bg-green-500/5' : 'border-border hover:border-[#CC0000]/50'
                   }`}>
@@ -561,7 +904,7 @@ export default function ListVehiclePage() {
                       {dlFront ? (
                         <>
                           <CheckCircle2 className="h-8 w-8 text-green-600" />
-                          <p className="text-sm font-medium text-green-700">{dlFront.name}</p>
+                          <p className="text-sm font-medium text-green-700 truncate max-w-full">{dlFront.name}</p>
                         </>
                       ) : (
                         <>
@@ -574,7 +917,7 @@ export default function ListVehiclePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-foreground">Driver&apos;s License (Back)</Label>
+                  <Label>Driver&apos;s License (Back)</Label>
                   <div className={`relative border-2 border-dashed rounded-lg p-4 transition-colors ${
                     dlBack ? 'border-green-500 bg-green-500/5' : 'border-border hover:border-[#CC0000]/50'
                   }`}>
@@ -589,7 +932,7 @@ export default function ListVehiclePage() {
                       {dlBack ? (
                         <>
                           <CheckCircle2 className="h-8 w-8 text-green-600" />
-                          <p className="text-sm font-medium text-green-700">{dlBack.name}</p>
+                          <p className="text-sm font-medium text-green-700 truncate max-w-full">{dlBack.name}</p>
                         </>
                       ) : (
                         <>
@@ -602,7 +945,6 @@ export default function ListVehiclePage() {
                 </div>
               </div>
 
-              {/* DL Verification Status */}
               {dlFront && dlBack && (
                 <Card className="p-3 bg-green-500/10 border-green-500/20">
                   <div className="flex items-center gap-3">
@@ -615,8 +957,8 @@ export default function ListVehiclePage() {
               )}
 
               {/* Insurance Upload */}
-              <div className="space-y-2 mt-4">
-                <Label className="text-foreground">Proof of Insurance</Label>
+              <div className="space-y-2">
+                <Label>Proof of Insurance</Label>
                 <div className={`relative border-2 border-dashed rounded-lg p-4 transition-colors ${
                   insurance ? 'border-green-500 bg-green-500/5' : 'border-border hover:border-[#CC0000]/50'
                 }`}>
@@ -631,20 +973,18 @@ export default function ListVehiclePage() {
                     {insurance ? (
                       <>
                         <CheckCircle2 className="h-8 w-8 text-green-600" />
-                        <p className="text-sm font-medium text-green-700">{insurance.name}</p>
+                        <p className="text-sm font-medium text-green-700 truncate max-w-full">{insurance.name}</p>
                       </>
                     ) : (
                       <>
                         <FileText className="h-8 w-8 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground">Upload insurance card or policy document</p>
-                        <p className="text-xs text-muted-foreground">Required for vehicle listing</p>
+                        <p className="text-sm text-muted-foreground">Upload insurance card or policy</p>
                       </>
                     )}
                   </div>
                 </div>
               </div>
 
-              {/* Insurance Verification Status */}
               {insuranceVerified && (
                 <Card className="p-3 bg-green-500/10 border-green-500/20">
                   <div className="flex items-center gap-3">
@@ -657,26 +997,25 @@ export default function ListVehiclePage() {
               )}
             </div>
 
-            {/* Description */}
+            {/* STEP 5: Description */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <span className="w-6 h-6 bg-[#CC0000] text-white rounded-full flex items-center justify-center text-sm">5</span>
-                Description
-              </h3>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-[#CC0000] text-white rounded-full flex items-center justify-center font-bold">5</div>
+                <h3 className="text-lg font-semibold text-foreground">Description</h3>
+              </div>
               <Textarea
-                id="description"
-                placeholder="Describe your vehicle, features, and any rules for renters..."
+                placeholder="Describe your vehicle: special features, condition, rental guidelines..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
                 disabled={isLoading}
-                className="resize-none"
               />
             </div>
 
+            {/* Submit Button */}
             <Button
               type="submit"
-              disabled={isLoading || uploadingDocs || !vehicleInfo.year || !vehicleInfo.make || !vehicleInfo.model || !category || !dlFront || !dlBack || !insurance}
+              disabled={isLoading || uploadingDocs || !year || !make || !model || !category || !dlFront || !dlBack || !insurance || recallStatus === 'critical'}
               className="w-full h-12 bg-[#CC0000] hover:bg-[#CC0000]/90 text-white font-medium text-lg disabled:opacity-50"
             >
               {isLoading || uploadingDocs ? (
@@ -693,13 +1032,6 @@ export default function ListVehiclePage() {
               After listing, you&apos;ll be guided through the RAD Photo Session to capture professional images of your vehicle.
             </p>
           </form>
-
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            By listing your vehicle, you agree to our{' '}
-            <Link href="/terms" className="text-[#CC0000] hover:text-[#CC0000]/80">
-              Terms of Service
-            </Link>
-          </p>
         </div>
       </div>
     </div>
