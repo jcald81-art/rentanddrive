@@ -2021,10 +2021,28 @@ export default function ListVehiclePage() {
               </div>
             )}
 
-            {/* Submit Button */}
+            {/* Debug: Show which validation is failing */}
+            {(!year || !make || !model || !category || !mileage || !dailyRate || !dlFront || !dlBack || !insurance) && (
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
+                <p className="font-medium mb-1">Missing required fields:</p>
+                <ul className="list-disc list-inside text-xs space-y-0.5">
+                  {!year && <li>Year</li>}
+                  {!make && <li>Make</li>}
+                  {!model && <li>Model</li>}
+                  {!category && <li>Category</li>}
+                  {!mileage && <li>Mileage</li>}
+                  {!dailyRate && <li>Daily Rate</li>}
+                  {!dlFront && <li>Driver License (Front)</li>}
+                  {!dlBack && <li>Driver License (Back)</li>}
+                  {!insurance && <li>Insurance Document</li>}
+                </ul>
+              </div>
+            )}
+            
+            {/* Submit Button - VIN optional for testing */}
             <Button
               type="submit"
-              disabled={isLoading || uploadingDocs || !vinDecoded || !year || !make || !model || !category || !mileage || !dailyRate || !dlFront || !dlBack || !insurance || recallStatus === 'critical'}
+              disabled={isLoading || uploadingDocs || !year || !make || !model || !category || !mileage || !dailyRate || !dlFront || !dlBack || !insurance || recallStatus === 'critical'}
               className="w-full h-12 bg-[#CC0000] hover:bg-[#CC0000]/90 text-white font-medium text-lg disabled:opacity-50"
             >
               {isLoading || uploadingDocs ? (
