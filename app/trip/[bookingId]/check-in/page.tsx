@@ -51,7 +51,7 @@ interface CheckInData {
 export default function MobileCheckInPage() {
   const params = useParams()
   const searchParams = useSearchParams()
-  const bookingId = params.id as string
+  const bookingId = params.bookingId as string
   const bookingCode = searchParams.get('code')
 
   const [checkInData, setCheckInData] = useState<CheckInData | null>(null)
