@@ -69,41 +69,48 @@ export async function GET() {
     damageMap[d.booking_id] = d.photos || []
   })
 
-  const formattedDisputes = bookings?.map((b) => ({
-    id: b.id,
-    booking_id: b.id,
-    booking_number: b.booking_number || b.id.slice(0, 8).toUpperCase(),
-    vehicle_name: b.vehicle ? `${b.vehicle.year} ${b.vehicle.make} ${b.vehicle.model}` : 'Unknown',
-    vehicle_thumbnail: b.vehicle?.thumbnail_url,
-    renter: {
-      id: b.renter?.id,
-      name: b.renter?.full_name || 'Unknown',
-      email: b.renter?.email,
-      avatar: b.renter?.avatar_url,
-    },
-    host: {
-      id: b.host?.id,
-      name: b.host?.full_name || 'Unknown',
-      email: b.host?.email,
-      avatar: b.host?.avatar_url,
-    },
-    total_amount: b.total_amount,
-    start_date: b.start_date,
-    end_date: b.end_date,
-    dispute_reason: b.admin_notes,
-    dispute_created_at: b.created_at,
-    stripe_dispute_id: b.stripe_dispute_id,
-    status: b.status,
-    admin_notes: b.admin_notes,
-    damage_photos: damageMap[b.id] || [],
-    messages: (messagesMap[b.id] || []).map((m) => ({
-      id: m.id,
-      sender: m.sender_id === b.renter?.id ? b.renter?.full_name : b.host?.full_name,
-      sender_role: m.sender_id === b.renter?.id ? 'renter' : 'host',
-      message: m.message,
-      created_at: m.created_at,
-    })),
-  }))
+  const formattedDisputes = bookings?.map((b) => {
+    // Normalize joined relations - Supabase types them as arrays even for single FK relations
+    const vehicle = Array.isArray(b.vehicle) ? b.vehicle[0] : b.vehicle
+    const renter = Array.isArray(b.renter) ? b.renter[0] : b.renter
+    const host = Array.isArray(b.host) ? b.host[0] : b.host
+
+    return {
+      id: b.id,
+      booking_id: b.id,
+      booking_number: b.booking_number || b.id.slice(0, 8).toUpperCase(),
+      vehicle_name: vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : 'Unknown',
+      vehicle_thumbnail: vehicle?.thumbnail_url,
+      renter: {
+        id: renter?.id,
+        name: renter?.full_name || 'Unknown',
+        email: renter?.email,
+        avatar: renter?.avatar_url,
+      },
+      host: {
+        id: host?.id,
+        name: host?.full_name || 'Unknown',
+        email: host?.email,
+        avatar: host?.avatar_url,
+      },
+      total_amount: b.total_amount,
+      start_date: b.start_date,
+      end_date: b.end_date,
+      dispute_reason: b.admin_notes,
+      dispute_created_at: b.created_at,
+      stripe_dispute_id: b.stripe_dispute_id,
+      status: b.status,
+      admin_notes: b.admin_notes,
+      damage_photos: damageMap[b.id] || [],
+      messages: (messagesMap[b.id] || []).map((m) => ({
+        id: m.id,
+        sender: m.sender_id === renter?.id ? renter?.full_name : host?.full_name,
+        sender_role: m.sender_id === renter?.id ? 'renter' : 'host',
+        message: m.message,
+        created_at: m.created_at,
+      })),
+    }
+  })
 
   return NextResponse.json({ disputes: formattedDisputes })
 }
