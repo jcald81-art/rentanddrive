@@ -177,6 +177,70 @@ export default function HostDashboardPage() {
     fetchData()
   }, [supabase, router])
 
+  // Real-time subscriptions for live updates
+  useEffect(() => {
+    if (!user?.id) return
+
+    // Subscribe to booking changes
+    const bookingsChannel = supabase
+      .channel('host-bookings')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'bookings',
+          filter: `host_id=eq.${user.id}`
+        },
+        async (payload) => {
+          console.log('[v0] Booking change:', payload.eventType)
+          if (payload.eventType === 'INSERT') {
+            // Fetch the new booking with relations
+            const { data } = await supabase
+              .from('bookings')
+              .select(`*, vehicles:vehicle_id (year, make, model, images), profiles:guest_id (full_name, avatar_url, email)`)
+              .eq('id', payload.new.id)
+              .single()
+            if (data) setBookings(prev => [data, ...prev])
+          } else if (payload.eventType === 'UPDATE') {
+            setBookings(prev => prev.map(b => b.id === payload.new.id ? { ...b, ...payload.new } : b))
+          } else if (payload.eventType === 'DELETE') {
+            setBookings(prev => prev.filter(b => b.id !== payload.old.id))
+          }
+        }
+      )
+      .subscribe()
+
+    // Subscribe to vehicle changes
+    const vehiclesChannel = supabase
+      .channel('host-vehicles')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'vehicles',
+          filter: `host_id=eq.${user.id}`
+        },
+        (payload) => {
+          console.log('[v0] Vehicle change:', payload.eventType)
+          if (payload.eventType === 'INSERT') {
+            setVehicles(prev => [payload.new as Vehicle, ...prev])
+          } else if (payload.eventType === 'UPDATE') {
+            setVehicles(prev => prev.map(v => v.id === payload.new.id ? { ...v, ...payload.new } : v))
+          } else if (payload.eventType === 'DELETE') {
+            setVehicles(prev => prev.filter(v => v.id !== payload.old.id))
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(bookingsChannel)
+      supabase.removeChannel(vehiclesChannel)
+    }
+  }, [user?.id, supabase])
+
   const toggleVehicleStatus = async (vehicleId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'paused' : 'active'
     await supabase
