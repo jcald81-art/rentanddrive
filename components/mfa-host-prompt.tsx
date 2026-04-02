@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Shield, ShieldCheck, ShieldAlert, CheckCircle2, AlertTriangle } from 'lucide-react'
+import { Shield, ShieldCheck, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { MFAEnrollment } from '@/components/mfa-enrollment'
 
 const MFA_PROMPT_DISMISSED_KEY = 'rad_mfa_prompt_dismissed_until'
@@ -145,7 +145,7 @@ export function MFAHostPrompt() {
                     : 'bg-[#e22c2c]/20'
                 }`}>
                   {forceShow ? (
-                    <ShieldAlert className="h-7 w-7 text-[#e22c2c]" />
+                    <AlertTriangle className="h-7 w-7 text-[#e22c2c]" />
                   ) : (
                     <Shield className="h-7 w-7 text-[#e22c2c]" />
                   )}
