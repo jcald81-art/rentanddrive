@@ -59,7 +59,7 @@ const FAQ_CATEGORIES = [
       },
       {
         q: 'How do I file an insurance claim?',
-        a: 'Document any incident with photos immediately. Report to us within 24 hours through the app or by calling (775) 555-HELP. Our team will guide you through the claims process with Tint.'
+        a: 'Document any incident with photos immediately. Report to us within 24 hours through the app or by calling (318) RENT-RAD. Our team will guide you through the claims process with Tint.'
       },
       {
         q: 'What isn\'t covered by insurance?',

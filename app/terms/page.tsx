@@ -250,7 +250,7 @@ export default function TermsOfServicePage() {
               <strong>Rent and Drive LLC</strong><br />
               Reno, Nevada<br />
               Email: <a href="mailto:legal@rentanddrive.net" className="text-primary hover:underline">legal@rentanddrive.net</a><br />
-              Phone: (775) 555-0123
+              Phone: (318) RENT-RAD
             </address>
           </section>
         </div>

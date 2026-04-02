@@ -55,7 +55,7 @@ export default function BookingCancelPage() {
         {/* Support */}
         <p className="text-sm text-gray-500 mt-8">
           Need help?{' '}
-          <a href="mailto:support@rentanddrive.net" className="text-[#FFD84D] hover:underline">
+          <a href="mailto:admin@rentanddrive.net" className="text-[#FFD84D] hover:underline">
             Contact Support
           </a>
         </p>

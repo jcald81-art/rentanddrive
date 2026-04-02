@@ -352,7 +352,7 @@ async function sendRideSms(
   }
 
   const directionText = details.direction === 'pickup' ? 'to your rental vehicle' : 'from your rental vehicle'
-  const message = `Rent & Drive: Your ${details.provider.toUpperCase()} ride ${directionText} is scheduled for ${details.scheduledTime}.\n\nPickup: ${details.pickup}\nDropoff: ${details.dropoff}${details.driverName ? `\nDriver: ${details.driverName}` : ''}${details.vehicleDescription ? `\nVehicle: ${details.vehicleDescription}` : ''}\n\nQuestions? Text us back or call (775) 555-RENT`
+  const message = `Rent & Drive: Your ${details.provider.toUpperCase()} ride ${directionText} is scheduled for ${details.scheduledTime}.\n\nPickup: ${details.pickup}\nDropoff: ${details.dropoff}${details.driverName ? `\nDriver: ${details.driverName}` : ''}${details.vehicleDescription ? `\nVehicle: ${details.vehicleDescription}` : ''}\n\nQuestions? Text us back or call (318) RENT-RAD`
 
   try {
     const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`

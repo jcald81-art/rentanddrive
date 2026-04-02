@@ -328,8 +328,9 @@ export default function CartegrityInspectionPage() {
 
   async function downloadPDF() {
     try {
-      // Dynamically import jsPDF
-      const { default: jsPDF } = await import('jspdf')
+      // Dynamically import jsPDF using browser build to avoid Node.js worker issues
+      const jsPDFModule = await import('jspdf/dist/jspdf.es.min.js')
+      const jsPDF = jsPDFModule.default || jsPDFModule.jsPDF
       const doc = new jsPDF()
       
       // Header

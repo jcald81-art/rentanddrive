@@ -1,8 +1,14 @@
 import { updateSession } from '@/lib/supabase/middleware'
-import { type NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
-export async function middleware(request: NextRequest) {
-  return await updateSession(request)
+// Next.js 16 proxy function - handles session refresh for Supabase auth
+export async function proxy(request: NextRequest) {
+  try {
+    return await updateSession(request)
+  } catch {
+    // If updateSession fails, continue without session update
+    return NextResponse.next()
+  }
 }
 
 export const config = {

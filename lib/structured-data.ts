@@ -3,7 +3,23 @@
  * Implements Schema.org vocabulary for rich search results
  */
 
-import type { Vehicle } from '@/types'
+// Vehicle type for structured data - accepts either daily_rate or daily_rate_cents
+interface VehicleForSchema {
+  id: string
+  make: string
+  model: string
+  year: number
+  category?: string
+  daily_rate?: number
+  daily_rate_cents?: number
+  description?: string
+  images?: string[]
+  is_active?: boolean
+  is_approved?: boolean
+  is_awd?: boolean
+  seats?: number
+  color?: string
+}
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rentanddrive.net'
 
@@ -19,8 +35,8 @@ export function getOrganizationSchema() {
     logo: `${baseUrl}/icons/icon-512x512.png`,
     image: `${baseUrl}/og-image.jpg`,
     description: 'Premium peer-to-peer car rental in Reno and Lake Tahoe, Nevada. AWD vehicles, contactless pickup, VIN verified.',
-    telephone: '+17755551234',
-    email: 'info@rentanddrive.net',
+    telephone: '+13187368723',
+    email: 'admin@rentanddrive.net',
     address: {
       '@type': 'PostalAddress',
       streetAddress: '123 Virginia St',
@@ -57,7 +73,7 @@ export function getOrganizationSchema() {
 }
 
 // Vehicle/Product schema
-export function getVehicleSchema(vehicle: Vehicle, reviews?: { rating: number; count: number }) {
+export function getVehicleSchema(vehicle: VehicleForSchema, reviews?: { rating: number; count: number }) {
   const schema: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -74,7 +90,7 @@ export function getVehicleSchema(vehicle: Vehicle, reviews?: { rating: number; c
     offers: {
       '@type': 'Offer',
       priceCurrency: 'USD',
-      price: (vehicle.daily_rate_cents / 100).toFixed(2),
+      price: (vehicle.daily_rate_cents ? vehicle.daily_rate_cents / 100 : vehicle.daily_rate || 0).toFixed(2),
       priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       availability: vehicle.is_active && vehicle.is_approved
         ? 'https://schema.org/InStock'
@@ -112,7 +128,7 @@ export function getVehicleSchema(vehicle: Vehicle, reviews?: { rating: number; c
 }
 
 // Vehicle listing (for search results page)
-export function getVehicleListSchema(vehicles: Vehicle[]) {
+export function getVehicleListSchema(vehicles: VehicleForSchema[]) {
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -127,7 +143,7 @@ export function getVehicleListSchema(vehicles: Vehicle[]) {
         offers: {
           '@type': 'Offer',
           priceCurrency: 'USD',
-          price: (vehicle.daily_rate_cents / 100).toFixed(2),
+price: (vehicle.daily_rate_cents ? vehicle.daily_rate_cents / 100 : vehicle.daily_rate || 0).toFixed(2),
         },
       },
     })),
@@ -172,7 +188,7 @@ export function getLocalBusinessSchema() {
     '@id': `${baseUrl}/#localbusiness`,
     name: 'Rent and Drive LLC',
     image: `${baseUrl}/og-image.jpg`,
-    telephone: '+17755551234',
+    telephone: '+13187368723',
     address: {
       '@type': 'PostalAddress',
       streetAddress: '123 Virginia St',
