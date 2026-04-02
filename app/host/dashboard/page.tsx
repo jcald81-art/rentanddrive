@@ -600,26 +600,28 @@ export default function HostDashboardPage() {
 
                         <div className="flex items-center gap-2">
                           <Button
-                            variant="outline"
                             size="sm"
                             onClick={() => toggleVehicleStatus(vehicle.id, vehicle.listing_status || vehicle.status)}
-                            className={`flex-1 ${isActive ? 'border-amber-500/50 text-amber-400' : 'border-emerald-500/50 text-emerald-400'}`}
+                            className={`flex-1 ${isActive 
+                              ? 'bg-amber-600 hover:bg-amber-700 text-white border-0' 
+                              : 'bg-emerald-600 hover:bg-emerald-700 text-white border-0'
+                            }`}
                           >
                             {isActive ? <PowerOff className="h-4 w-4 mr-1" /> : <Power className="h-4 w-4 mr-1" />}
                             {isActive ? 'Pause' : 'Activate'}
                           </Button>
                           <Link href={`/host/vehicles/${vehicle.id}/settings`}>
-                            <Button variant="outline" size="sm" className="border-white/20">
+                            <Button size="sm" className="bg-zinc-800 hover:bg-[#e50914] text-white border border-zinc-700 hover:border-[#e50914]">
                               <Settings className="h-4 w-4" />
                             </Button>
                           </Link>
                           <Link href={`/host/vehicles/${vehicle.id}/availability`}>
-                            <Button variant="outline" size="sm" className="border-white/20">
+                            <Button size="sm" className="bg-zinc-800 hover:bg-[#e50914] text-white border border-zinc-700 hover:border-[#e50914]">
                               <Calendar className="h-4 w-4" />
                             </Button>
                           </Link>
                           <Link href={`/vehicles/${vehicle.id}`}>
-                            <Button variant="outline" size="sm" className="border-white/20">
+                            <Button size="sm" className="bg-zinc-800 hover:bg-[#e50914] text-white border border-zinc-700 hover:border-[#e50914]">
                               <Eye className="h-4 w-4" />
                             </Button>
                           </Link>
@@ -651,13 +653,13 @@ export default function HostDashboardPage() {
           {activeSection === 'bookings' && (
             <div className="space-y-6">
               <div className="flex items-center gap-4">
-                <Button variant={pendingBookings.length > 0 ? 'default' : 'outline'} className="bg-[#e50914]">
+                <Button className="bg-[#e50914] hover:bg-[#c00810] text-white font-medium">
                   Pending ({pendingBookings.length})
                 </Button>
-                <Button variant="outline" className="border-white/20 text-white/70">
+                <Button className="bg-zinc-800 hover:bg-[#e50914] text-white border border-zinc-700 hover:border-[#e50914] font-medium">
                   Confirmed ({bookings.filter(b => b.status === 'confirmed').length})
                 </Button>
-                <Button variant="outline" className="border-white/20 text-white/70">
+                <Button className="bg-zinc-800 hover:bg-[#e50914] text-white border border-zinc-700 hover:border-[#e50914] font-medium">
                   Completed ({bookings.filter(b => b.status === 'completed').length})
                 </Button>
               </div>
@@ -740,13 +742,13 @@ export default function HostDashboardPage() {
                         </div>
                         <div className="flex gap-2">
                           <Link href={`/host/vehicles/${vehicle.id}/availability`} className="flex-1">
-                            <Button variant="outline" className="w-full border-white/20 text-white/70">
+                            <Button className="w-full bg-zinc-800 hover:bg-[#e50914] text-white border border-zinc-700 hover:border-[#e50914] transition-colors">
                               <Calendar className="h-4 w-4 mr-2" />
                               Edit Calendar
                             </Button>
                           </Link>
                           <Link href={`/host/vehicles/${vehicle.id}/settings`} className="flex-1">
-                            <Button variant="outline" className="w-full border-white/20 text-white/70">
+                            <Button className="w-full bg-zinc-800 hover:bg-[#e50914] text-white border border-zinc-700 hover:border-[#e50914] transition-colors">
                               <DollarSign className="h-4 w-4 mr-2" />
                               Edit Pricing
                             </Button>
