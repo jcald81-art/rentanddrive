@@ -938,12 +938,24 @@ export default function ListVehiclePage() {
                 setFlowStep('complete')
               }
             }}
-            onSkip={() => {
-              // Allow skipping payouts but still proceed
-              if (vehicleId && isMounted) {
-                router.push(`/host/vehicles/${vehicleId}/photos?new=true`)
+            onSkip={async () => {
+              // Set status to pending_stripe and redirect to host dashboard
+              if (vehicleId) {
+                try {
+                  await supabase
+                    .from('vehicles')
+                    .update({ status: 'pending_stripe', listing_status: 'pending_stripe' })
+                    .eq('id', vehicleId)
+                } catch (err) {
+                  console.error('Failed to update vehicle status:', err)
+                }
+                if (isMounted) {
+                  router.push('/host/dashboard')
+                }
               } else {
-                setFlowStep('complete')
+                if (isMounted) {
+                  router.push('/host/dashboard')
+                }
               }
             }}
             onBack={() => setFlowStep('safety')}

@@ -30,10 +30,11 @@ export function StripePayoutSetup({
   isLoading = false,
   userId 
 }: StripePayoutSetupProps) {
-  const [payoutStatus, setPayoutStatus] = useState<'idle' | 'checking' | 'connected' | 'pending' | 'error'>('idle')
+  const [payoutStatus, setPayoutStatus] = useState<'idle' | 'checking' | 'connected' | 'pending' | 'error' | 'unavailable'>('idle')
   const [connectingStripe, setConnectingStripe] = useState(false)
   const [stripeAccountId, setStripeAccountId] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [isStripeUnavailable, setIsStripeUnavailable] = useState(false)
 
   // Check if user already has Stripe Connect set up
   useEffect(() => {
@@ -68,6 +69,7 @@ export function StripePayoutSetup({
   const handleConnectStripe = async () => {
     setConnectingStripe(true)
     setErrorMessage(null)
+    setIsStripeUnavailable(false)
     
     try {
       const res = await fetch('/api/stripe/connect/onboard', {
@@ -87,13 +89,21 @@ export function StripePayoutSetup({
         } else {
           setErrorMessage('Could not start Stripe onboarding. Please try again.')
         }
+      } else if (res.status === 503) {
+        // Stripe is temporarily unavailable
+        setIsStripeUnavailable(true)
+        setPayoutStatus('unavailable')
+        setErrorMessage('Stripe setup is temporarily unavailable. You can skip this step and complete it later from your host dashboard.')
       } else {
         const error = await res.json()
         setErrorMessage(error.message || 'Failed to connect to Stripe. Please try again.')
       }
     } catch (err) {
       console.error('Stripe Connect error:', err)
-      setErrorMessage('Connection error. Please check your internet and try again.')
+      // Network errors or fetch failures - treat as unavailable
+      setIsStripeUnavailable(true)
+      setPayoutStatus('unavailable')
+      setErrorMessage('Stripe setup is temporarily unavailable. You can skip this step and complete it later from your host dashboard.')
     } finally {
       setConnectingStripe(false)
     }
@@ -178,6 +188,22 @@ export function StripePayoutSetup({
             </div>
           )}
 
+          {payoutStatus === 'unavailable' && (
+            <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                  <AlertCircle className="h-5 w-5 text-amber-600" />
+                </div>
+                <div>
+                  <p className="font-semibold text-amber-700">Stripe Temporarily Unavailable</p>
+                  <p className="text-sm text-amber-600 mt-1">
+                    Stripe setup is temporarily unavailable. You can skip this step and complete it later from your host dashboard.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Benefits */}
           {payoutStatus !== 'connected' && (
             <div className="grid gap-4">
@@ -250,6 +276,16 @@ export function StripePayoutSetup({
                 className="flex-1 bg-[#CC0000] hover:bg-[#CC0000]/90 text-white font-medium h-12"
               >
                 Continue
+                <ArrowRight className="h-5 w-5 ml-2" />
+              </Button>
+            ) : isStripeUnavailable && onSkip ? (
+              // Prominent Skip button when Stripe is unavailable
+              <Button
+                onClick={onSkip}
+                disabled={isLoading}
+                className="flex-1 bg-[#CC0000] hover:bg-[#CC0000]/90 text-white font-medium h-12"
+              >
+                Continue Without Stripe
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
             ) : onSkip && (

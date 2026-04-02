@@ -61,10 +61,11 @@ export async function POST(request: Request) {
     }
 
     // Create an account link for onboarding
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://rentanddrive.net'
     const accountLink = await stripe.accountLinks.create({
       account: accountId,
-      refresh_url: refreshUrl || `${process.env.NEXT_PUBLIC_BASE_URL || 'https://rentanddrive.com'}/host/onboarding`,
-      return_url: returnUrl || `${process.env.NEXT_PUBLIC_BASE_URL || 'https://rentanddrive.com'}/host/onboarding?stripe_return=true`,
+      refresh_url: refreshUrl || `${baseUrl}/host/dashboard`,
+      return_url: returnUrl || `${baseUrl}/host/dashboard?stripe_return=true`,
       type: 'account_onboarding',
     })
 
