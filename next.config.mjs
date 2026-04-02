@@ -6,8 +6,6 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Enable React Compiler for automatic memoization (Next.js 16 stable)
-  reactCompiler: true,
   // Image optimization
   images: {
     remotePatterns: [
