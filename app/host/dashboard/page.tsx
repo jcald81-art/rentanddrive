@@ -418,31 +418,31 @@ export default function HostDashboardPage() {
                   <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <button
                       onClick={() => setActiveSection('fleet')}
-                      className="flex flex-col items-center gap-2 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                      className="flex flex-col items-center gap-2 p-4 rounded-lg bg-zinc-900 hover:bg-red-600 transition-colors"
                     >
-                      <Car className="h-6 w-6 text-[#e50914]" />
-                      <span className="text-sm text-white">My Fleet</span>
+                      <Car className="h-6 w-6 text-white" />
+                      <span className="text-sm text-white font-medium">My Fleet</span>
                     </button>
                     <button
                       onClick={() => setActiveSection('bookings')}
-                      className="flex flex-col items-center gap-2 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                      className="flex flex-col items-center gap-2 p-4 rounded-lg bg-zinc-900 hover:bg-red-600 transition-colors"
                     >
-                      <Calendar className="h-6 w-6 text-blue-400" />
-                      <span className="text-sm text-white">Bookings</span>
+                      <Calendar className="h-6 w-6 text-white" />
+                      <span className="text-sm text-white font-medium">Bookings</span>
                     </button>
                     <button
                       onClick={() => setActiveSection('pricing')}
-                      className="flex flex-col items-center gap-2 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                      className="flex flex-col items-center gap-2 p-4 rounded-lg bg-zinc-900 hover:bg-red-600 transition-colors"
                     >
-                      <CalendarDays className="h-6 w-6 text-purple-400" />
-                      <span className="text-sm text-white">Calendar</span>
+                      <CalendarDays className="h-6 w-6 text-white" />
+                      <span className="text-sm text-white font-medium">Calendar</span>
                     </button>
                     <button
                       onClick={() => setActiveSection('earnings')}
-                      className="flex flex-col items-center gap-2 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                      className="flex flex-col items-center gap-2 p-4 rounded-lg bg-zinc-900 hover:bg-red-600 transition-colors"
                     >
-                      <DollarSign className="h-6 w-6 text-emerald-400" />
-                      <span className="text-sm text-white">Earnings</span>
+                      <DollarSign className="h-6 w-6 text-white" />
+                      <span className="text-sm text-white font-medium">Earnings</span>
                     </button>
                   </CardContent>
                 </Card>
