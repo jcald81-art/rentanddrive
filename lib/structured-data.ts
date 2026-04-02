@@ -3,7 +3,23 @@
  * Implements Schema.org vocabulary for rich search results
  */
 
-import type { Vehicle } from '@/types'
+// Vehicle type for structured data - accepts either daily_rate or daily_rate_cents
+interface VehicleForSchema {
+  id: string
+  make: string
+  model: string
+  year: number
+  category?: string
+  daily_rate?: number
+  daily_rate_cents?: number
+  description?: string
+  images?: string[]
+  is_active?: boolean
+  is_approved?: boolean
+  is_awd?: boolean
+  seats?: number
+  color?: string
+}
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rentanddrive.net'
 
@@ -57,7 +73,7 @@ export function getOrganizationSchema() {
 }
 
 // Vehicle/Product schema
-export function getVehicleSchema(vehicle: Vehicle, reviews?: { rating: number; count: number }) {
+export function getVehicleSchema(vehicle: VehicleForSchema, reviews?: { rating: number; count: number }) {
   const schema: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -74,7 +90,7 @@ export function getVehicleSchema(vehicle: Vehicle, reviews?: { rating: number; c
     offers: {
       '@type': 'Offer',
       priceCurrency: 'USD',
-      price: (vehicle.daily_rate_cents / 100).toFixed(2),
+      price: (vehicle.daily_rate_cents ? vehicle.daily_rate_cents / 100 : vehicle.daily_rate || 0).toFixed(2),
       priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       availability: vehicle.is_active && vehicle.is_approved
         ? 'https://schema.org/InStock'
@@ -112,7 +128,7 @@ export function getVehicleSchema(vehicle: Vehicle, reviews?: { rating: number; c
 }
 
 // Vehicle listing (for search results page)
-export function getVehicleListSchema(vehicles: Vehicle[]) {
+export function getVehicleListSchema(vehicles: VehicleForSchema[]) {
   return {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -127,7 +143,7 @@ export function getVehicleListSchema(vehicles: Vehicle[]) {
         offers: {
           '@type': 'Offer',
           priceCurrency: 'USD',
-          price: (vehicle.daily_rate_cents / 100).toFixed(2),
+price: (vehicle.daily_rate_cents ? vehicle.daily_rate_cents / 100 : vehicle.daily_rate || 0).toFixed(2),
         },
       },
     })),
