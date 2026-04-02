@@ -25,6 +25,7 @@ import {
 } from 'lucide-react'
 import { DashboardClient } from './dashboard-client'
 import { MFASecurityBadge } from '@/components/mfa-enrollment'
+import { InviteFriendCard } from '@/components/referrals/invite-friend-card'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -542,26 +543,7 @@ export default async function DashboardPage() {
             </Card>
 
             {/* Referral Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Users className="w-5 h-5" />
-                  Invite Friends
-                </CardTitle>
-                <CardDescription>Earn $25 for each friend who books</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                  <code className="flex-1 text-sm font-mono">{referralCode}</code>
-                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                </div>
-                <Button className="w-full mt-3 bg-[#D62828] hover:bg-[#D62828]/90">
-                  Share invite link
-                </Button>
-              </CardContent>
-            </Card>
+            <InviteFriendCard />
 
             {/* Notifications */}
             <Card>
