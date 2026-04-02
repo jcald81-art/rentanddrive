@@ -104,7 +104,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = 'signin', redirectTo 
           email,
           password,
           options: { 
-            emailRedirectTo: `https://rentanddrive.net/callback?next=${redirectTo}` 
+            emailRedirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}` 
           }
         })
         if (error) throw error
@@ -126,7 +126,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = 'signin', redirectTo 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `https://rentanddrive.net/callback?next=${redirectTo}`,
+          redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,
         },
       })
       if (error) throw error
@@ -363,7 +363,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = 'signin', redirectTo 
 }
 
 // Standalone page wrapper that shows the modal over a nice background with navbar
-export function AuthPage({ defaultMode = 'signin' }: { defaultMode?: 'signin' | 'signup' }) {
+export function AuthPage({ defaultMode = 'signin', redirectTo = '/dashboard' }: { defaultMode?: 'signin' | 'signup'; redirectTo?: string }) {
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(true)
   
@@ -388,6 +388,7 @@ export function AuthPage({ defaultMode = 'signin' }: { defaultMode?: 'signin' | 
         isOpen={isOpen} 
         onClose={handleClose} 
         defaultMode={defaultMode}
+        redirectTo={redirectTo}
       />
     </div>
   )

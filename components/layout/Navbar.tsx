@@ -94,7 +94,10 @@ export function Navbar() {
             <Link href="/how-it-works" className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors">
               How It Works
             </Link>
-            <Link href="/list-vehicle" className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors">
+            <Link 
+              href={user ? "/list-vehicle" : "/sign-in?redirectTo=/list-vehicle"} 
+              className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors"
+            >
               List Your Car
             </Link>
             <Link href="/help" className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors">
@@ -209,7 +212,7 @@ export function Navbar() {
                 How It Works
               </Link>
               <Link 
-                href="/list-vehicle" 
+                href={user ? "/list-vehicle" : "/sign-in?redirectTo=/list-vehicle"} 
                 className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >

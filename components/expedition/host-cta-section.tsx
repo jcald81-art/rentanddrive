@@ -1,8 +1,23 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { createClient } from '@/lib/supabase/client'
 
 export function HostCTASection() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => {
+      setIsAuthenticated(!!data.user)
+    })
+  }, [])
+
+  const listVehicleHref = isAuthenticated ? '/list-vehicle' : '/sign-in?redirectTo=/list-vehicle'
+
   return (
     <section className="bg-card py-24 lg:py-32">
       <div className="mx-auto max-w-[1280px] px-6 lg:px-20">
@@ -25,7 +40,7 @@ export function HostCTASection() {
                 asChild
                 className="bg-accent hover:bg-accent/90 text-accent-foreground font-medium px-8 py-6 rounded-full text-lg"
               >
-                <Link href="/list-vehicle">
+                <Link href={listVehicleHref}>
                   Become a founding host
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
