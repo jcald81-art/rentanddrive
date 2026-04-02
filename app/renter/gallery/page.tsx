@@ -241,7 +241,7 @@ export default function GalleryPage() {
                 <div className="p-3">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="h-6 w-6 rounded-full bg-slate-700 overflow-hidden">
-                      <Image src={photo.user?.avatar || '/placeholder.svg'} alt="" width={24} height={24} />
+                      <Image src={photo.user?.avatar || '/placeholder.svg'} alt={`${photo.user?.name || 'User'} avatar`} width={24} height={24} />
                     </div>
                     <span className="text-sm text-slate-300">{photo.user?.name}</span>
                   </div>
@@ -300,7 +300,7 @@ export default function GalleryPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="h-8 w-8 rounded-full bg-slate-700 overflow-hidden">
-                      <Image src={entry.user?.avatar || '/placeholder.svg'} alt="" width={32} height={32} />
+                      <Image src={entry.user?.avatar || '/placeholder.svg'} alt={`${entry.user?.name || 'User'} avatar`} width={32} height={32} />
                     </div>
                     <span className="font-medium text-white">{entry.user?.name}</span>
                   </div>

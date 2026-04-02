@@ -298,7 +298,7 @@ export default function HostFleetDashboard() {
               <Card key={v.id} className={cn('cursor-pointer hover:shadow-lg', selectedVehicle === v.id && 'ring-2 ring-[#CC0000]')} onClick={() => setSelectedVehicle(v.id)}>
                 <CardContent className="p-4 flex gap-4">
                   <div className="relative h-20 w-28 flex-shrink-0 rounded-lg bg-muted overflow-hidden">
-                    {v.thumbnail_url ? <img src={v.thumbnail_url} alt="" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center"><Car className="h-8 w-8 text-muted-foreground" /></div>}
+                    {v.thumbnail_url ? <img src={v.thumbnail_url} alt={`${v.year} ${v.make} ${v.model}`} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center"><Car className="h-8 w-8 text-muted-foreground" /></div>}
                     <div className={cn('absolute bottom-1 right-1 h-3 w-3 rounded-full border-2 border-white', getStatusColor(v.status))} />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -355,7 +355,7 @@ export default function HostFleetDashboard() {
               <CardContent className="space-y-3">
                 {renterScores.length === 0 ? <div className="text-center py-8 text-muted-foreground">No renter data</div> : renterScores.map(r => (
                   <div key={r.user_id} className={cn('flex items-center gap-4 rounded-lg border p-4', r.is_blocked && 'opacity-50 bg-muted')}>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">{r.avatar_url ? <img src={r.avatar_url} alt="" className="h-full w-full rounded-full object-cover" /> : <User className="h-6 w-6 text-muted-foreground" />}</div>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">{r.avatar_url ? <img src={r.avatar_url} alt={`${r.full_name} avatar`} className="h-full w-full rounded-full object-cover" /> : <User className="h-6 w-6 text-muted-foreground" />}</div>
                     <div className="flex-1 min-w-0"><div className="flex items-center gap-2"><span className="font-medium">{r.full_name}</span>{r.is_blocked && <Badge variant="destructive">Blocked</Badge>}</div><p className="text-sm text-muted-foreground">{r.trips_count} trips - {r.total_miles.toLocaleString()} mi</p></div>
                     <div className="text-center"><div className={cn('flex h-12 w-12 items-center justify-center rounded-full text-lg font-bold text-white', r.avg_driving_score >= 80 && 'bg-green-500', r.avg_driving_score >= 60 && r.avg_driving_score < 80 && 'bg-yellow-500', r.avg_driving_score < 60 && 'bg-red-500')}>{Math.round(r.avg_driving_score)}</div><div className="text-xs text-muted-foreground mt-1">Score</div></div>
                     <div className="text-right text-sm"><div className="flex items-center gap-1 text-muted-foreground"><Activity className="h-3 w-3" />{r.hard_brakes_per_100_miles.toFixed(1)}/100mi</div>{r.speed_violations > 0 && <div className="flex items-center gap-1 text-red-500"><Gauge className="h-3 w-3" />{r.speed_violations} violations</div>}</div>
