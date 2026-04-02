@@ -226,7 +226,7 @@ export default function InsuranceDisclosurePage() {
               </li>
             </ol>
             <p className="mt-4">
-              <strong>Emergency Claims Line:</strong> (775) 555-HELP (4357) - Available 24/7
+              <strong>Emergency Claims Line:</strong> (318) RENT-RAD - Available 24/7
             </p>
           </section>
 

@@ -171,7 +171,7 @@ export default function SupportPage() {
     if (lower.includes('find') || lower.includes('locate')) {
       return 'I see you have an active trip. Check the Eagle location map below to see the vehicle\'s current location. The address shown should help you find it. If there\'s a significant discrepancy, let me know!'
     }
-    return 'I understand. Let me look into this for you. If you need immediate assistance, you can call our 24/7 support line at (775) 555-0199. Is there anything else I can help with?'
+    return 'I understand. Let me look into this for you. If you need immediate assistance, you can call our 24/7 support line at (318) RENT-RAD. Is there anything else I can help with?'
   }
 
   const handleQuickReply = (reply: string) => {
@@ -211,9 +211,9 @@ export default function SupportPage() {
                 </div>
               </div>
               <Button asChild className="bg-[#CC0000] hover:bg-[#AA0000] text-lg px-6">
-                <a href="tel:+17755550199">
+                <a href="tel:+13187368723">
                   <Phone className="h-5 w-5 mr-2" />
-                  (775) 555-0199
+                  (318) RENT-RAD
                 </a>
               </Button>
             </div>

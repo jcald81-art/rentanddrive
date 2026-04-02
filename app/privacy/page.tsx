@@ -229,7 +229,7 @@ export default function PrivacyPolicyPage() {
               Privacy Officer<br />
               Reno, Nevada<br />
               Email: <a href="mailto:privacy@rentanddrive.net" className="text-primary hover:underline">privacy@rentanddrive.net</a><br />
-              Phone: (775) 555-0123
+              Phone: (318) RENT-RAD
             </address>
           </section>
 

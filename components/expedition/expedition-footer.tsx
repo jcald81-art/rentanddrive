@@ -107,9 +107,9 @@ export function ExpeditionFooter() {
             <Mail className="h-4 w-4" />
             info@rentanddrive.net
           </a>
-          <a href="tel:+17755551234" className="flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors">
+          <a href="tel:+13187368723" className="flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors">
             <Phone className="h-4 w-4" />
-            (775) 555-1234
+            (318) RENT-RAD
           </a>
         </div>
 

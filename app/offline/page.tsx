@@ -58,8 +58,8 @@ export default function OfflinePage() {
         {/* Help Text */}
         <p className="mt-8 text-sm text-muted-foreground">
           Need help? Call us at{' '}
-          <a href="tel:+17755551234" className="text-[#CC0000] hover:underline">
-            (775) 555-1234
+          <a href="tel:+13187368723" className="text-[#CC0000] hover:underline">
+            (318) RENT-RAD
           </a>
         </p>
       </div>

@@ -81,8 +81,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold">Phone</h3>
                     <p className="text-muted-foreground text-sm">24/7 Support Line</p>
-                    <a href="tel:+17755550123" className="text-[#CC0000] hover:underline font-medium">
-                      (775) 555-0123
+                    <a href="tel:+13187368723" className="text-[#CC0000] hover:underline font-medium">
+                      (318) RENT-RAD
                     </a>
                   </div>
                 </div>
