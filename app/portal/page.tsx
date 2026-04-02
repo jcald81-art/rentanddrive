@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Logo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { FlaskConical, Route, Car, Loader2 } from 'lucide-react'
+import { Home, Car, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 // This page acts as a smart router after login
@@ -76,10 +76,10 @@ export default function PortalPage() {
       if (!hasVisitedPortal) {
         localStorage.setItem('portal_visited', 'true')
         if (role === 'host') {
-          router.push('/hostslab/lobby')
+          router.push('/host/dashboard')
           return
         } else if (role === 'renter') {
-          router.push('/rr/lounge')
+          router.push('/renter/suite')
           return
         }
       }
@@ -129,40 +129,40 @@ export default function PortalPage() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Hosts Suite Portal */}
-          <Card className="bg-slate-900/50 border-slate-700 hover:border-[#CC0000] transition-all cursor-pointer group">
-            <Link href="/hostslab/lobby">
+          {/* RAD Hosts Portal */}
+          <Card className="bg-slate-900/50 border-slate-700 hover:border-[#2D4A2D] transition-all cursor-pointer group">
+            <Link href="/host/dashboard">
               <CardHeader className="text-center pb-4">
-                <div className="w-20 h-20 bg-[#CC0000]/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-[#CC0000]/30 transition-colors">
-                  <FlaskConical className="h-10 w-10 text-[#CC0000]" />
+                <div className="w-20 h-20 bg-[#2D4A2D]/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-[#2D4A2D]/30 transition-colors">
+                  <Home className="h-10 w-10 text-[#2D4A2D]" />
                 </div>
-                <CardTitle className="text-white text-2xl">Hosts Suite</CardTitle>
+                <CardTitle className="text-white text-2xl">RAD Hosts</CardTitle>
                 <CardDescription className="text-slate-400">
                   Your host command center
                 </CardDescription>
               </CardHeader>
               <CardContent className="text-center">
                 <ul className="text-sm text-slate-500 space-y-2 mb-6">
-                  <li>Manage your fleet with Eagle GPS tracking</li>
+                  <li>Manage your fleet with RADar tracking</li>
                   <li>View earnings and payouts in The Vault</li>
-                  <li>Connect with R&D AI agents</li>
+                  <li>Connect with AI agents (Dollar, Shield, Eagle)</li>
                   <li>Earn XP and badges in The Game Room</li>
                 </ul>
-                <Button className="w-full bg-[#CC0000] hover:bg-[#AA0000]">
-                  Enter Hosts Suite
+                <Button className="w-full bg-[#2D4A2D] hover:bg-[#4A7C59]">
+                  Enter RAD Hosts
                 </Button>
               </CardContent>
             </Link>
           </Card>
 
-          {/* Renters Suite Portal */}
-          <Card className="bg-slate-900/50 border-slate-700 hover:border-[#CC0000] transition-all cursor-pointer group">
-            <Link href="/rr/lounge">
+          {/* RAD Renters Portal */}
+          <Card className="bg-slate-900/50 border-slate-700 hover:border-[#C4813A] transition-all cursor-pointer group">
+            <Link href="/renter/suite">
               <CardHeader className="text-center pb-4">
-                <div className="w-20 h-20 bg-[#CC0000]/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-[#CC0000]/30 transition-colors">
-                  <Route className="h-10 w-10 text-[#CC0000]" />
+                <div className="w-20 h-20 bg-[#C4813A]/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-[#C4813A]/30 transition-colors">
+                  <Car className="h-10 w-10 text-[#C4813A]" />
                 </div>
-                <CardTitle className="text-white text-2xl">Renters Suite</CardTitle>
+                <CardTitle className="text-white text-2xl">RAD Renters</CardTitle>
                 <CardDescription className="text-slate-400">
                   Your renter experience hub
                 </CardDescription>
@@ -172,10 +172,10 @@ export default function PortalPage() {
                   <li>Find and book vehicles in The Garage</li>
                   <li>Track your trips and Road Score</li>
                   <li>Earn rewards and unlock perks</li>
-                  <li>Get 24/7 support from our team</li>
+                  <li>Get 24/7 support from RAD AI</li>
                 </ul>
-                <Button className="w-full bg-[#CC0000] hover:bg-[#AA0000]">
-                  Enter Renters Suite
+                <Button className="w-full bg-[#C4813A] hover:bg-[#B4712A]">
+                  Enter RAD Renters
                 </Button>
               </CardContent>
             </Link>
@@ -193,12 +193,12 @@ export default function PortalPage() {
               </Link>
             </Button>
             <Button variant="outline" size="sm" asChild className="border-slate-700 text-slate-300 hover:bg-slate-800">
-              <Link href="/hostslab/workshop">
+              <Link href="/host/vehicles">
                 My Vehicles
               </Link>
             </Button>
             <Button variant="outline" size="sm" asChild className="border-slate-700 text-slate-300 hover:bg-slate-800">
-              <Link href="/rr/trips">
+              <Link href="/renter/trips">
                 My Trips
               </Link>
             </Button>
