@@ -23,6 +23,7 @@ import {
   ChevronDown, Upload, Camera, Menu
 } from 'lucide-react'
 import { MFAHostPrompt } from '@/components/mfa-host-prompt'
+import { TuroImportModal } from '@/components/host/turo-import-modal'
 
 interface Vehicle {
   id: string
@@ -98,6 +99,7 @@ export default function HostDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [activeSection, setActiveSection] = useState<ActiveSection>('overview')
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null)
+  const [showTuroImport, setShowTuroImport] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const router = useRouter()
@@ -716,19 +718,33 @@ export default function HostDashboardPage() {
                 })}
 
                 {/* Add Vehicle Card */}
-                <Link href="/host/vehicles/add/details">
-                  <Card className="bg-[#151820] border-white/10 border-dashed h-full min-h-[300px] hover:border-[#e50914]/50 transition-colors cursor-pointer">
-                    <CardContent className="h-full flex flex-col items-center justify-center gap-4 p-6">
-                      <div className="w-16 h-16 rounded-full bg-[#e50914]/20 flex items-center justify-center">
-                        <Plus className="h-8 w-8 text-[#e50914]" />
-                      </div>
-                      <div className="text-center">
-                        <p className="text-white font-semibold">Add New Vehicle</p>
-                        <p className="text-sm text-white/50 mt-1">List your car and start earning</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
+                <Card className="bg-[#151820] border-white/10 border-dashed h-full min-h-[300px]">
+                  <CardContent className="h-full flex flex-col items-center justify-center gap-6 p-6">
+                    <div className="w-16 h-16 rounded-full bg-[#e50914]/20 flex items-center justify-center">
+                      <Plus className="h-8 w-8 text-[#e50914]" />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-white font-semibold">Add New Vehicle</p>
+                      <p className="text-sm text-white/50 mt-1">List your car and start earning</p>
+                    </div>
+                    <div className="flex flex-col gap-2 w-full">
+                      <Link href="/host/vehicles/add/details">
+                        <Button className="w-full bg-[#e50914] hover:bg-[#c00810] text-white">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Manually
+                        </Button>
+                      </Link>
+                      <Button 
+                        variant="outline" 
+                        className="w-full border-white/20 text-white hover:bg-white/10"
+                        onClick={() => setShowTuroImport(true)}
+                      >
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Import from Turo
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           )}
@@ -970,7 +986,17 @@ export default function HostDashboardPage() {
             </div>
           )}
         </div>
-      </main>
-    </div>
-  )
+</main>
+      
+      {/* Turo Import Modal */}
+      <TuroImportModal
+        open={showTuroImport}
+        onOpenChange={setShowTuroImport}
+        onImportComplete={(vehicleId) => {
+          // Refresh vehicles list
+          window.location.reload()
+        }}
+      />
+      </div>
+      )
 }
