@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
+import { recordRadarEvent } from '@/lib/integrations/stripe-radar'
 
 // Use service role to bypass RLS for webhook updates
 const supabaseAdmin = createClient(
@@ -50,6 +51,10 @@ export async function POST(request: Request) {
 
       case 'payment_intent.payment_failed':
         await handlePaymentFailed(event.data.object as Stripe.PaymentIntent)
+        break
+
+      case 'charge.succeeded':
+        await handleChargeSucceeded(event.data.object as Stripe.Charge)
         break
 
       case 'charge.refunded':
@@ -242,6 +247,47 @@ async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
   }
 
   console.log(`[Stripe Webhook] Booking ${bookingId} marked as payment_failed`)
+}
+
+// Handle charge succeeded - record Radar fraud data
+async function handleChargeSucceeded(charge: Stripe.Charge) {
+  const paymentIntentId = charge.payment_intent as string
+
+  if (!paymentIntentId) {
+    console.log('[Stripe Webhook] No payment_intent on charge')
+    return
+  }
+
+  console.log(`[Stripe Webhook] Charge succeeded, recording Radar data: ${charge.id}`)
+
+  // Get booking and user info from metadata or payment intent
+  const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
+  const bookingId = paymentIntent.metadata?.booking_id || null
+  const userId = paymentIntent.metadata?.user_id || null
+
+  // Record Radar fraud detection data
+  const { success, outcome } = await recordRadarEvent(
+    paymentIntentId,
+    bookingId,
+    userId,
+    charge
+  )
+
+  if (success && outcome) {
+    console.log(`[Stripe Webhook] Radar data recorded - Risk: ${outcome.riskLevel}, Score: ${outcome.riskScore}`)
+    
+    // If blocked, update booking status
+    if (outcome.blocked && bookingId) {
+      await supabaseAdmin
+        .from('bookings')
+        .update({
+          status: 'cancelled',
+          payment_status: 'blocked',
+          admin_notes: `Payment blocked by Stripe Radar - Risk Level: ${outcome.riskLevel}`,
+        })
+        .eq('id', bookingId)
+    }
+  }
 }
 
 // Handle refunds
