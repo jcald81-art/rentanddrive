@@ -98,8 +98,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold">Email</h3>
                     <p className="text-muted-foreground text-sm">General inquiries</p>
-                    <a href="mailto:support@rentanddrive.net" className="text-[#CC0000] hover:underline font-medium">
-                      support@rentanddrive.net
+                    <a href="mailto:admin@rentanddrive.net" className="text-[#CC0000] hover:underline font-medium">
+                      admin@rentanddrive.net
                     </a>
                   </div>
                 </div>

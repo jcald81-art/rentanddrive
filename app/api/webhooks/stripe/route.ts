@@ -349,7 +349,7 @@ async function handleDisputeCreated(dispute: Stripe.Dispute) {
         },
         body: JSON.stringify({
           personalizations: [{ to: [{ email: process.env.ADMIN_EMAIL }] }],
-          from: { email: process.env.SENDGRID_FROM_EMAIL || 'support@rentanddrive.net' },
+          from: { email: process.env.SENDGRID_FROM_EMAIL || 'admin@rentanddrive.net' },
           subject: `[URGENT] Payment Dispute - Booking ${booking.id.slice(0, 8)}`,
           content: [{
             type: 'text/html',

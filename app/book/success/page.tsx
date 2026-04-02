@@ -295,12 +295,12 @@ export default function BookingSuccessPage() {
         {/* Support */}
         <p className="text-center text-sm text-muted-foreground mt-8">
           Questions? Contact us at{' '}
-          <a href="mailto:support@rentanddrive.net" className="text-[#CC0000] hover:underline">
-            support@rentanddrive.net
+          <a href="mailto:admin@rentanddrive.net" className="text-[#CC0000] hover:underline">
+            admin@rentanddrive.net
           </a>{' '}
           or call{' '}
-          <a href="tel:+17755550000" className="text-[#CC0000] hover:underline">
-            (775) 555-0000
+          <a href="tel:+13187368723" className="text-[#CC0000] hover:underline">
+            (318) RENT-RAD
           </a>
         </p>
       </div>

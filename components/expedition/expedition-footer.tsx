@@ -103,9 +103,9 @@ export function ExpeditionFooter() {
 
         {/* Contact Bar */}
         <div className="mb-8 flex flex-wrap items-center justify-center gap-6 rounded-xl bg-white/5 px-6 py-4">
-          <a href="mailto:info@rentanddrive.net" className="flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors">
+          <a href="mailto:admin@rentanddrive.net" className="flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors">
             <Mail className="h-4 w-4" />
-            info@rentanddrive.net
+            admin@rentanddrive.net
           </a>
           <a href="tel:+13187368723" className="flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors">
             <Phone className="h-4 w-4" />

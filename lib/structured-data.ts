@@ -36,7 +36,7 @@ export function getOrganizationSchema() {
     image: `${baseUrl}/og-image.jpg`,
     description: 'Premium peer-to-peer car rental in Reno and Lake Tahoe, Nevada. AWD vehicles, contactless pickup, VIN verified.',
     telephone: '+13187368723',
-    email: 'info@rentanddrive.net',
+    email: 'admin@rentanddrive.net',
     address: {
       '@type': 'PostalAddress',
       streetAddress: '123 Virginia St',
