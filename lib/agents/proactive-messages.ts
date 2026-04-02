@@ -53,7 +53,7 @@ export async function getProactiveMessage({
         full_message: `Good to see you, ${firstName}. Your vehicles are getting views. Head to RAD Fleet Command for your fleet overview, or check the Command Center for recent bookings.`,
         context: { page: 'home', role: 'host', profile },
         action_buttons: [
-          { label: 'RAD Fleet Command', action: '/hostslab/rad-fleet-command', variant: 'primary' },
+          { label: 'RAD Fleet Command', action: '/host/fleet-command', variant: 'primary' },
           { label: 'View earnings', action: '/host/earnings', variant: 'secondary' },
         ]
       }
@@ -147,7 +147,7 @@ export async function getProactiveMessage({
   }
 
   // RAD FLEET COMMAND
-  if (pathname.startsWith('/hostslab/rad-fleet-command')) {
+  if (pathname.startsWith('/host/fleet-command')) {
     return {
       agent: AGENT_CONFIGS['rad-fleet'],
       preview_text: 'RAD Fleet has a fleet health update',
@@ -164,7 +164,7 @@ export async function getProactiveMessage({
       full_message: 'Welcome to RAD Hosts. This is your Command Center. What would you like to focus on — fleet management, pricing optimization, or checking your metrics?',
       context: { page: 'rad_hosts', profile },
       action_buttons: [
-        { label: 'Fleet overview', action: '/hostslab/rad-fleet-command', variant: 'primary' },
+        { label: 'Fleet overview', action: '/host/fleet-command', variant: 'primary' },
         { label: 'Pricing tools', action: '/host/pricing', variant: 'secondary' },
       ]
     }

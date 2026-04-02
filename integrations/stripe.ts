@@ -171,8 +171,8 @@ export async function createHostConnectAccount(params: {
 
   const accountLink = await stripe.accountLinks.create({
     account: account.id,
-    refresh_url: `${process.env.NEXT_PUBLIC_APP_URL}/hostslab/vault?stripe=refresh`,
-    return_url: `${process.env.NEXT_PUBLIC_APP_URL}/hostslab/vault?stripe=success`,
+    refresh_url: `${process.env.NEXT_PUBLIC_APP_URL}/host/vault?stripe=refresh`,
+    return_url: `${process.env.NEXT_PUBLIC_APP_URL}/host/vault?stripe=success`,
     type: 'account_onboarding',
   })
 

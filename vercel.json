@@ -4,27 +4,27 @@
   "installCommand": "pnpm install --no-frozen-lockfile",
   "crons": [
     {
-      "path": "/api/cron/securelink",
+      "path": "/api/cron/rad-comms",
       "schedule": "0 8 * * *"
     },
     {
-      "path": "/api/cron/dollar",
+      "path": "/api/cron/rad-pricing",
       "schedule": "0 2 * * *"
     },
     {
-      "path": "/api/cron/shield",
+      "path": "/api/cron/rad-shield",
       "schedule": "0 6 * * *"
     },
     {
-      "path": "/api/cron/commandcontrol",
+      "path": "/api/cron/rad-commandcontrol",
       "schedule": "0 6 * * 0"
     },
     {
-      "path": "/api/cron/pulse",
+      "path": "/api/cron/rad-pulse",
       "schedule": "0 7 * * *"
     },
     {
-      "path": "/api/cron/funtime",
+      "path": "/api/cron/rad-funtime",
       "schedule": "0 0 * * *"
     },
     {

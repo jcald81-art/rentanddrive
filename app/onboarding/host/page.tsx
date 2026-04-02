@@ -134,7 +134,7 @@ export default function HostOnboardingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ completed: true, current_step: 4 }),
       })
-      router.push('/hostslab/lobby')
+      router.push('/host/dashboard')
     }
   }
 
