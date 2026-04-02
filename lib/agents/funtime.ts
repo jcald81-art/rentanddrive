@@ -474,24 +474,21 @@ export async function runDailyFuntime(): Promise<{
   }
 }
 
-// ── FuntimeAgent class wrapper ─────────────────────────────────────────────────
+// Class wrapper for API routes
 export class FuntimeAgent {
-  async awardXP(userId: string, amount: number, reason: string, _source?: string) {
-    return awardHostXP(userId, amount, reason)
+  async awardXP(userId: string, amount: number, reason: string, source?: object) {
+    return awardHostXP(userId, amount, reason, source)
   }
   async checkLevelUp(userId: string) {
-    return checkAndAwardBadges()
+    return { leveledUp: false, currentLevel: 1 }
   }
   async awardBadge(userId: string, badgeType: string) {
-    return awardHostBadge(userId, badgeType as any)
+    return awardHostBadge(userId, badgeType as keyof typeof BADGES)
   }
   async updateLeaderboard() {
     return updateLeaderboard()
   }
-  async processChallengeProgress(_userId: string, _challengeId: string) {
-    return { success: true }
-  }
-  async voteOnPhoto(photoId: string, _voterId: string) {
-    return runPhotoContestVoting(photoId)
+  async runDaily() {
+    return runDailyFuntime()
   }
 }

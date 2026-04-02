@@ -393,21 +393,25 @@ Return JSON: {
   }
 }
 
-// ── ShieldAgent class wrapper ──────────────────────────────────────────────────
+// Class wrapper for API routes
 export class ShieldAgent {
   async analyzeReview(reviewId: string) {
     return analyzeReview(reviewId)
   }
   async generateResponse(reviewId: string) {
-    return analyzeReview(reviewId)
+    const analysis = await analyzeReview(reviewId)
+    return { response: analysis.suggestedResponse }
   }
-  async scanHostReviews(_hostId: string) {
+  async scanHostReviews(hostId: string) {
     return analyzeNewReviews()
   }
   async calculateRenterScore(renterId: string) {
     return calculateRenterScore(renterId)
   }
-  async flagReview(reviewId: string, _reason: string) {
-    return analyzeReview(reviewId)
+  async updateAllScores() {
+    return updateAllRenterScores()
+  }
+  async analyzeDamage(claimId: string, photoUrls: string[]) {
+    return analyzeDamagePhotos(claimId, photoUrls)
   }
 }

@@ -374,18 +374,20 @@ export async function getVehicleHealth(vehicleId: string): Promise<VehicleHealth
   return analyzeVehicleTelemetry(vehicleId)
 }
 
-// ── PulseAgent class wrapper ───────────────────────────────────────────────────
+// Class wrapper for API routes
 export class PulseAgent {
   async analyzeVehicleHealth(vehicleId: string) {
     return getVehicleHealth(vehicleId)
   }
-  async analyzeFleetHealth(_hostId: string) {
+  async analyzeFleetHealth(hostId?: string) {
     return runFleetHealthCheck()
   }
   async predictMaintenance(vehicleId: string) {
-    return getVehicleHealth(vehicleId)
+    const health = await getVehicleHealth(vehicleId)
+    return health.maintenancePredictions
   }
-  async getEfficiencyReport(vehicleId: string) {
-    return getVehicleHealth(vehicleId)
+  async getEfficiency(vehicleId: string) {
+    const health = await getVehicleHealth(vehicleId)
+    return health.fuelEfficiency
   }
 }
