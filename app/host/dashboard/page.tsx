@@ -509,26 +509,33 @@ export default function HostDashboardPage() {
                       {vehicles.slice(0, 3).map(vehicle => {
                         const isActive = vehicle.status === 'active' || vehicle.listing_status === 'active'
                         return (
-                    <div key={vehicle.id} className="flex items-center gap-4 p-3 rounded-lg bg-white/5">
-                      <div className="w-16 h-12 rounded-lg bg-white/10 overflow-hidden flex-shrink-0">
+                    <Link 
+                      key={vehicle.id} 
+                      href={`/host/vehicles/${vehicle.id}/settings`}
+                      className="flex items-center gap-4 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group"
+                    >
+                      <div className="w-16 h-12 rounded-lg bg-white/10 overflow-hidden flex-shrink-0 relative">
                         <img
                           src={vehicle.images?.[0] || '/images/vehicle-placeholder.jpg'}
                           alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-white font-medium truncate">
-                                {vehicle.year} {vehicle.make} {vehicle.model}
-                              </p>
-                              <div className="flex items-center gap-2">
-                                <Badge className={`text-xs ${isActive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
-                                  {isActive ? 'Live' : 'Paused'}
-                                </Badge>
-                                <span className="text-sm text-[#e50914] font-semibold">${vehicle.daily_rate}/day</span>
-                              </div>
-                            </div>
-                          </div>
+                          className="w-full h-full object-cover"
+                        />
+                        {/* Live status indicator */}
+                        <div className={`absolute bottom-1 right-1 w-2 h-2 rounded-full ${isActive ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white font-medium truncate group-hover:text-[#e50914] transition-colors">
+                          {vehicle.year} {vehicle.make} {vehicle.model}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <Badge className={`text-xs ${isActive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                            {isActive ? 'Live' : 'Paused'}
+                          </Badge>
+                          <span className="text-sm text-[#e50914] font-semibold">${vehicle.daily_rate}/day</span>
+                        </div>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-white/30 group-hover:text-[#e50914] transition-colors" />
+                    </Link>
                         )
                       })}
                     </div>
@@ -556,23 +563,36 @@ export default function HostDashboardPage() {
                   const device = bouncieDevices.find(d => d.vehicle_id === vehicle.id)
                   
                   return (
-              <Card key={vehicle.id} className="bg-[#151820] border-white/10 overflow-hidden">
-                <div className="aspect-[16/10] relative bg-[#1a1f2e]">
-                  <img
-                    src={vehicle.images?.[0] || '/images/vehicle-placeholder.jpg'}
-                    alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-                          className="w-full h-full object-cover"
-                        />
-                        <Badge className={`absolute top-3 left-3 ${isActive ? 'bg-emerald-500' : 'bg-amber-500 text-black'}`}>
-                          {isActive ? 'Live' : 'Paused'}
-                        </Badge>
-                        {vehicle.rating && vehicle.rating > 0 && (
-                          <Badge className="absolute top-3 right-3 bg-black/70 gap-1">
-                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                            {vehicle.rating.toFixed(1)}
-                          </Badge>
-                        )}
+              <Card key={vehicle.id} className="bg-[#151820] border-white/10 overflow-hidden group hover:border-[#e50914]/50 transition-colors">
+                <Link href={`/host/vehicles/${vehicle.id}/settings`} className="block">
+                  <div className="aspect-[16/10] relative bg-[#1a1f2e]">
+                    <img
+                      src={vehicle.images?.[0] || '/images/vehicle-placeholder.jpg'}
+                      alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <Badge className={`absolute top-3 left-3 ${isActive ? 'bg-emerald-500' : 'bg-amber-500 text-black'}`}>
+                      {isActive ? 'Live' : 'Paused'}
+                    </Badge>
+                    {vehicle.rating && vehicle.rating > 0 && (
+                      <Badge className="absolute top-3 right-3 bg-black/70 gap-1">
+                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                        {vehicle.rating.toFixed(1)}
+                      </Badge>
+                    )}
+                    {/* Live tracking indicator */}
+                    {device && (
+                      <div className={`absolute bottom-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${
+                        device.is_active 
+                          ? 'bg-emerald-500/90 text-white' 
+                          : 'bg-red-500/90 text-white'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${device.is_active ? 'bg-white animate-pulse' : 'bg-white/50'}`} />
+                        {device.is_active ? 'GPS Live' : 'GPS Offline'}
                       </div>
+                    )}
+                  </div>
+                </Link>
                       
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between mb-3">

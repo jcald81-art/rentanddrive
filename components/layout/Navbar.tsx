@@ -4,7 +4,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { Menu, X, User, LogOut, ArrowRightLeft } from 'lucide-react'
+import { Menu, X, User, LogOut, Car, Home, Settings, Shield } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { ThemeSwitcher } from '@/components/theme-switcher'
@@ -21,7 +21,12 @@ import {
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   
-  const [user, setUser] = useState<{ email?: string; user_metadata?: { avatar_url?: string; full_name?: string } } | null>(null)
+  const [user, setUser] = useState<{ 
+    id?: string
+    email?: string
+    user_metadata?: { avatar_url?: string; full_name?: string } 
+  } | null>(null)
+  const [userRole, setUserRole] = useState<string | null>(null)
   const [authModalOpen, setAuthModalOpen] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
   const [userMode, setUserMode] = useState<'renter' | 'host'>('renter')
@@ -34,9 +39,8 @@ export function Navbar() {
     }
   }, [])
 
-  // Toggle user mode and persist to localStorage
-  const toggleUserMode = () => {
-    const newMode = userMode === 'renter' ? 'host' : 'renter'
+  // Set user mode and persist to localStorage
+  const setMode = (newMode: 'renter' | 'host') => {
     setUserMode(newMode)
     localStorage.setItem('rad_user_mode', newMode)
     // Redirect to appropriate dashboard
@@ -45,12 +49,35 @@ export function Navbar() {
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(async ({ data }) => {
       setUser(data.user)
+      
+      // Fetch user role from profiles
+      if (data.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single()
+        
+        setUserRole(profile?.role || null)
+      }
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null)
+      
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single()
+        
+        setUserRole(profile?.role || null)
+      } else {
+        setUserRole(null)
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -62,6 +89,8 @@ export function Navbar() {
     window.location.href = '/'
   }
 
+  const isPlatformManager = userRole === 'admin' || userRole === 'platform_manager'
+
   return (
     <>
       <header className="h-16 bg-sidebar border-b border-sidebar-border fixed top-0 left-0 right-0 z-50">
@@ -71,7 +100,7 @@ export function Navbar() {
             <Link href="/" className="flex-shrink-0">
               <Image 
                 src="/images/rad-brand-logo.png" 
-                alt="Rent and Drive" 
+                alt="RAD Rent and Drive" 
                 width={120}
                 height={40}
                 className="h-8"
@@ -113,70 +142,105 @@ export function Navbar() {
             {/* Auth - Desktop */}
             <div className="hidden md:flex items-center gap-3">
               {user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-foreground/10">
-                      {user.user_metadata?.avatar_url ? (
-                        <Image
-                          src={user.user_metadata.avatar_url}
-                          alt="Avatar"
-                          width={28}
-                          height={28}
-                          className="rounded-full mr-2"
-                        />
-                      ) : (
-                        <User className="h-4 w-4 mr-2" />
-                      )}
-                      Account
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    {/* Mode Toggle */}
-                    <DropdownMenuItem 
-                      onClick={toggleUserMode}
-                      className="flex items-center bg-[#CC0000]/5 text-[#CC0000] hover:bg-[#CC0000]/10 cursor-pointer"
-                    >
-                      <ArrowRightLeft className="h-4 w-4 mr-2" />
-                      {userMode === 'renter' ? 'Switch to Host Mode' : 'Switch to Renter Mode'}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/profile">My Profile</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/bookings">My Bookings</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut}>
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Sign Out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
                 <>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    className="text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-foreground/10"
-                    onClick={() => {
-                      setAuthMode('signin')
-                      setAuthModalOpen(true)
-                    }}
-                  >
-                    Login
-                  </Button>
-                  <Button 
-                    size="sm"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-5"
-                    onClick={() => {
-                      setAuthMode('signup')
-                      setAuthModalOpen(true)
-                    }}
-                  >
-                    Sign Up
-                  </Button>
+                  {/* Segmented Rent/Host Control */}
+                  <div className="flex bg-sidebar-foreground/10 rounded-full p-1">
+                    <button
+                      onClick={() => setMode('renter')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full transition-all ${
+                        userMode === 'renter'
+                          ? 'bg-[#FF4D4D] text-white shadow-md'
+                          : 'text-sidebar-foreground/70 hover:text-sidebar-foreground'
+                      }`}
+                    >
+                      <Car className="h-3.5 w-3.5" />
+                      Rent Vehicles
+                    </button>
+                    <button
+                      onClick={() => setMode('host')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-full transition-all ${
+                        userMode === 'host'
+                          ? 'bg-[#FF4D4D] text-white shadow-md'
+                          : 'text-sidebar-foreground/70 hover:text-sidebar-foreground'
+                      }`}
+                    >
+                      <Home className="h-3.5 w-3.5" />
+                      Host Your Car
+                    </button>
+                  </div>
+
+                  {/* User Avatar Dropdown */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-foreground/10 rounded-full p-1.5">
+                        {user.user_metadata?.avatar_url ? (
+                          <Image
+                            src={user.user_metadata.avatar_url}
+                            alt="Avatar"
+                            width={32}
+                            height={32}
+                            className="rounded-full"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-[#FF4D4D] flex items-center justify-center">
+                            <User className="h-4 w-4 text-white" />
+                          </div>
+                        )}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <div className="px-3 py-2 border-b">
+                        <p className="text-sm font-medium">{user.user_metadata?.full_name || user.email}</p>
+                        <p className="text-xs text-muted-foreground">{user.email}</p>
+                      </div>
+                      <DropdownMenuItem asChild>
+                        <Link href="/profile" className="flex items-center cursor-pointer">
+                          <User className="h-4 w-4 mr-2" />
+                          My Profile
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/settings" className="flex items-center cursor-pointer">
+                          <Settings className="h-4 w-4 mr-2" />
+                          Settings
+                        </Link>
+                      </DropdownMenuItem>
+                      
+                      {/* Platform Manager Link - Only visible to admins */}
+                      {isPlatformManager && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem asChild>
+                            <Link 
+                              href="/platform-management" 
+                              className="flex items-center cursor-pointer text-[#FF4D4D] font-medium"
+                            >
+                              <Shield className="h-4 w-4 mr-2" />
+                              RAD Command Center
+                            </Link>
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                      
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleSignOut} className="text-red-500 cursor-pointer">
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </>
+              ) : (
+                <Button 
+                  size="sm"
+                  className="bg-[#FF4D4D] hover:bg-[#e63939] text-white rounded-full px-6 font-medium shadow-lg shadow-[#FF4D4D]/20 hover:shadow-xl hover:shadow-[#FF4D4D]/30 transition-all"
+                  onClick={() => {
+                    setAuthMode('signup')
+                    setAuthModalOpen(true)
+                  }}
+                >
+                  Get Started
+                </Button>
               )}
             </div>
 
@@ -196,6 +260,40 @@ export function Navbar() {
             <nav className="flex flex-col gap-4">
               {/* Ask RAD Button - Mobile */}
               <AskRADButton />
+              
+              {/* Segmented Control - Mobile */}
+              {user && (
+                <div className="flex bg-sidebar-foreground/10 rounded-full p-1">
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      setMode('renter')
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-full transition-all ${
+                      userMode === 'renter'
+                        ? 'bg-[#FF4D4D] text-white shadow-md'
+                        : 'text-sidebar-foreground/70'
+                    }`}
+                  >
+                    <Car className="h-3.5 w-3.5" />
+                    Rent
+                  </button>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      setMode('host')
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-full transition-all ${
+                      userMode === 'host'
+                        ? 'bg-[#FF4D4D] text-white shadow-md'
+                        : 'text-sidebar-foreground/70'
+                    }`}
+                  >
+                    <Home className="h-3.5 w-3.5" />
+                    Host
+                  </button>
+                </div>
+              )}
               
               <Link 
                 href="/vehicles" 
@@ -229,62 +327,49 @@ export function Navbar() {
               <div className="border-t border-sidebar-border pt-4 mt-2">
                 {user ? (
                   <>
-                    {/* Mode Toggle - Mobile */}
-                    <button 
-                      onClick={() => {
-                        setMobileMenuOpen(false)
-                        toggleUserMode()
-                      }}
-                      className="text-sm font-medium text-[#CC0000] hover:text-[#CC0000]/80 py-3 px-3 mb-2 flex items-center gap-2 bg-[#CC0000]/5 rounded-lg w-full text-left"
-                    >
-                      <ArrowRightLeft className="h-4 w-4" /> 
-                      {userMode === 'renter' ? 'Switch to Host Mode' : 'Switch to Renter Mode'}
-                    </button>
+                    {/* Platform Manager - Mobile */}
+                    {isPlatformManager && (
+                      <Link 
+                        href="/platform-management" 
+                        className="text-sm font-medium text-[#FF4D4D] hover:text-[#FF4D4D]/80 py-3 px-3 mb-2 flex items-center gap-2 bg-[#FF4D4D]/5 rounded-lg w-full"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <Shield className="h-4 w-4" /> 
+                        RAD Command Center
+                      </Link>
+                    )}
                     <Link 
                       href="/profile" 
-                      className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2"
+                      className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2 block"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       My Profile
                     </Link>
                     <Link 
                       href="/bookings" 
-                      className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2"
+                      className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2 block"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       My Bookings
                     </Link>
                     <button 
-                      className="text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground py-2 text-left w-full flex items-center gap-2"
+                      className="text-sm text-red-500 hover:text-red-400 py-2 text-left w-full flex items-center gap-2"
                       onClick={handleSignOut}
                     >
                       <LogOut className="h-4 w-4" /> Sign Out
                     </button>
                   </>
                 ) : (
-                  <div className="flex flex-col gap-3">
-                    <Button 
-                      variant="outline"
-                      className="w-full border-sidebar-border text-sidebar-foreground hover:bg-sidebar-foreground/10"
-                      onClick={() => {
-                        setMobileMenuOpen(false)
-                        setAuthMode('signin')
-                        setAuthModalOpen(true)
-                      }}
-                    >
-                      Login
-                    </Button>
-                    <Button 
-                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                      onClick={() => {
-                        setMobileMenuOpen(false)
-                        setAuthMode('signup')
-                        setAuthModalOpen(true)
-                      }}
-                    >
-                      Sign Up
-                    </Button>
-                  </div>
+                  <Button 
+                    className="w-full bg-[#FF4D4D] hover:bg-[#e63939] text-white font-medium"
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      setAuthMode('signup')
+                      setAuthModalOpen(true)
+                    }}
+                  >
+                    Get Started
+                  </Button>
                 )}
               </div>
             </nav>
