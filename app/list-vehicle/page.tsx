@@ -271,6 +271,57 @@ export default function ListVehiclePage() {
     }
   }, [])
 
+  // Handle Stripe Connect return - check URL params and restore flow state
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    
+    const urlParams = new URLSearchParams(window.location.search)
+    const stripeReturn = urlParams.get('stripe_return')
+    const stripeRefresh = urlParams.get('stripe_refresh')
+    
+    if (stripeReturn === 'true' || stripeRefresh === 'true') {
+      // Restore saved state from localStorage
+      const savedVehicleId = localStorage.getItem('rad_onboarding_vehicle_id')
+      const wasRedirectPending = localStorage.getItem('rad_stripe_redirect_pending')
+      
+      if (savedVehicleId && wasRedirectPending === 'true') {
+        setVehicleId(savedVehicleId)
+        
+        // Check Stripe Connect status
+        const checkStripeStatus = async () => {
+          try {
+            const res = await fetch('/api/stripe/connect/status')
+            if (res.ok) {
+              const data = await res.json()
+              
+              // Clear the redirect pending flag
+              localStorage.removeItem('rad_stripe_redirect_pending')
+              
+              if (data.connected) {
+                // Stripe setup complete - redirect to photos
+                localStorage.removeItem('rad_onboarding_vehicle_id')
+                localStorage.removeItem('rad_onboarding_step')
+                router.push(`/host/vehicles/${savedVehicleId}/photos?new=true`)
+              } else {
+                // Stripe not yet connected - stay on payouts step
+                setFlowStep('payouts')
+              }
+            }
+          } catch (err) {
+            console.error('Failed to check Stripe status:', err)
+            setFlowStep('payouts')
+          }
+        }
+        
+        checkStripeStatus()
+      }
+      
+      // Clean up URL params
+      const cleanUrl = window.location.pathname
+      window.history.replaceState({}, '', cleanUrl)
+    }
+  }, [router])
+
   // Fetch makes when vehicle type changes
   useEffect(() => {
     async function fetchMakes() {
@@ -784,7 +835,14 @@ export default function ListVehiclePage() {
       console.log('✅ [RADCC VEHICLE SUBMIT DEBUG] Vehicle created successfully:', vehicleData)
       
       // Save vehicle ID and move to safety standards step
-      setVehicleId(vehicleData?.id || null)
+      const newVehicleId = vehicleData?.id || null
+      setVehicleId(newVehicleId)
+      
+      // Store vehicle ID in localStorage for Stripe redirect recovery
+      if (newVehicleId && typeof window !== 'undefined') {
+        localStorage.setItem('rad_onboarding_vehicle_id', newVehicleId)
+      }
+      
       setFlowStep('safety')
     } catch (err: unknown) {
       console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Caught error:', err)

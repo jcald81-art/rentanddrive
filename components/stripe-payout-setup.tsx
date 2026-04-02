@@ -71,13 +71,29 @@ export function StripePayoutSetup({
     setErrorMessage(null)
     setIsStripeUnavailable(false)
     
+    // Store current onboarding state before redirecting to Stripe
+    if (typeof window !== 'undefined') {
+      const vehicleId = new URLSearchParams(window.location.search).get('vehicleId') || 
+                        localStorage.getItem('rad_onboarding_vehicle_id')
+      if (vehicleId) {
+        localStorage.setItem('rad_onboarding_vehicle_id', vehicleId)
+      }
+      localStorage.setItem('rad_onboarding_step', 'payouts')
+      localStorage.setItem('rad_stripe_redirect_pending', 'true')
+    }
+    
     try {
+      // Build return URL with stripe_return flag
+      const baseUrl = window.location.origin
+      const returnUrl = `${baseUrl}/list-vehicle?stripe_return=true`
+      const refreshUrl = `${baseUrl}/list-vehicle?stripe_refresh=true`
+      
       const res = await fetch('/api/stripe/connect/onboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          returnUrl: window.location.href,
-          refreshUrl: window.location.href
+          returnUrl,
+          refreshUrl
         }),
       })
       
