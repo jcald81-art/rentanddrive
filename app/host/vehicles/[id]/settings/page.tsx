@@ -25,6 +25,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import Link from 'next/link'
+import { AIDescriptionGenerator } from '@/components/vehicles/ai-description-generator'
 
 interface Vehicle {
   id: string
@@ -44,6 +45,8 @@ interface Vehicle {
     fuel_policy?: string
   }
   security_deposit_cents?: number
+  description?: string
+  images?: string[]
 }
 
 interface SettingsData {
@@ -59,6 +62,7 @@ interface SettingsData {
   securityDeposit: number
   cleaningFee: number
   lateFeePerHour: number
+  description: string
 }
 
 export default function VehicleSettingsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -83,6 +87,7 @@ export default function VehicleSettingsPage({ params }: { params: Promise<{ id: 
     securityDeposit: 500,
     cleaningFee: 75,
     lateFeePerHour: 25,
+    description: '',
   })
 
   const supabase = createBrowserClient(
@@ -253,6 +258,14 @@ export default function VehicleSettingsPage({ params }: { params: Promise<{ id: 
             </div>
           </CardContent>
         </Card>
+
+        {/* AI Description Generator */}
+        <AIDescriptionGenerator
+          vehicleId={vehicleId}
+          currentDescription={settings.description}
+          photoUrls={vehicle.images || []}
+          onDescriptionChange={(desc) => setSettings(prev => ({ ...prev, description: desc }))}
+        />
 
         {/* Mileage & Fuel */}
         <Card className="bg-white/5 border-white/10">
