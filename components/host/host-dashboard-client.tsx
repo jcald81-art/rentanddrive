@@ -1,24 +1,24 @@
 'use client'
 
 import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { 
-  Battery, 
-  Radio, 
-  Clock, 
-  MapPin, 
-  Calendar, 
+  Plus,
+  Calendar,
   Settings,
   ExternalLink,
-  AlertTriangle,
-  CheckCircle,
+  Battery,
+  MapPin,
+  Clock,
   Wifi,
   WifiOff,
+  AlertTriangle,
   Car
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
+import { AddVehicleBouncieModal } from './add-vehicle-bouncie-modal'
 
 interface Vehicle {
   id: string
@@ -59,6 +59,68 @@ interface Booking {
   total_price: number
 }
 
+interface VehicleWithData extends Vehicle {
+  bouncieDevice?: BouncieDevice | null
+  lastLocation?: BouncieLocation | null
+  nextBooking?: Booking | null
+}
+
+interface FleetSectionProps {
+  vehicles: VehicleWithData[]
+}
+
+export function AddVehicleButton() {
+  return (
+    <AddVehicleBouncieModal>
+      <Button className="bg-[#D62828] hover:bg-[#b82222] text-white px-6 py-3 h-auto gap-2">
+        <Plus className="h-4 w-4" />
+        Add New Vehicle + Link Bouncie Device
+      </Button>
+    </AddVehicleBouncieModal>
+  )
+}
+
+export function AddVehicleButtonSmall() {
+  return (
+    <AddVehicleBouncieModal>
+      <Button className="bg-[#D62828] hover:bg-[#b82222] text-white gap-2">
+        <Plus className="h-4 w-4" />
+        Add Vehicle
+      </Button>
+    </AddVehicleBouncieModal>
+  )
+}
+
+export function FleetSection({ vehicles }: FleetSectionProps) {
+  if (vehicles.length === 0) return null
+
+  return (
+    <section className="border-t border-white/10">
+      <div className="container mx-auto px-4 py-12">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-2xl font-bold text-white">Your Fleet</h2>
+            <p className="text-gray-400 mt-1">Real-time status of your vehicles</p>
+          </div>
+          <AddVehicleButtonSmall />
+        </div>
+        
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {vehicles.map((vehicle) => (
+            <FleetVehicleCard 
+              key={vehicle.id} 
+              vehicle={vehicle}
+              bouncieDevice={vehicle.bouncieDevice}
+              lastLocation={vehicle.lastLocation}
+              nextBooking={vehicle.nextBooking}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 interface FleetVehicleCardProps {
   vehicle: Vehicle
   bouncieDevice?: BouncieDevice | null
@@ -66,7 +128,7 @@ interface FleetVehicleCardProps {
   nextBooking?: Booking | null
 }
 
-export function FleetVehicleCard({ 
+function FleetVehicleCard({ 
   vehicle, 
   bouncieDevice, 
   lastLocation, 

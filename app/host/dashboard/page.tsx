@@ -13,25 +13,14 @@ import {
   Shield, 
   MessageSquare, 
   CheckCircle2,
-  ArrowRight,
   Users,
   TrendingUp,
   Calendar,
-  FolderOpen,
-  Plus,
-  Battery,
-  Radio,
-  Clock,
-  AlertTriangle,
-  Zap,
-  Activity,
-  Settings,
-  ExternalLink
+  FolderOpen
 } from 'lucide-react'
 import { MFASecurityBadge } from '@/components/mfa-enrollment'
 import { MFAHostPrompt } from '@/components/mfa-host-prompt'
-import { AddVehicleBouncieModal } from '@/components/host/add-vehicle-bouncie-modal'
-import { FleetVehicleCard } from '@/components/host/fleet-vehicle-card'
+import { AddVehicleButton, AddVehicleButtonSmall, FleetSection } from '@/components/host/host-dashboard-client'
 
 interface Vehicle {
   id: string
@@ -271,12 +260,7 @@ export default async function HostDashboardPage() {
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-4 pt-6">
-                <AddVehicleBouncieModal>
-                  <Button className="bg-[#D62828] hover:bg-[#b82222] text-white px-6 py-3 h-auto gap-2">
-                    <Plus className="h-4 w-4" />
-                    Add New Vehicle + Link Bouncie Device
-                  </Button>
-                </AddVehicleBouncieModal>
+                <AddVehicleButton />
 
                 <Link href="/host/chat">
                   <Button variant="ghost" className="text-white/60 hover:text-white px-6 py-3 h-auto">
@@ -367,36 +351,7 @@ export default async function HostDashboardPage() {
       </section>
 
       {/* Fleet Inventory Section */}
-      {vehiclesWithData.length > 0 && (
-        <section className="border-t border-white/10">
-          <div className="container mx-auto px-4 py-12">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-2xl font-bold text-white">Your Fleet</h2>
-                <p className="text-gray-400 mt-1">Real-time status of your vehicles</p>
-              </div>
-              <AddVehicleBouncieModal>
-                <Button className="bg-[#D62828] hover:bg-[#b82222] text-white gap-2">
-                  <Plus className="h-4 w-4" />
-                  Add Vehicle
-                </Button>
-              </AddVehicleBouncieModal>
-            </div>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {vehiclesWithData.map((vehicle) => (
-                <FleetVehicleCard 
-                  key={vehicle.id} 
-                  vehicle={vehicle}
-                  bouncieDevice={vehicle.bouncieDevice}
-                  lastLocation={vehicle.lastLocation}
-                  nextBooking={vehicle.nextBooking}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      <FleetSection vehicles={vehiclesWithData} />
 
       {/* RAD AI Assistant Section */}
       <section className="border-t border-white/10">
