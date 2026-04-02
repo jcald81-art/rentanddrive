@@ -342,21 +342,21 @@ export async function getVehiclePricingRecommendation(vehicleId: string): Promis
   }
 }
 
-// ── DollarAgent class wrapper ──────────────────────────────────────────────────
+// Class wrapper for API routes
 export class DollarAgent {
   async analyzeVehicle(vehicleId: string) {
     return getVehiclePricingRecommendation(vehicleId)
   }
-  async optimizeFleetPricing(_hostId: string) {
+  async optimizeFleetPricing(hostId?: string) {
     return analyzeAllVehiclePricing()
   }
-  async getPriceRecommendation(vehicleId: string, _startDate?: string, _endDate?: string) {
+  async getPriceRecommendation(vehicleId: string, startDate?: string, endDate?: string) {
     return getVehiclePricingRecommendation(vehicleId)
   }
-  async applySuggestion(vehicleId: string, newPrice: number) {
-    return { success: true, vehicleId, newPrice }
-  }
-  async scanCompetitors(vehicleId: string) {
-    return getVehiclePricingRecommendation(vehicleId)
+  async applySuggestion(vehicleId: string, newRate: number) {
+    const { createClient } = await import('@/lib/supabase/server')
+    const supabase = await createClient()
+    await supabase.from('vehicles').update({ daily_rate: newRate }).eq('id', vehicleId)
+    return { success: true, vehicleId, newRate }
   }
 }

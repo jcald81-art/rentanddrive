@@ -306,22 +306,19 @@ export async function getRealTimeConditions(): Promise<{
   }
 }
 
-// ── CommandControlAgent class wrapper ─────────────────────────────────────────
-// Routes import this class; methods delegate to the exported functions above.
+// Class wrapper for API routes
 export class CommandControlAgent {
-  async scanMarket(_region: string) {
+  async scanMarket(region: string = 'reno') {
     return runWeeklyMarketScan()
   }
   async scanUpcomingEvents() {
-    return getRealTimeConditions()
+    const snapshot = await getLatestMarketSnapshot()
+    return snapshot?.upcomingDemandEvents || []
   }
   async scanCompetitorPricing(category?: string) {
-    if (category) {
-      return searchVehiclePricing(category, '', 0)
-    }
     return getLatestMarketSnapshot()
   }
-  async generateMarketReport(_hostId: string) {
-    return getLatestMarketSnapshot()
+  async generateReport() {
+    return runWeeklyMarketScan()
   }
 }
