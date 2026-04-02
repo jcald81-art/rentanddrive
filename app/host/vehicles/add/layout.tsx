@@ -2,11 +2,13 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Check, Car, Camera, CreditCard, Rocket } from 'lucide-react'
+import { Check, Car, Camera, CreditCard, Rocket, Calendar, Settings } from 'lucide-react'
 
 const STEPS = [
   { id: 'details', label: 'Vehicle Info', path: '/host/vehicles/add/details', icon: Car },
   { id: 'photos', label: 'Photos', path: '/host/vehicles/add/photos', icon: Camera },
+  { id: 'availability', label: 'Availability', path: '/host/vehicles/add/availability', icon: Calendar },
+  { id: 'settings', label: 'Rules', path: '/host/vehicles/add/settings', icon: Settings },
   { id: 'payout', label: 'Payout', path: '/host/vehicles/add/payout', icon: CreditCard },
   { id: 'publish', label: 'Go Live', path: '/host/vehicles/add/publish', icon: Rocket },
 ]

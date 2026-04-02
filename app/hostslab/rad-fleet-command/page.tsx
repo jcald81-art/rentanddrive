@@ -12,8 +12,11 @@ import {
   Eye, Activity, DollarSign, Shield, MessageSquare, Camera,
   Radar, TrendingUp, AlertTriangle, CheckCircle, Clock, Zap,
   BarChart3, PieChart, ArrowUpRight, ArrowDownRight, Pause, Play,
-  RefreshCw, Settings, Bot, Cpu, Database, Globe
+  RefreshCw, Settings, Bot, Cpu, Database, Globe, Car, Calendar,
+  MapPin, Plus, ExternalLink, Edit, Power, PowerOff
 } from 'lucide-react'
+import Link from 'next/link'
+import { createBrowserClient } from '@supabase/ssr'
 
 // Agent configuration with Expedition theming
 const EXPEDITION_AGENTS = [
@@ -104,6 +107,21 @@ const SYSTEM_METRICS = {
   activeAgents: 5
 }
 
+interface Vehicle {
+  id: string
+  year: number
+  make: string
+  model: string
+  status: string
+  listing_status: string
+  daily_rate: number
+  location_city?: string
+  location_state?: string
+  trip_count?: number
+  rating?: number
+  images?: string[]
+}
+
 export default function RADFleetCommandPage() {
   const [loading, setLoading] = useState(true)
   const [agentStates, setAgentStates] = useState<Record<string, boolean>>({
@@ -115,11 +133,60 @@ export default function RADFleetCommandPage() {
   })
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null)
   const [refreshing, setRefreshing] = useState(false)
+  const [vehicles, setVehicles] = useState<Vehicle[]>([])
+  const [vehicleLoading, setVehicleLoading] = useState(true)
+
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  // Fetch vehicles
+  useEffect(() => {
+    const fetchVehicles = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        setVehicleLoading(false)
+        return
+      }
+
+      const { data, error } = await supabase
+        .from('vehicles')
+        .select('id, year, make, model, status, listing_status, daily_rate, location_city, location_state, trip_count, rating, images')
+        .eq('host_id', user.id)
+        .order('created_at', { ascending: false })
+
+      if (!error && data) {
+        setVehicles(data)
+      }
+      setVehicleLoading(false)
+    }
+
+    fetchVehicles()
+  }, [supabase])
 
   useEffect(() => {
     // Simulate loading
     setTimeout(() => setLoading(false), 800)
   }, [])
+
+  // Toggle vehicle status
+  const toggleVehicleStatus = async (vehicleId: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'active' ? 'paused' : 'active'
+    
+    const { error } = await supabase
+      .from('vehicles')
+      .update({ listing_status: newStatus, status: newStatus })
+      .eq('id', vehicleId)
+
+    if (!error) {
+      setVehicles(prev => prev.map(v => 
+        v.id === vehicleId 
+          ? { ...v, status: newStatus, listing_status: newStatus }
+          : v
+      ))
+    }
+  }
 
   const toggleAgent = (agentId: string) => {
     setAgentStates(prev => ({ ...prev, [agentId]: !prev[agentId] }))
@@ -233,13 +300,185 @@ export default function RADFleetCommandPage() {
         </Card>
       </div>
 
-      <Tabs defaultValue="agents" className="space-y-4">
+      <Tabs defaultValue="vehicles" className="space-y-4">
         <TabsList className="bg-slate-800/50">
+          <TabsTrigger value="vehicles">My Fleet</TabsTrigger>
           <TabsTrigger value="agents">Agent Control</TabsTrigger>
           <TabsTrigger value="activity">Activity Log</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="routing">AI Routing</TabsTrigger>
         </TabsList>
+
+        {/* Vehicles Tab */}
+        <TabsContent value="vehicles" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold">Your Fleet</h2>
+            <Link href="/host/vehicles/add/details">
+              <Button className="bg-[#CC0000] hover:bg-[#CC0000]/90">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Vehicle
+              </Button>
+            </Link>
+          </div>
+
+          {vehicleLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3].map(i => (
+                <Skeleton key={i} className="h-48" />
+              ))}
+            </div>
+          ) : vehicles.length === 0 ? (
+            <Card className="bg-slate-900/50 border-slate-700">
+              <CardContent className="p-12 text-center">
+                <Car className="h-16 w-16 text-slate-600 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No Vehicles Yet</h3>
+                <p className="text-muted-foreground mb-6">
+                  List your first vehicle and start earning with RAD
+                </p>
+                <Link href="/host/vehicles/add/details">
+                  <Button className="bg-[#CC0000] hover:bg-[#CC0000]/90">
+                    <Plus className="h-4 w-4 mr-2" />
+                    List Your First Vehicle
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {vehicles.map(vehicle => {
+                const isActive = vehicle.listing_status === 'active' || vehicle.status === 'active'
+                const thumbnail = vehicle.images?.[0] || '/images/vehicle-placeholder.jpg'
+                
+                return (
+                  <Card 
+                    key={vehicle.id}
+                    className={`bg-slate-900/50 border-slate-700 overflow-hidden transition-all ${!isActive ? 'opacity-60' : ''}`}
+                  >
+                    {/* Vehicle Image */}
+                    <div className="aspect-[16/9] relative bg-slate-800">
+                      <img 
+                        src={thumbnail} 
+                        alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+                        className="w-full h-full object-cover"
+                      />
+                      <Badge 
+                        className={`absolute top-2 left-2 ${
+                          isActive 
+                            ? 'bg-emerald-500/90 text-white' 
+                            : 'bg-amber-500/90 text-black'
+                        }`}
+                      >
+                        {isActive ? 'Live' : 'Paused'}
+                      </Badge>
+                      {vehicle.rating && (
+                        <Badge className="absolute top-2 right-2 bg-black/70 text-white">
+                          {vehicle.rating.toFixed(1)} ★
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    <CardContent className="p-4">
+                      {/* Vehicle Info */}
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="font-semibold text-lg">
+                            {vehicle.year} {vehicle.make} {vehicle.model}
+                          </h3>
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                            <MapPin className="h-3 w-3" />
+                            {vehicle.location_city || 'Reno'}, {vehicle.location_state || 'NV'}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-[#CC0000]">${vehicle.daily_rate}</p>
+                          <p className="text-xs text-muted-foreground">/day</p>
+                        </div>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                        <span>{vehicle.trip_count || 0} trips</span>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className={`flex-1 ${
+                            isActive 
+                              ? 'border-amber-500/30 text-amber-400 hover:bg-amber-500/10' 
+                              : 'border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10'
+                          }`}
+                          onClick={() => toggleVehicleStatus(vehicle.id, vehicle.listing_status || vehicle.status)}
+                        >
+                          {isActive ? (
+                            <>
+                              <PowerOff className="h-4 w-4 mr-1" />
+                              Pause
+                            </>
+                          ) : (
+                            <>
+                              <Power className="h-4 w-4 mr-1" />
+                              Activate
+                            </>
+                          )}
+                        </Button>
+                        <Link href={`/host/vehicles/${vehicle.id}/availability`}>
+                          <Button variant="outline" size="sm">
+                            <Calendar className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <Link href={`/host/vehicles/${vehicle.id}/settings`}>
+                          <Button variant="outline" size="sm">
+                            <Settings className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <Link href={`/vehicles/${vehicle.id}`}>
+                          <Button variant="outline" size="sm">
+                            <ExternalLink className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Fleet Summary */}
+          {vehicles.length > 0 && (
+            <Card className="bg-slate-900/50 border-slate-700">
+              <CardContent className="p-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                  <div>
+                    <p className="text-2xl font-bold">{vehicles.length}</p>
+                    <p className="text-sm text-muted-foreground">Total Vehicles</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-emerald-400">
+                      {vehicles.filter(v => v.listing_status === 'active' || v.status === 'active').length}
+                    </p>
+                    <p className="text-sm text-muted-foreground">Active</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">
+                      {vehicles.reduce((acc, v) => acc + (v.trip_count || 0), 0)}
+                    </p>
+                    <p className="text-sm text-muted-foreground">Total Trips</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-[#CC0000]">
+                      ${Math.round(vehicles.reduce((acc, v) => acc + (v.daily_rate || 0), 0) / vehicles.length || 0)}
+                    </p>
+                    <p className="text-sm text-muted-foreground">Avg Daily Rate</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
 
         {/* Agent Control Tab */}
         <TabsContent value="agents" className="space-y-4">

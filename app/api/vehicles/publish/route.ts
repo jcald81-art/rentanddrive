@@ -28,7 +28,40 @@ export async function POST(req: NextRequest) {
       fuel_type, mileage, daily_rate, location, latitude, longitude,
       features, adventure_tags, photos, rules, description,
       igloo_pin, bouncie_device_id,
+      // New availability fields
+      availability,
+      // New settings fields  
+      settings,
+      location_city, location_state,
     } = body;
+    
+    // Extract availability settings
+    const {
+      blockedDates = [],
+      minimumTrip = 1,
+      maximumTrip = 30,
+      advanceBooking = 90,
+      instantBook = true,
+      weekendPremium = 0,
+      weeklyDiscount = 10,
+      monthlyDiscount = 20,
+    } = availability || {};
+    
+    // Extract vehicle settings
+    const {
+      pickupAddress = '',
+      pickupInstructions = '',
+      mileageLimit = 200,
+      unlimitedMiles = false,
+      fuelPolicy = 'full_to_full',
+      smokingAllowed = false,
+      petsAllowed = false,
+      festivalFriendly = false,
+      minimumAge = 25,
+      securityDeposit = 500,
+      cleaningFee = 75,
+      lateFeePerHour = 25,
+    } = settings || {};
 
     // ── Validate required fields ───────────────────────────────────────────
     if (!make || !model || !year || !daily_rate || !photos?.length) {
@@ -81,20 +114,47 @@ export async function POST(req: NextRequest) {
         fuel_type: fuel_type ?? null,
         mileage: mileage ? parseInt(mileage) : null,
         daily_rate: parseFloat(daily_rate),
-        location: location ?? "Reno, NV",
+        daily_rate_cents: Math.round(parseFloat(daily_rate) * 100),
+        location: location ?? pickupAddress ?? "Reno, NV",
+        location_city: location_city ?? "Reno",
+        location_state: location_state ?? "NV",
         latitude: latitude ?? null,
         longitude: longitude ?? null,
         features: features ?? [],
         adventure_tags: adventure_tags ?? [],
         images: photos, // array of Supabase Storage URLs
+        photos: photos, // also store in photos column for compatibility
         description: description ?? `${year} ${make} ${model} available for rent in ${location ?? "Reno, NV"}.`,
-        rules: rules ?? {},
+        rules: {
+          ...rules,
+          smoking_allowed: smokingAllowed,
+          pets_allowed: petsAllowed,
+          festival_friendly: festivalFriendly,
+          minimum_age: minimumAge,
+          fuel_policy: fuelPolicy,
+        },
         igloo_pin: igloo_pin ?? null,
         bouncie_device_id: bouncie_device_id ?? null,
         host_stripe_account_id: profile.stripe_connect_id,
+        listing_status: "active",
         status: "active",
+        // Availability settings
+        minimum_trip_days: minimumTrip,
+        maximum_trip_days: maximumTrip,
+        maximum_advance_booking: advanceBooking,
+        instant_book: instantBook,
+        // Pricing adjustments
+        weekly_rate_cents: Math.round(parseFloat(daily_rate) * 7 * (1 - weeklyDiscount / 100) * 100),
+        monthly_rate_cents: Math.round(parseFloat(daily_rate) * 30 * (1 - monthlyDiscount / 100) * 100),
+        security_deposit_cents: securityDeposit * 100,
+        // Vehicle settings
+        pickup_address: pickupAddress,
+        pickup_instructions: pickupInstructions,
+        mileage_limit: unlimitedMiles ? null : mileageLimit,
+        pet_friendly: petsAllowed,
+        // Certifications
         rad_certified: false, // unlocked after 10 trips + 4.8+ rating
-        carfidelity_verified: false, // unlocked after inspection
+        carfidelity_certified: false, // unlocked after inspection
       })
       .select("id, make, model, year, daily_rate, status")
       .single();

@@ -185,7 +185,7 @@ function PhotosPageContent() {
 
   const handleContinue = () => {
     saveDraft()
-    router.push('/host/vehicles/add/payout')
+    router.push('/host/vehicles/add/availability')
   }
 
   // Earnings display
@@ -551,7 +551,7 @@ function PhotosPageContent() {
           size="lg"
           className="bg-[#CC0000] hover:bg-[#CC0000]/90 text-white px-8"
         >
-          Continue to Payout
+          Continue to Availability
         </Button>
       </div>
     </div>

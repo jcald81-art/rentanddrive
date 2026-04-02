@@ -254,7 +254,7 @@ export default function PayoutPage() {
       <div className="flex justify-between pb-20 sm:pb-0">
         <Button
           variant="outline"
-          onClick={() => router.push('/host/vehicles/add/photos')}
+          onClick={() => router.push('/host/vehicles/add/settings')}
           className="border-white/20 text-white hover:bg-white/10"
         >
           Back
