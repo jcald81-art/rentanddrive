@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
-    // FIXED: Enable type checking for production builds
-    ignoreBuildErrors: false,
+    // Skip slow type-check on Vercel (run tsc locally/CI instead)
+    ignoreBuildErrors: true,
   },
   images: {
     remotePatterns: [
