@@ -56,7 +56,7 @@ const standards = [
     key: 'exclusivity',
     icon: Car,
     title: 'Platform Exclusivity',
-    description: 'To maintain a consistent experience, RentAndDrive asks that you do not list the same car on other sharing platforms while it is active on RAD.',
+    description: 'To maintain a consistent experience, RAD Rent and Drive asks that you do not list the same car on other sharing platforms while it is active on RAD.',
     color: 'text-purple-600',
     bgColor: 'bg-purple-500/10',
   },
@@ -355,12 +355,16 @@ export function SafetyStandards({ onAgree, onBack, isLoading = false, vehicleDat
             <Button
               onClick={handleSubmit}
               disabled={!canSubmit || isLoading || isSubmitting}
-              className="flex-1 bg-[#CC0000] hover:bg-[#CC0000]/90 text-white font-medium h-12"
+              className={`flex-1 font-medium h-12 transition-all ${
+                canSubmit && !isLoading && !isSubmitting
+                  ? 'bg-[#FF4D4D] hover:bg-[#e63939] hover:shadow-lg hover:-translate-y-0.5 text-white cursor-pointer'
+                  : 'bg-[#666666] text-white/60 cursor-not-allowed'
+              }`}
             >
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Signing Agreement...
+                  Signing...
                 </span>
               ) : (
                 <>
@@ -370,6 +374,13 @@ export function SafetyStandards({ onAgree, onBack, isLoading = false, vehicleDat
               )}
             </Button>
           </div>
+
+          {/* Helper text when button is disabled */}
+          {!canSubmit && !isSubmitting && (
+            <p className="text-center text-sm text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-lg py-2 px-4">
+              Please check all standards above, agree to the terms, and type your full legal name to continue.
+            </p>
+          )}
 
           <p className="text-center text-xs text-muted-foreground">
             By signing, you agree to uphold RAD&apos;s commitment to safety and quality.
