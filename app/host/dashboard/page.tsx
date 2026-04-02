@@ -458,7 +458,7 @@ export default function HostDashboardPage() {
                         <div className="w-10 h-10 rounded-lg bg-white/10 overflow-hidden">
                           <img 
                             src={booking.vehicles?.images?.[0] || '/images/vehicle-placeholder.jpg'} 
-                            alt=""
+                            alt={`${booking.vehicles?.year || ''} ${booking.vehicles?.make || ''} ${booking.vehicles?.model || 'Vehicle'}`}
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -509,11 +509,11 @@ export default function HostDashboardPage() {
                       {vehicles.slice(0, 3).map(vehicle => {
                         const isActive = vehicle.status === 'active' || vehicle.listing_status === 'active'
                         return (
-                          <div key={vehicle.id} className="flex items-center gap-4 p-3 rounded-lg bg-white/5">
-                            <div className="w-16 h-12 rounded-lg bg-white/10 overflow-hidden flex-shrink-0">
-                              <img 
-                                src={vehicle.images?.[0] || '/images/vehicle-placeholder.jpg'} 
-                                alt=""
+                    <div key={vehicle.id} className="flex items-center gap-4 p-3 rounded-lg bg-white/5">
+                      <div className="w-16 h-12 rounded-lg bg-white/10 overflow-hidden flex-shrink-0">
+                        <img
+                          src={vehicle.images?.[0] || '/images/vehicle-placeholder.jpg'}
+                          alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
                                 className="w-full h-full object-cover"
                               />
                             </div>
@@ -556,11 +556,11 @@ export default function HostDashboardPage() {
                   const device = bouncieDevices.find(d => d.vehicle_id === vehicle.id)
                   
                   return (
-                    <Card key={vehicle.id} className="bg-[#151820] border-white/10 overflow-hidden">
-                      <div className="aspect-[16/10] relative bg-[#1a1f2e]">
-                        <img 
-                          src={vehicle.images?.[0] || '/images/vehicle-placeholder.jpg'} 
-                          alt=""
+              <Card key={vehicle.id} className="bg-[#151820] border-white/10 overflow-hidden">
+                <div className="aspect-[16/10] relative bg-[#1a1f2e]">
+                  <img
+                    src={vehicle.images?.[0] || '/images/vehicle-placeholder.jpg'}
+                    alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
                           className="w-full h-full object-cover"
                         />
                         <Badge className={`absolute top-3 left-3 ${isActive ? 'bg-emerald-500' : 'bg-amber-500 text-black'}`}>
@@ -665,12 +665,12 @@ export default function HostDashboardPage() {
               <Card className="bg-[#151820] border-white/10">
                 <CardContent className="p-0">
                   <div className="divide-y divide-white/10">
-                    {bookings.map(booking => (
-                      <div key={booking.id} className="flex items-center gap-4 p-4 hover:bg-white/5 transition-colors">
-                        <div className="w-16 h-12 rounded-lg bg-white/10 overflow-hidden flex-shrink-0">
-                          <img 
-                            src={booking.vehicles?.images?.[0] || '/images/vehicle-placeholder.jpg'} 
-                            alt=""
+                {bookings.map(booking => (
+                  <div key={booking.id} className="flex items-center gap-4 p-4 hover:bg-white/5 transition-colors">
+                    <div className="w-16 h-12 rounded-lg bg-white/10 overflow-hidden flex-shrink-0">
+                      <img
+                        src={booking.vehicles?.images?.[0] || '/images/vehicle-placeholder.jpg'}
+                        alt={`${booking.vehicles?.year || ''} ${booking.vehicles?.make || ''} ${booking.vehicles?.model || 'Vehicle'}`}
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -724,12 +724,12 @@ export default function HostDashboardPage() {
                 <CardContent>
                   <div className="grid md:grid-cols-2 gap-6">
                     {vehicles.map(vehicle => (
-                      <div key={vehicle.id} className="p-4 rounded-lg bg-white/5 space-y-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-9 rounded bg-white/10 overflow-hidden">
-                            <img 
-                              src={vehicle.images?.[0] || '/images/vehicle-placeholder.jpg'} 
-                              alt=""
+                  <div key={vehicle.id} className="p-4 rounded-lg bg-white/5 space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-9 rounded bg-white/10 overflow-hidden">
+                        <img
+                          src={vehicle.images?.[0] || '/images/vehicle-placeholder.jpg'}
+                          alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
                               className="w-full h-full object-cover"
                             />
                           </div>
