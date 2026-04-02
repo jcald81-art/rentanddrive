@@ -62,7 +62,10 @@ export async function GET() {
       .in('status', ['confirmed', 'active'])
 
     // Get renter scores
-    const renterIds = activeBookings?.map(b => b.renter?.id).filter(Boolean) || []
+    const renterIds = activeBookings?.map(b => {
+      const renter = Array.isArray(b.renter) ? b.renter[0] : b.renter
+      return renter?.id
+    }).filter(Boolean) || []
     const { data: renterScores } = await supabase
       .from('renter_road_scores')
       .select('*')
@@ -72,7 +75,11 @@ export async function GET() {
     const vehiclesWithTelemetry = vehicles?.map(vehicle => {
       const latestTelemetry = telemetry?.find(t => t.vehicle_id === vehicle.id)
       const vehicleAlerts = alerts?.filter(a => a.vehicle_id === vehicle.id) || []
-      const activeBooking = activeBookings?.find(b => b.vehicle_id === vehicle.id)
+      const activeBookingRaw = activeBookings?.find(b => b.vehicle_id === vehicle.id)
+      const activeBooking = activeBookingRaw ? {
+        ...activeBookingRaw,
+        renter: Array.isArray(activeBookingRaw.renter) ? activeBookingRaw.renter[0] : activeBookingRaw.renter
+      } : undefined
       
       return {
         ...vehicle,

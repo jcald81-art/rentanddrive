@@ -97,13 +97,16 @@ export async function GET(
     total_spent,
     total_earned,
     total_bookings: allBookings?.length || 0,
-    bookings: bookings?.map((b) => ({
-      id: b.id,
-      vehicle_name: b.vehicle ? `${b.vehicle.year} ${b.vehicle.make} ${b.vehicle.model}` : 'Unknown',
-      total_amount: b.total_amount,
-      status: b.status,
-      created_at: b.created_at,
-    })) || [],
+    bookings: bookings?.map((b) => {
+      const vehicle = Array.isArray(b.vehicle) ? b.vehicle[0] : b.vehicle
+      return {
+        id: b.id,
+        vehicle_name: vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : 'Unknown',
+        total_amount: b.total_amount,
+        status: b.status,
+        created_at: b.created_at,
+      }
+    }) || [],
     vehicles: vehicles?.map((v) => ({
       id: v.id,
       name: `${v.year} ${v.make} ${v.model}`,

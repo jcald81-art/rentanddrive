@@ -109,15 +109,19 @@ export async function GET() {
     .order('created_at', { ascending: false })
     .limit(10)
 
-  const formattedBookings = recent_bookings?.map((b) => ({
-    id: b.id,
-    booking_number: b.booking_number || b.id.slice(0, 8).toUpperCase(),
-    renter_name: b.renter?.full_name || 'Unknown',
-    vehicle_name: b.vehicle ? `${b.vehicle.year} ${b.vehicle.make} ${b.vehicle.model}` : 'Unknown Vehicle',
-    total_amount: b.total_amount,
-    status: b.status,
-    created_at: b.created_at,
-  }))
+  const formattedBookings = recent_bookings?.map((b) => {
+    const vehicle = Array.isArray(b.vehicle) ? b.vehicle[0] : b.vehicle
+    const renter = Array.isArray(b.renter) ? b.renter[0] : b.renter
+    return {
+      id: b.id,
+      booking_number: b.booking_number || b.id.slice(0, 8).toUpperCase(),
+      renter_name: renter?.full_name || 'Unknown',
+      vehicle_name: vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : 'Unknown Vehicle',
+      total_amount: b.total_amount,
+      status: b.status,
+      created_at: b.created_at,
+    }
+  })
 
   // Recent signups
   const { data: recent_signups } = await supabase
