@@ -5,7 +5,6 @@ export async function GET() {
   try {
     const supabase = await createClient()
 
-    // Check if user is admin
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -21,7 +20,6 @@ export async function GET() {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // Get all vehicles with their recalls
     const { data: vehicles, error } = await supabase
       .from('vehicles')
       .select(`
@@ -58,11 +56,13 @@ export async function GET() {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // Format response
-    const formattedVehicles = vehicles?.map(v => ({
-      ...v,
-      host_name: v.host?.full_name || 'Unknown',
-    })) || []
+    const formattedVehicles = vehicles?.map(v => {
+      const host = (Array.isArray(v.host) ? v.host[0] : v.host) as { full_name: string } | null
+      return {
+        ...v,
+        host_name: host?.full_name || 'Unknown',
+      }
+    }) || []
 
     return NextResponse.json({ vehicles: formattedVehicles })
 
