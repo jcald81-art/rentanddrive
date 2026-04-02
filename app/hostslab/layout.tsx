@@ -33,18 +33,19 @@ import {
 import { PortalSwitcher } from '@/components/portal-switcher'
 
 const NAV_ITEMS = [
-  { href: '/hostslab/lobby', label: 'Command Center', icon: Home },
-  { href: '/hostslab/workshop', label: 'The Workshop', icon: Wrench },
-  { href: '/hostslab/eagle-command', label: 'Eagle Command', icon: Radar },
-  { href: '/hostslab/rd-navigator', label: 'Mission Control', icon: Compass },
-  { href: '/hostslab/briefing-room', label: 'Intel Hub', icon: FileText },
+  { href: '/hostslab/lobby', label: 'The Lobby', icon: Home },
+  { href: '/hostslab/workshop', label: 'The Garage', icon: Wrench },
+  { href: '/dashboard/command-center', label: 'Command Center', icon: Shield, badge: true },
+  { href: '/hostslab/rad-fleet-command', label: 'RAD Fleet Command', icon: Radar },
+  { href: '/hostslab/rd-navigator', label: 'RAD Intel', icon: Compass },
+  { href: '/hostslab/briefing-room', label: 'The Briefing Room', icon: FileText },
   { href: '/hostslab/vault', label: 'The Vault', icon: Vault },
-  { href: '/hostslab/filing-cabinet', label: 'The Archive', icon: FolderArchive },
-  { href: '/hostslab/game-room', label: 'Achievement Hall', icon: Gamepad2 },
-  { href: '/hostslab/break-room', label: 'Crew Lounge', icon: Coffee },
+  { href: '/hostslab/filing-cabinet', label: 'The Filing Cabinet', icon: FolderArchive },
+  { href: '/hostslab/game-room', label: 'The Game Room', icon: Gamepad2 },
+  { href: '/hostslab/break-room', label: 'The Break Room', icon: Coffee },
   { href: '/hostslab/academy', label: 'The Academy', icon: GraduationCap },
-  { href: '/hostslab/lab-controls', label: 'Suite Settings', icon: Settings },
-  { href: '/hostslab/rev-share', label: 'Earnings Hub', icon: TrendingUp },
+  { href: '/hostslab/lab-controls', label: 'Lab Controls', icon: Settings },
+  { href: '/hostslab/rev-share', label: 'Rev Share', icon: TrendingUp },
 ]
 
 const LAB_LEVELS = [
@@ -99,7 +100,7 @@ function Sidebar({
         </div>
         {!collapsed && (
           <div>
-            <h1 className="font-bold text-lg">Hosts Suite</h1>
+            <h1 className="font-bold text-lg">RAD Hosts</h1>
             <p className="text-xs text-slate-400">Command Center</p>
           </div>
         )}
@@ -187,7 +188,7 @@ function Sidebar({
               >
                 <Icon className="h-5 w-5 flex-shrink-0" />
                 <span className="truncate">{item.label}</span>
-                {item.href === '/hostslab/eagle-command' && alertCount > 0 && (
+                {(item.href === '/hostslab/rad-fleet-command' || item.href === '/dashboard/command-center') && alertCount > 0 && (
                   <Badge variant="destructive" className="ml-auto">
                     {alertCount}
                   </Badge>
@@ -202,7 +203,7 @@ function Sidebar({
       <div className="p-4 border-t border-slate-700">
         {!collapsed && alertCount > 0 && (
           <Link 
-            href="/hostslab/eagle-command"
+            href="/hostslab/rad-fleet-command"
             className="flex items-center gap-2 p-3 mb-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/30 transition-colors"
           >
             <Bell className="h-4 w-4" />
@@ -212,22 +213,22 @@ function Sidebar({
         
         {host?.is_admin && !collapsed && (
           <Link 
-            href="/hostslab/admin-override"
+            href="/management"
             className="flex items-center gap-2 p-3 mb-3 bg-purple-500/20 border border-purple-500/30 rounded-lg text-purple-400 hover:bg-purple-500/30 transition-colors"
           >
             <Shield className="h-4 w-4" />
-            <span className="text-sm">Admin Override</span>
+            <span className="text-sm">Management Platform</span>
           </Link>
         )}
 
-        {/* Switch to Renters Suite */}
+        {/* Switch to RAD Renters */}
         {!collapsed && (
           <Link 
-            href="/rr/lounge"
+            href="/renter/suite"
             className="flex items-center gap-2 p-3 mb-3 bg-slate-700/50 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 transition-colors"
           >
             <Route className="h-4 w-4 text-[#CC0000]" />
-            <span className="text-sm">Switch to Renters Suite</span>
+            <span className="text-sm">Switch to RAD Renters</span>
           </Link>
         )}
 
@@ -262,7 +263,7 @@ function MobileNav({ host, alertCount }: { host: HostData | null; alertCount: nu
             <FlaskConical className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-lg">Hosts Suite</h1>
+            <h1 className="font-bold text-lg">RAD Hosts</h1>
             <p className="text-xs text-slate-400">Command Center</p>
           </div>
         </div>
@@ -309,7 +310,7 @@ function MobileNav({ host, alertCount }: { host: HostData | null; alertCount: nu
               >
                 <Icon className="h-5 w-5" />
                 <span>{item.label}</span>
-                {item.href === '/hostslab/eagle-command' && alertCount > 0 && (
+                {(item.href === '/hostslab/rad-fleet-command' || item.href === '/dashboard/command-center') && alertCount > 0 && (
                   <Badge variant="destructive" className="ml-auto">
                     {alertCount}
                   </Badge>
@@ -323,20 +324,28 @@ function MobileNav({ host, alertCount }: { host: HostData | null; alertCount: nu
   )
 }
 
-export default function Hosts SuiteLayout({ children }: { children: React.ReactNode }) {
+export default function HostsLabLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
   const [host, setHost] = useState<HostData | null>(null)
   const [alertCount, setAlertCount] = useState(0)
 
   useEffect(() => {
-    // Fetch host data
-    fetch('/api/hostslab/me')
-      .then(res => res.json())
+    // Fetch host data with debug logging
+    console.log('🔍 [RADCC DEBUG] Fetching host data...')
+    fetch('/api/radcc/me')
+      .then(res => {
+        console.log('📥 [RADCC DEBUG] Host data response:', res.status)
+        if (!res.ok) {
+          console.error('❌ [RADCC DEBUG] Host data error:', res.status)
+          return {}
+        }
+        return res.json()
+      })
       .then(data => {
         if (data.host) setHost(data.host)
         if (data.alertCount) setAlertCount(data.alertCount)
       })
-      .catch(console.error)
+      .catch(e => console.error('❌ [RADCC DEBUG] Host data fetch failed:', e))
   }, [])
 
   return (
@@ -358,7 +367,7 @@ export default function Hosts SuiteLayout({ children }: { children: React.ReactN
           <MobileNav host={host} alertCount={alertCount} />
           <div className="flex items-center gap-2">
             <FlaskConical className="h-6 w-6 text-[#CC0000]" />
-            <span className="font-bold">Hosts Suite</span>
+            <span className="font-bold">RAD Hosts</span>
           </div>
           <div className="w-10" /> {/* Spacer */}
         </header>
