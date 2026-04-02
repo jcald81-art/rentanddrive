@@ -26,7 +26,7 @@ interface Vehicle {
   daily_rate: number
   location_city?: string
   location_state?: string
-  carfidelity_certified?: boolean
+  inspektlabs_certified?: boolean
   smoking_policy?: string
   fuel_type?: string
 }

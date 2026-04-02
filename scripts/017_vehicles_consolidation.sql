@@ -41,10 +41,10 @@ ALTER TABLE vehicles ADD COLUMN IF NOT EXISTS audio_cold_start_url text;
 ALTER TABLE vehicles ADD COLUMN IF NOT EXISTS audio_idle_url text;
 ALTER TABLE vehicles ADD COLUMN IF NOT EXISTS audio_shutdown_url text;
 
--- CarFidelity
-ALTER TABLE vehicles ADD COLUMN IF NOT EXISTS carfidelity_score int;
-ALTER TABLE vehicles ADD COLUMN IF NOT EXISTS carfidelity_certified bool DEFAULT false;
-ALTER TABLE vehicles ADD COLUMN IF NOT EXISTS carfidelity_inspected_at timestamptz;
+-- Inspektlabs
+ALTER TABLE vehicles ADD COLUMN IF NOT EXISTS inspektlabs_score int;
+ALTER TABLE vehicles ADD COLUMN IF NOT EXISTS inspektlabs_certified bool DEFAULT false;
+ALTER TABLE vehicles ADD COLUMN IF NOT EXISTS inspektlabs_inspected_at timestamptz;
 
 -- Status enhancements
 ALTER TABLE vehicles ADD COLUMN IF NOT EXISTS is_demo bool DEFAULT false;
@@ -61,7 +61,7 @@ UPDATE vehicles SET has_snow_tires = false WHERE has_snow_tires IS NULL;
 UPDATE vehicles SET is_pet_friendly = false WHERE is_pet_friendly IS NULL;
 UPDATE vehicles SET has_toll_transponder = false WHERE has_toll_transponder IS NULL;
 UPDATE vehicles SET has_portable_wifi = false WHERE has_portable_wifi IS NULL;
-UPDATE vehicles SET carfidelity_certified = false WHERE carfidelity_certified IS NULL;
+UPDATE vehicles SET inspektlabs_certified = false WHERE inspektlabs_certified IS NULL;
 UPDATE vehicles SET is_demo = false WHERE is_demo IS NULL;
 UPDATE vehicles SET nhtsa_recall_count = 0 WHERE nhtsa_recall_count IS NULL;
 
@@ -134,7 +134,7 @@ CREATE INDEX IF NOT EXISTS idx_vehicles_daily_rate ON vehicles(daily_rate);
 CREATE INDEX IF NOT EXISTS idx_vehicles_body_style ON vehicles(body_style);
 CREATE INDEX IF NOT EXISTS idx_vehicles_seats ON vehicles(seats);
 CREATE INDEX IF NOT EXISTS idx_vehicles_bouncie ON vehicles(bouncie_imei) WHERE bouncie_imei IS NOT NULL;
-CREATE INDEX IF NOT EXISTS idx_vehicles_carfidelity ON vehicles(carfidelity_certified) WHERE carfidelity_certified = true;
+CREATE INDEX IF NOT EXISTS idx_vehicles_inspektlabs ON vehicles(inspektlabs_certified) WHERE inspektlabs_certified = true;
 CREATE INDEX IF NOT EXISTS idx_vehicles_demo ON vehicles(is_demo);
 
 -- Composite index for common search patterns

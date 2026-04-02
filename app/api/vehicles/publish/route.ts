@@ -154,7 +154,7 @@ export async function POST(req: NextRequest) {
         pet_friendly: petsAllowed,
         // Certifications
         rad_certified: false, // unlocked after 10 trips + 4.8+ rating
-        carfidelity_certified: false, // unlocked after inspection
+        inspektlabs_certified: false, // unlocked after inspection
       })
       .select("id, make, model, year, daily_rate, status")
       .single();

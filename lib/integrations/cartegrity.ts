@@ -1,5 +1,5 @@
 /**
- * carfidelity.ai Inspection Integration (powered by Inspector Cartegrity AI)
+ * inspektlabs.ai Inspection Integration (powered by Inspector Cartegrity AI)
  * Pre and post-trip vehicle inspections with AI damage detection
  * Mobile app integration with Rent and Drive platform
  */
@@ -192,8 +192,8 @@ export async function sendInspectionReminder(
   if (!booking) return
   
   const message = type === 'pre'
-    ? `Please complete your carfidelity.ai pre-rental inspection before driving. Open: ${process.env.NEXT_PUBLIC_APP_URL}/inspect/${bookingId}`
-    : `Please complete your carfidelity.ai return inspection. Open: ${process.env.NEXT_PUBLIC_APP_URL}/inspect/${bookingId}?type=post`
+    ? `Please complete your inspektlabs.ai pre-rental inspection before driving. Open: ${process.env.NEXT_PUBLIC_APP_URL}/inspect/${bookingId}`
+    : `Please complete your inspektlabs.ai return inspection. Open: ${process.env.NEXT_PUBLIC_APP_URL}/inspect/${bookingId}?type=post`
   
   await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/agents/securelink`, {
     method: 'POST',

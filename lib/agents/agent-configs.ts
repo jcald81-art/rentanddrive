@@ -96,9 +96,9 @@ export const AGENT_CONFIGS: Record<string, AgentConfig> = {
     status: 'staged',
     staged_reason: 'Verification agent — staged for Phase 2. GPT-4o Vision primary for license verification. Activates with direct booking platform launch at Month 6.',
   },
-  'rad-carfidelity': {
-    id: 'rad-carfidelity',
-    name: 'RAD CarFidelity',
+  'rad-inspektlabs': {
+    id: 'rad-inspektlabs',
+    name: 'RAD Inspektlabs',
     role: 'Vehicle Inspection',
     initials: 'CF',
     color: '#2E5A88',
@@ -106,7 +106,7 @@ export const AGENT_CONFIGS: Record<string, AgentConfig> = {
     task_type: 'expansion',
     description: 'AI-powered vehicle inspection system for damage assessment and documentation.',
     status: 'staged',
-    staged_reason: 'Damage assessment agent — staged for CarFidelity.ai spinoff launch Q1 2027. Triple-sensor inspection: visual + audio + OBD2 fusion scoring.',
+    staged_reason: 'Damage assessment agent — staged for Inspektlabs.ai spinoff launch Q1 2027. Triple-sensor inspection: visual + audio + OBD2 fusion scoring.',
   },
   'rad-secure': {
     id: 'rad-secure',
@@ -160,8 +160,8 @@ export const LEGACY_AGENT_MAPPING: Record<string, string> = {
   'funtime': 'rad-rewards',
   'badge': 'rad-verify',
   'diesel': 'rad-verify',
-  'surveyor': 'rad-carfidelity',
-  'cartegrity': 'rad-carfidelity',
+  'surveyor': 'rad-inspektlabs',
+  'cartegrity': 'rad-inspektlabs',
   'lookout': 'rad-secure',
   'outfitter': 'rad-upsell',
 }

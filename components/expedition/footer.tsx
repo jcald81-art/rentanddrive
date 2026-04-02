@@ -16,7 +16,7 @@ const FOOTER_LINKS = {
       { href: '/list-vehicle', label: 'Become a RAD Host' },
       { href: '/host/dashboard', label: 'Command Center' },
       { href: '/hostslab/rad-fleet-command', label: 'RAD Fleet Command' },
-      { href: '/carfidelity', label: 'CarFidelity' },
+      { href: '/inspektlabs', label: 'Inspektlabs' },
     ],
   },
   company: {

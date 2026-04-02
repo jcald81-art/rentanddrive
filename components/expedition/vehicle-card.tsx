@@ -34,11 +34,11 @@ export function VehicleCard({
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
           
-          {/* CarFidelity Badge */}
+          {/* Inspektlabs Badge */}
           {certified && (
             <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-primary text-primary-foreground text-xs font-medium px-3 py-1.5 rounded-full">
               <Shield className="h-3.5 w-3.5" />
-              CarFidelity Certified
+              Inspektlabs Certified
             </div>
           )}
         </div>

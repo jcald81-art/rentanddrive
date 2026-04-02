@@ -10,7 +10,7 @@ export function TrustBadges() {
         <div className="flex items-start gap-2">
           <Shield className="size-4 text-green-600 mt-0.5 shrink-0" />
           <div>
-            <p className="text-xs font-medium">CarFidelity Certified</p>
+            <p className="text-xs font-medium">Inspektlabs Certified</p>
             <p className="text-xs text-muted-foreground">Every vehicle inspected</p>
           </div>
         </div>

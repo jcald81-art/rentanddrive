@@ -26,7 +26,7 @@ const AGENT_ICONS: Record<string, React.ElementType> = {
   'rad-fleet': HeartPulse,
   'rad-rewards': Rocket,
   'rad-verify': BadgeCheck,
-  'rad-carfidelity': Camera,
+  'rad-inspektlabs': Camera,
   'rad-secure': Eye,
   'rad-upsell': Backpack,
   'rad': Compass,

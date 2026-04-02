@@ -88,7 +88,7 @@ export default function AboutPage() {
               <Card className="border-green-500/30">
                 <CardContent className="pt-6">
                   <Shield className="h-10 w-10 text-green-500 mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">RAD CarFidelity Inspections</h3>
+                  <h3 className="text-xl font-semibold mb-2">RAD Inspektlabs Inspections</h3>
                   <p className="text-sm text-muted-foreground">
                     AI-powered photo inspections document vehicle condition before and after 
                     every trip. No more he-said-she-said disputes about damage.

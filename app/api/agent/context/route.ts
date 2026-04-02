@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     .select(`
       id, make, model, year, daily_rate, 
       pickup_location, features,
-      carfidelity_score, carfidelity_certified,
+      inspektlabs_score, inspektlabs_certified,
       status
     `)
     .eq("status", "active")

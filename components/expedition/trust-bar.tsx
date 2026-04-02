@@ -2,7 +2,7 @@ export function TrustBar() {
   const stats = [
     { value: '10%', label: 'Host Commission' },
     { value: 'RAD Fleet', label: 'Tracking on Every Trip' },
-    { value: 'CarFidelity', label: 'Certified Vehicles' },
+    { value: 'Inspektlabs', label: 'Certified Vehicles' },
     { value: '3 Markets', label: 'Reno - Sparks - Tahoe' },
   ]
 

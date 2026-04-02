@@ -12,7 +12,7 @@ export function WhyRADSection() {
     },
     {
       stat: 'Verified',
-      title: 'CarFidelity Certified',
+      title: 'Inspektlabs Certified',
       description: 'VIN history, NHTSA recall check, pre-trip inspection. Every vehicle earns its badge.',
     },
   ]

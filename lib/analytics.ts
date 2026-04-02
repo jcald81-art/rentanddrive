@@ -13,7 +13,7 @@ type EventName =
   | 'concierge_ride_requested'
   | 'login_completed'
   | 'signup_completed'
-  | 'carfidelity_report_purchased'
+  | 'inspektlabs_report_purchased'
   | 'inspection_started'
   | 'inspection_completed'
   | 'car_lot_viewed'

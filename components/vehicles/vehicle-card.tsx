@@ -11,7 +11,7 @@ interface VehicleCardProps {
     has_vin_report?: boolean
     sell_while_renting?: boolean
     for_sale?: boolean
-    carfidelity_certified?: boolean
+    inspektlabs_certified?: boolean
     eagle_eye_tracked?: boolean
     photos?: string[]
   }
@@ -40,7 +40,7 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
                 AWD
               </Badge>
             )}
-            {vehicle.carfidelity_certified && (
+            {vehicle.inspektlabs_certified && (
               <Badge variant="secondary" className="bg-green-600 text-white gap-1">
                 <ShieldCheck className="size-3" />
                 Certified

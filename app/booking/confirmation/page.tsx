@@ -25,7 +25,7 @@ async function getBookingDetails(bookingId: string) {
       vehicles (
         id, make, model, year, photos, thumbnail,
         location_city, location_state, fuel_type,
-        carfidelity_certified
+        inspektlabs_certified
       ),
       profiles!bookings_host_id_fkey (
         full_name, avatar_url, phone

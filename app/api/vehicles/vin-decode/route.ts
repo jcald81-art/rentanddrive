@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 
 // ─── POST /api/vehicles/vin-decode ───────────────────────────────────────────
 // Decodes VIN using GoodCar API + runs NHTSA recall check
-// Returns: vehicle details + features + recalls + CarFidelity score
+// Returns: vehicle details + features + recalls + Inspektlabs score
 
 export async function POST(req: NextRequest) {
   try {
@@ -133,8 +133,8 @@ export async function POST(req: NextRequest) {
       suggestedTags.push("Eco-Friendly");
     }
 
-    // ── 5. CarFidelity baseline score ─────────────────────────────────────
-    const carFidelityStatus = openRecalls === 0
+    // ── 5. Inspektlabs baseline score ─────────────────────────────────────
+    const inspektlabsStatus = openRecalls === 0
       ? { status: "certified", label: "0 open recalls", color: "green" }
       : { status: "warning", label: `${openRecalls} open recall${openRecalls > 1 ? "s" : ""}`, color: "red" };
 
@@ -160,7 +160,7 @@ export async function POST(req: NextRequest) {
       recalls: {
         count: openRecalls,
         items: recalls.slice(0, 5), // first 5
-        carfidelity: carFidelityStatus,
+        inspektlabs: inspektlabsStatus,
       },
       pricing: {
         suggested_daily_rate: Math.max(55, suggestedDailyRate),

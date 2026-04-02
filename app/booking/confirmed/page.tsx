@@ -22,7 +22,7 @@ async function getBooking(bookingId: string) {
         daily_rate,
         location_city,
         location_state,
-        carfidelity_certified,
+        inspektlabs_certified,
         smoking_policy
       )
     `)

@@ -83,7 +83,7 @@ const AGENT_CONFIG: Record<string, { icon: React.ReactNode; color: string; descr
   diesel: {
     icon: <Wrench className="h-6 w-6" />,
     color: 'bg-slate-700',
-    description: 'CarFidelity Vehicle Verification',
+    description: 'Inspektlabs Vehicle Verification',
   },
 }
 
@@ -182,7 +182,7 @@ export default function RDNavigatorPage() {
     { name: 'commandcontrol', displayName: 'Command', customName: null, status: 'idle' as const, actionsToday: 0, costToday: 0, lastAction: 'Waiting for weekly scan', lastActionTime: '', currentTask: null },
     { name: 'pulse', displayName: 'Pulse', customName: null, status: 'idle' as const, actionsToday: 0, costToday: 0, lastAction: 'Monitoring fleet health', lastActionTime: '', currentTask: null },
     { name: 'funtime', displayName: 'Funtime', customName: null, status: 'idle' as const, actionsToday: 0, costToday: 0, lastAction: 'Processing XP awards', lastActionTime: '', currentTask: null },
-    { name: 'diesel', displayName: 'Diesel', customName: null, status: 'idle' as const, actionsToday: 0, costToday: 0, lastAction: 'Ready to run CarFidelity checks', lastActionTime: '', currentTask: null },
+    { name: 'diesel', displayName: 'Diesel', customName: null, status: 'idle' as const, actionsToday: 0, costToday: 0, lastAction: 'Ready to run Inspektlabs checks', lastActionTime: '', currentTask: null },
   ]
 
   return (

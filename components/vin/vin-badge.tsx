@@ -81,7 +81,7 @@ export function VinBadge({
         {isVerifiedClean && !hasFlags ? (
           <>
             <Shield className={cn(size === 'sm' ? "h-3 w-3" : "h-4 w-4")} />
-            CarFidelity Verified
+            Inspektlabs Verified
           </>
         ) : (
           <>

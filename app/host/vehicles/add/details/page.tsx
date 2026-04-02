@@ -227,7 +227,7 @@ export default function VehicleDetailsPage() {
               ) : (
                 <>
                   <ShieldCheck className="w-5 h-5 text-green-400" />
-                  <span className="text-green-400">CarFidelity: 0 open recalls</span>
+                  <span className="text-green-400">Inspektlabs: 0 open recalls</span>
                 </>
               )}
             </div>

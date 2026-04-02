@@ -36,7 +36,7 @@ interface Booking {
     }
   }
   has_review: boolean
-  carfidelity_report_id?: string
+  inspektlabs_report_id?: string
   eagle_location?: {
     lat: number
     lng: number
@@ -90,7 +90,7 @@ export default function TripsPage() {
           { id: '2', start_date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), end_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'active', total_price: 267, pickup_address: '456 Oak Ave, Reno, NV', vehicle: mockVehicle, has_review: false, eagle_location: { lat: 39.5296, lng: -119.8138, updated_at: new Date().toISOString() } },
         ],
         past: [
-          { id: '3', start_date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), end_date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), status: 'completed', total_price: 267, pickup_address: '789 Pine St, Sparks, NV', vehicle: mockVehicle, has_review: false, carfidelity_report_id: 'CFI-20240115-001' },
+          { id: '3', start_date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), end_date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), status: 'completed', total_price: 267, pickup_address: '789 Pine St, Sparks, NV', vehicle: mockVehicle, has_review: false, inspektlabs_report_id: 'CFI-20240115-001' },
           { id: '4', start_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), end_date: new Date(Date.now() - 27 * 24 * 60 * 60 * 1000).toISOString(), status: 'completed', total_price: 195, pickup_address: '321 Elm Dr, Reno, NV', vehicle: { ...mockVehicle, make: 'Jeep', model: 'Wrangler', year: 2024 }, has_review: true },
         ],
       })
@@ -276,7 +276,7 @@ export default function TripsPage() {
                       <Download className="h-4 w-4 mr-1" />
                       Receipt
                     </Button>
-{booking.carfidelity_report_id && (
+{booking.inspektlabs_report_id && (
   <Button size="sm" variant="outline" className="border-slate-700 text-slate-300" asChild>
   <Link href={`/inspect/${booking.id}`}>
   <FileText className="h-4 w-4 mr-1" />

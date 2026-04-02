@@ -85,7 +85,7 @@ const EXPEDITION_AGENTS = [
     name: 'Inspector Cartegrity',
     fullName: 'Inspector Cartegrity - The Cartographer',
     role: 'Vehicle Inspections',
-    description: 'AI damage detection and inspection reports via carfidelity.ai',
+    description: 'AI damage detection and inspection reports via inspektlabs.ai',
     icon: Camera,
     color: '#CC0000',
     bgColor: 'bg-red-500/20',

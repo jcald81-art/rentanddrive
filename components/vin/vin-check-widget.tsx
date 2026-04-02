@@ -241,7 +241,7 @@ export function VinCheckWidget({
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <FileSearch className="h-4 w-4" />
-              CarFidelity Vehicle History
+              Inspektlabs Vehicle History
             </CardTitle>
             <CardDescription>
               Diesel checks this vehicle&apos;s history. No sugarcoating, just facts.
@@ -298,7 +298,7 @@ export function VinCheckWidget({
             <div className="flex items-center justify-between p-3 rounded-lg border border-[#CC0000]/30 bg-[#CC0000]/5">
               <div>
                 <p className="font-medium flex items-center gap-2">
-                  CarFidelity Report
+                  Inspektlabs Report
                   <Badge variant="secondary" className="text-xs">Diesel Verified</Badge>
                 </p>
                 <p className="text-sm text-muted-foreground">
@@ -336,7 +336,7 @@ export function VinCheckWidget({
                 {fullReport.is_clean ? (
                   <>
                     <Shield className="h-5 w-5 text-green-600" />
-                    <span className="text-green-600">CarFidelity Verified by Diesel</span>
+                    <span className="text-green-600">Inspektlabs Verified by Diesel</span>
                   </>
                 ) : (
                   <>
@@ -434,7 +434,7 @@ export function VinCheckWidget({
       )}
 
       <p className="text-xs text-center text-muted-foreground">
-        CarFidelity Reports - Powered by Diesel. Data from NHTSA & VinAudit.
+        Inspektlabs Reports - Powered by Diesel. Data from NHTSA & VinAudit.
       </p>
     </div>
   )

@@ -148,7 +148,7 @@ export const AGENT_ROUTES: Record<AgentTaskType, RouteConfig> = {
     tagline: 'Driver Verification',
   },
   damage_assessment: {
-    agent_name: 'RAD CarFidelity',
+    agent_name: 'RAD Inspektlabs',
     former_name: 'Surveyor',
     primary: 'google/gemini-2.5-pro',
     fallback: 'openai/gpt-4o',
@@ -581,7 +581,7 @@ export function getAgentLoadingMessage(task: AgentTaskType): string {
     'Gemini': 'Gemini is analyzing documents...',
     'DeepSeek': 'DeepSeek is processing batch...',
     'RAD Verify': 'RAD Verify is verifying credentials...',
-    'RAD CarFidelity': 'RAD CarFidelity is assessing damage...',
+    'RAD Inspektlabs': 'RAD Inspektlabs is assessing damage...',
     'RAD Secure': 'RAD Secure is scanning for threats...',
     'RAD Upsell': 'RAD Upsell is preparing gear...',
     'RAD Rewards': 'RAD Rewards is charging up...',

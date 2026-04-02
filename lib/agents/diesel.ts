@@ -1,11 +1,11 @@
 /**
- * Diesel - CarFidelity Vehicle Verification Agent
+ * Diesel - Inspektlabs Vehicle Verification Agent
  * 
  * Personality: Direct, no-nonsense, trustworthy. Like a seasoned mechanic
  * who tells you exactly what he found with zero sugarcoating.
  * 
  * Responsibilities:
- * - VIN verification via CarFidelity
+ * - VIN verification via Inspektlabs
  * - Title status checks
  * - Accident history analysis
  * - Odometer verification
@@ -24,7 +24,7 @@ const DIESEL_PERSONALITY = {
 // Diesel's message templates - straight to the point
 const DIESEL_MESSAGES = {
   clean_report: (vin: string, make: string, model: string) => 
-    `Ran CarFidelity on ${make} ${model} (${vin}). Clean title, no accidents, odometer checks out. This one's good to go.`,
+    `Ran Inspektlabs on ${make} ${model} (${vin}). Clean title, no accidents, odometer checks out. This one's good to go.`,
   
   salvage_title: (vin: string) =>
     `Problem. VIN ${vin} shows salvage title. Can't list this vehicle. No exceptions.`,
@@ -42,7 +42,7 @@ const DIESEL_MESSAGES = {
     `Stop. VIN ${vin} flagged for theft record. Cannot proceed. Alerting admin.`,
   
   verification_complete: (make: string, model: string, year: number) =>
-    `CarFidelity check complete for ${year} ${make} ${model}. Full report ready.`,
+    `Inspektlabs check complete for ${year} ${make} ${model}. Full report ready.`,
   
   api_error: () =>
     `Hit a snag with the verification service. Will retry. If this keeps happening, check the API keys.`,
@@ -62,7 +62,7 @@ interface VerificationResult {
   diesel_summary: string
 }
 
-export async function runCarFidelityCheck(
+export async function runInspektlabsCheck(
   vin: string,
   vehicleId?: string,
   userId?: string
@@ -180,7 +180,7 @@ export async function getDieselStatus(userId: string) {
     name: agent.custom_name || 'Diesel',
     status: agent.is_active ? 'active' : 'inactive',
     actionsToday: count || 0,
-    lastAction: lastLog?.action_summary || 'Ready to run CarFidelity checks',
+    lastAction: lastLog?.action_summary || 'Ready to run Inspektlabs checks',
     lastActionTime: lastLog?.created_at || null,
   }
 }
@@ -213,7 +213,7 @@ export async function logDieselAction(
     action_summary: summary,
     input_data: inputData,
     output_data: outputData,
-    model_used: 'carfidelity-api',
+    model_used: 'inspektlabs-api',
     triggered_by: 'user_action',
     success,
     error_message: errorMessage,

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { runCarFidelityCheck, logDieselAction, getDieselStatus } from '@/lib/agents/diesel'
+import { runInspektlabsCheck, logDieselAction, getDieselStatus } from '@/lib/agents/diesel'
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,17 +15,17 @@ export async function POST(request: NextRequest) {
     const { action, vin, vehicle_id } = body
 
     switch (action) {
-      case 'run_carfidelity': {
+      case 'run_inspektlabs': {
         if (!vin) {
           return NextResponse.json({ error: 'VIN required' }, { status: 400 })
         }
 
-        const result = await runCarFidelityCheck(vin, vehicle_id, user.id)
+        const result = await runInspektlabsCheck(vin, vehicle_id, user.id)
 
         // Log the action
         await logDieselAction(
           user.id,
-          'carfidelity_check',
+          'inspektlabs_check',
           result.diesel_summary,
           { vin, vehicle_id },
           result,
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       }
 
       case 'get_reports': {
-        // Get user's recent CarFidelity reports
+        // Get user's recent Inspektlabs reports
         const { data: reports } = await supabase
           .from('vin_reports')
           .select('*')

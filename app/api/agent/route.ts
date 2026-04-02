@@ -40,8 +40,8 @@ interface RADContext {
     daily_rate: number
     pickup_location?: string
     features?: string[]
-    carfidelity_score?: number
-    carfidelity_certified?: boolean
+    inspektlabs_score?: number
+    inspektlabs_certified?: boolean
   }>
   localEvents: Array<{
     event_name: string
@@ -75,7 +75,7 @@ function buildSystemPrompt(ctx: RADContext | null): string {
     ? ctx.availableVehicles
         .map(v =>
           `${v.year} ${v.make} ${v.model} — $${v.daily_rate}/day` +
-          (v.carfidelity_certified ? " (CarFidelity Certified)" : "") +
+          (v.inspektlabs_certified ? " (Inspektlabs Certified)" : "") +
           (v.pickup_location ? ` in ${v.pickup_location}` : "")
         )
         .join("\n")

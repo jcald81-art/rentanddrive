@@ -9,14 +9,14 @@
  * - Fleet Tracker: GPS fleet tracking system
  * - RAD Reputation: Reputation management AI
  * - RAD Comms: Guest communications automation
- * - RAD CarFidelity: Vehicle inspection AI (carfidelity.ai mobile app)
+ * - RAD Inspektlabs: Vehicle inspection AI (inspektlabs.ai mobile app)
  */
 
 // Main conversational personas
 export type AIPersona = 'R&D' | 'RAD'
 
 // Host AI Agents (non-conversational, service-based)
-export type HostAIAgent = 'RAD Pricing' | 'Fleet Tracker' | 'RAD Reputation' | 'RAD Comms' | 'RAD CarFidelity'
+export type HostAIAgent = 'RAD Pricing' | 'Fleet Tracker' | 'RAD Reputation' | 'RAD Comms' | 'RAD Inspektlabs'
 
 export const PERSONAS: Record<AIPersona, {
   name: string
@@ -151,11 +151,11 @@ export const HOST_AI_AGENTS: Record<HostAIAgent, {
     ],
     status: 'active'
   },
-  'RAD CarFidelity': {
-    name: 'RAD CarFidelity',
-    fullName: 'RAD CarFidelity AI',
+  'RAD Inspektlabs': {
+    name: 'RAD Inspektlabs',
+    fullName: 'RAD Inspektlabs AI',
     tagline: 'Vehicle Inspection AI',
-    description: 'AI-powered vehicle inspection system via carfidelity.ai mobile app. Detects damage, documents condition, and generates detailed reports for dispute resolution.',
+    description: 'AI-powered vehicle inspection system via inspektlabs.ai mobile app. Detects damage, documents condition, and generates detailed reports for dispute resolution.',
     color: '#CC0000',
     icon: 'camera',
     capabilities: [

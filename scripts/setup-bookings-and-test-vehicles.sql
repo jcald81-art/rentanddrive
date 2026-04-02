@@ -16,7 +16,7 @@ ALTER TABLE vehicles
   ADD COLUMN IF NOT EXISTS smoking_policy_locked BOOLEAN DEFAULT FALSE;
 
 ALTER TABLE vehicles
-  ADD COLUMN IF NOT EXISTS carfidelity_certified BOOLEAN DEFAULT FALSE;
+  ADD COLUMN IF NOT EXISTS inspektlabs_certified BOOLEAN DEFAULT FALSE;
 
 ALTER TABLE vehicles
   ADD COLUMN IF NOT EXISTS eagle_eye_tracked BOOLEAN DEFAULT FALSE;
@@ -152,7 +152,7 @@ INSERT INTO vehicles (
   features,
   smoking_policy,
   smoking_policy_locked,
-  carfidelity_certified,
+  inspektlabs_certified,
   eagle_eye_tracked,
   is_active,
   minimum_days,
@@ -193,7 +193,7 @@ INSERT INTO vehicles (
   1,
   14,
   2,
-  'Black on black 2014 Audi Q5 with Quattro AWD and panoramic sunroof. Thule ski rack pre-installed for Tahoe season. Leather interior, heated seats, all the good stuff. CarFidelity inspection complete — this vehicle is RAD Clean.',
+  'Black on black 2014 Audi Q5 with Quattro AWD and panoramic sunroof. Thule ski rack pre-installed for Tahoe season. Leather interior, heated seats, all the good stuff. Inspektlabs inspection complete — this vehicle is RAD Clean.',
   ARRAY['https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&auto=format&fit=crop'],
   500.00,
   200,
@@ -225,7 +225,7 @@ INSERT INTO vehicles (
   features,
   smoking_policy,
   smoking_policy_locked,
-  carfidelity_certified,
+  inspektlabs_certified,
   eagle_eye_tracked,
   is_active,
   minimum_days,

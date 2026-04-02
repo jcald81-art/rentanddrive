@@ -56,7 +56,7 @@ export const ORCHESTRATION_RULES: OrchestrationRule[] = [
   {
     keywords: ['damage', 'scratch', 'dent', 'photo', 'inspection', 'condition'],
     agents: ['damage_assessment'],
-    rad_handoff: "Pulling the RAD CarFidelity inspection report."
+    rad_handoff: "Pulling the RAD Inspektlabs inspection report."
   },
   {
     keywords: ['points', 'rewards', 'tier', 'milestone', 'referral', 'mile markers'],
@@ -225,7 +225,7 @@ export function getAgentDisplayName(task: AgentTaskType): string {
     document_analysis: 'Gemini',
     bulk_processing: 'DeepSeek',
     driver_verification: 'RAD Verify',
-    damage_assessment: 'RAD CarFidelity',
+    damage_assessment: 'RAD Inspektlabs',
     fraud_detection: 'RAD Secure',
     upsell_recommendation: 'RAD Upsell',
     engagement: 'RAD Rewards',

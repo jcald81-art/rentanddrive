@@ -36,7 +36,7 @@ INSERT INTO vehicles (
   'WA1LFAFP5EA012345',
   'NV-TEST-01',
   135.00,
-  'Luxury compact SUV perfect for Tahoe trips. All-wheel drive, heated seats, panoramic sunroof. CarFidelity Certified with Eagle Eye GPS tracking.',
+  'Luxury compact SUV perfect for Tahoe trips. All-wheel drive, heated seats, panoramic sunroof. Inspektlabs Certified with Eagle Eye GPS tracking.',
   'suv',
   'Reno',
   true,

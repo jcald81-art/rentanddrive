@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
       vinAuditData = getMockVinAuditData(normalizedVin)
     }
 
-    // Generate CarFidelity report ID
+    // Generate Inspektlabs report ID
     const reportId = `CF-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`
 
     // Combine all data
@@ -217,7 +217,7 @@ export async function POST(request: NextRequest) {
       console.error('[VIN Report Save Error]:', saveError)
     }
 
-    // Log to Diesel (CarFidelity agent)
+    // Log to Diesel (Inspektlabs agent)
     if (user_id) {
       try {
         // Get user's Diesel agent
@@ -233,7 +233,7 @@ export async function POST(request: NextRequest) {
             agent_id: dieselAgent.id,
             user_id,
             action_type: 'vin_verification',
-            action_summary: `CarFidelity Report: ${normalizedVin} - ${fullReport.is_clean ? 'CLEAN' : 'FLAGS DETECTED'}`,
+            action_summary: `Inspektlabs Report: ${normalizedVin} - ${fullReport.is_clean ? 'CLEAN' : 'FLAGS DETECTED'}`,
             input_data: { vin: normalizedVin, vehicle_id },
             output_data: { report_id: reportId, is_clean: fullReport.is_clean, flags: fullReport.flags },
             model_used: vinAuditKey ? 'vinaudit-api' : 'nhtsa-free',
@@ -277,7 +277,7 @@ export async function POST(request: NextRequest) {
             action: 'send_urgent_alert',
             to_admin: true,
             subject: `Diesel Alert: Vehicle Blocked`,
-            message: `Diesel here. Ran CarFidelity check on VIN ${normalizedVin}. Found ${
+            message: `Diesel here. Ran Inspektlabs check on VIN ${normalizedVin}. Found ${
               vinAuditData.title_status !== 'clean' ? 'salvage title' : 'odometer rollback'
             }. Vehicle blocked. No exceptions.`,
           }),

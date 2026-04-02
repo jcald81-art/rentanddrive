@@ -19,7 +19,7 @@ interface PhotoSlot {
 }
 
 interface RecallStatus {
-  count: number; carfidelity: { status: string; label: string; color: string };
+  count: number; inspektlabs: { status: string; label: string; color: string };
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -168,8 +168,8 @@ function StepDetails({
         </div>
         {vinError && <p className="text-red-400 text-xs mt-1">{vinError}</p>}
         {recalls && (
-          <div className={`flex items-center gap-2 mt-2 text-xs font-medium ${recalls.carfidelity.color === "green" ? "text-green-400" : "text-red-400"}`}>
-            {recalls.carfidelity.color === "green" ? "✓" : "⚠"} CarFidelity: {recalls.carfidelity.label}
+          <div className={`flex items-center gap-2 mt-2 text-xs font-medium ${recalls.inspektlabs.color === "green" ? "text-green-400" : "text-red-400"}`}>
+            {recalls.inspektlabs.color === "green" ? "✓" : "⚠"} Inspektlabs: {recalls.inspektlabs.label}
           </div>
         )}
         <p className="text-white/25 text-xs mt-1">Find your VIN on the dashboard, door jamb, or title</p>

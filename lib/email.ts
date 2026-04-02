@@ -78,7 +78,7 @@ export async function sendWelcomeEmail({ to, firstName, role }: WelcomeEmailPara
                 <ul style="margin: 0; padding: 0 0 0 20px; color: #F5F2EC; font-size: 14px; line-height: 1.8;">
                   <li>Only <strong>10% commission</strong> - the lowest in the industry</li>
                   <li>RAD Verify verification system for renters</li>
-                  <li>CarFidelity protection on every trip</li>
+                  <li>Inspektlabs protection on every trip</li>
                   <li>Priority support as a founding member</li>
                 </ul>
               </div>
@@ -138,7 +138,7 @@ ${isHost
 FOUNDING HOST BENEFITS:
 - Only 10% commission - the lowest in the industry
   - RAD Fleet tracking system for every vehicle
-- CarFidelity protection on every trip
+- Inspektlabs protection on every trip
 - Priority support as a founding member`
   : `As a RAD Renter, you now have access to unique vehicles from local hosts - no rental counters, no middleman fees, just great rides for your adventures.
 

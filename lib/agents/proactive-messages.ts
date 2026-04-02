@@ -80,7 +80,7 @@ export async function getProactiveMessage({
     return {
       agent: AGENT_CONFIGS['rad-comms'],
       preview_text: 'Where are you headed?',
-      full_message: 'RAD connects you directly with local vehicle owners — no rental counters, no corporate fleet. Every vehicle is CarFidelity inspected and GPS tracked. What market are you heading to?',
+      full_message: 'RAD connects you directly with local vehicle owners — no rental counters, no corporate fleet. Every vehicle is Inspektlabs inspected and GPS tracked. What market are you heading to?',
       context: { page: 'home', role: 'visitor' },
       action_buttons: [
         { label: 'Reno/Sparks', action: '/vehicles?market=reno', variant: 'primary' },
@@ -189,7 +189,7 @@ export async function getProactiveMessage({
     return {
       agent: AGENT_CONFIGS['rad-comms'],
       preview_text: 'Setup takes 3 minutes',
-      full_message: 'Renter or host — your call. Renters get access to the fleet immediately. Hosts need a CarFidelity inspection first. Which path?',
+      full_message: 'Renter or host — your call. Renters get access to the fleet immediately. Hosts need a Inspektlabs inspection first. Which path?',
       context: { page: 'signup' },
       action_buttons: [
         { label: 'Rent vehicles', action: 'role_renter', variant: 'primary' },

@@ -21,7 +21,7 @@ fleet_health — vehicle maintenance, OBD2 alerts, repair scheduling, mileage tr
 realtime_conditions — weather, road conditions, live traffic, chain controls, event impacts
 document_analysis — contracts, insurance docs, uploaded files, registrations, titles
 bulk_processing — batch jobs, exports, mass updates, data migrations, fleet-wide changes
-driver_verification — license checks, identity verification, CarFidelity certification, age verification
+driver_verification — license checks, identity verification, Inspektlabs certification, age verification
 damage_assessment — vehicle photos, damage reports, repair estimates, pre/post trip inspections
 fraud_detection — suspicious bookings, account flags, risk scoring, payment anomalies
 upsell_recommendation — add-ons, gear recommendations, upgrades, bundles, equipment
@@ -93,7 +93,7 @@ const KEYWORD_PATTERNS: Record<AgentTaskType, RegExp[]> = {
   ],
   driver_verification: [
     /\b(license|verify|verification|identity|id check)\b/i,
-    /\b(carfidelity|certified|approve.*driver)\b/i,
+    /\b(inspektlabs|certified|approve.*driver)\b/i,
   ],
   damage_assessment: [
     /\b(damage|scratch|dent|broken|inspect|assessment)\b/i,

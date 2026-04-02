@@ -18,7 +18,7 @@ interface Vehicle {
   daily_rate: number
   location_city?: string
   location_state?: string
-  carfidelity_certified?: boolean
+  inspektlabs_certified?: boolean
   smoking_policy?: string
   fuel_type?: string
 }
@@ -87,7 +87,7 @@ export function BookingSummaryCard({
               <span>{vehicle.location_city}, {vehicle.location_state}</span>
             </div>
             <div className="flex gap-2 mt-2">
-              {vehicle.carfidelity_certified && (
+              {vehicle.inspektlabs_certified && (
                 <Badge variant="secondary" className="text-xs bg-green-600/10 text-green-600">
                   <Shield className="size-3 mr-1" />
                   Certified
