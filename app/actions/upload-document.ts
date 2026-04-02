@@ -1,7 +1,6 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { cookies } from 'next/headers'
 
 interface UploadResult {
   success: boolean
@@ -14,8 +13,7 @@ export async function uploadDocument(
   formData: FormData
 ): Promise<UploadResult> {
   try {
-    const cookieStore = await cookies()
-    const supabase = await createClient(cookieStore)
+    const supabase = await createClient()
     
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -98,8 +96,7 @@ export async function uploadDocument(
 
 export async function getMyDocuments() {
   try {
-    const cookieStore = await cookies()
-    const supabase = await createClient(cookieStore)
+    const supabase = await createClient()
     
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -125,8 +122,7 @@ export async function getMyDocuments() {
 
 export async function getDocumentSignedUrl(filePath: string) {
   try {
-    const cookieStore = await cookies()
-    const supabase = await createClient(cookieStore)
+    const supabase = await createClient()
     
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
