@@ -325,7 +325,7 @@ export default function ListVehiclePage() {
       const cleanUrl = window.location.pathname
       window.history.replaceState({}, '', cleanUrl)
     }
-  }, [router])
+  }, [])
 
   // Fetch makes when vehicle type changes
   useEffect(() => {
