@@ -5,7 +5,6 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useRouter } from 'next/navigation'
 import { Loader2, X, Eye, EyeOff, Mail, ExternalLink } from 'lucide-react'
 
 // Email provider detection and webmail URLs
@@ -66,7 +65,6 @@ export function AuthModal({ isOpen, onClose, defaultMode = 'signin', redirectTo 
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
-  const router = useRouter()
   
   // Detect email provider for smart "Open Email" button
   const emailProvider = useMemo(() => getEmailProvider(email), [email])
@@ -98,7 +96,8 @@ export function AuthModal({ isOpen, onClose, defaultMode = 'signin', redirectTo 
         })
         if (error) throw error
         onClose()
-        router.push(redirectTo)
+        // Use window.location to avoid router initialization issues
+        window.location.href = redirectTo
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -364,12 +363,12 @@ export function AuthModal({ isOpen, onClose, defaultMode = 'signin', redirectTo 
 
 // Standalone page wrapper that shows the modal over a nice background with navbar
 export function AuthPage({ defaultMode = 'signin', redirectTo = '/dashboard' }: { defaultMode?: 'signin' | 'signup'; redirectTo?: string }) {
-  const router = useRouter()
   const [isOpen, setIsOpen] = useState(true)
   
   const handleClose = () => {
     setIsOpen(false)
-    router.push('/')
+    // Use window.location to avoid router initialization issues
+    window.location.href = '/'
   }
   
   return (
