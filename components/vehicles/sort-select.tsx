@@ -1,20 +1,19 @@
 'use client'
 
 import { Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
 interface SortSelectProps {
   defaultValue?: string
 }
 
 function SortSelectInner({ defaultValue = 'price_asc' }: SortSelectProps) {
-  const router = useRouter()
   const searchParams = useSearchParams()
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set('sort', e.target.value)
-    router.push(`/vehicles?${params.toString()}`)
+    window.location.href = `/vehicles?${params.toString()}`
   }
 
   return (

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+
 import { format, differenceInDays, addDays } from 'date-fns'
 import { Calendar as CalendarIcon, Zap, Shield, Clock, TrendingUp, Sparkles, AlertTriangle, Check } from 'lucide-react'
 import { Calendar } from '@/components/ui/calendar'
@@ -33,7 +33,6 @@ interface RADPricingInsight {
 }
 
 export function PricingCalculator({ vehicleId, dailyRate, instantBook }: PricingCalculatorProps) {
-  const router = useRouter()
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: addDays(new Date(), 1),
     to: addDays(new Date(), 4),
@@ -147,7 +146,7 @@ export function PricingCalculator({ vehicleId, dailyRate, instantBook }: Pricing
       end_date: format(dateRange.to, 'yyyy-MM-dd'),
     })
 
-    router.push(`/book/${vehicleId}?${params.toString()}`)
+    window.location.href = `/book/${vehicleId}?${params.toString()}`
   }
 
   return (

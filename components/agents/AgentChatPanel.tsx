@@ -8,7 +8,7 @@ import { detectIntent, getAgentConsultingMessage } from '@/lib/orchestration'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { useRouter } from 'next/navigation'
+
 
 interface Message {
   role: 'agent' | 'user'
@@ -32,7 +32,6 @@ export function AgentChatPanel({
   actionButtons,
   onClose 
 }: AgentChatPanelProps) {
-  const router = useRouter()
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'agent',
@@ -111,7 +110,7 @@ export function AgentChatPanel({
 
   function handleActionButton(button: ActionButton) {
     if (button.action.startsWith('/') || button.action.startsWith('?')) {
-      router.push(button.action)
+      window.location.href = button.action
       onClose()
     } else if (button.action === 'dismiss' || button.action === 'continue') {
       onClose()

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -38,7 +38,6 @@ const FEATURES = [
 ]
 
 function VehicleFiltersInner() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [isClient, setIsClient] = useState(false)
   
@@ -113,7 +112,7 @@ function VehicleFiltersInner() {
     if (dateRange?.from) params.set('start_date', dateRange.from.toISOString().split('T')[0])
     if (dateRange?.to) params.set('end_date', dateRange.to.toISOString().split('T')[0])
     
-    router.push(`/vehicles?${params.toString()}`)
+    window.location.href = `/vehicles?${params.toString()}`
   }
 
   const clearFilters = () => {
@@ -121,7 +120,7 @@ function VehicleFiltersInner() {
     setPriceRange('all')
     setFeatures([])
     setDateRange(undefined)
-    router.push('/vehicles')
+    window.location.href = '/vehicles'
   }
 
   const hasActiveFilters = category !== 'all' || priceRange !== 'all' || features.length > 0 || dateRange?.from

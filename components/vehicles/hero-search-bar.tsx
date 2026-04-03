@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { format, addDays } from 'date-fns'
 import { Calendar as CalendarIcon, MapPin, Search } from 'lucide-react'
 import { Calendar } from '@/components/ui/calendar'
@@ -31,7 +31,6 @@ const CATEGORIES = [
 ]
 
 function HeroSearchBarInner() {
-  const router = useRouter()
   const searchParams = useSearchParams()
 
   const [mode, setMode] = useState<'rent' | 'buy'>('rent')
@@ -63,7 +62,7 @@ function HeroSearchBarInner() {
     if (mode === 'rent' && dateRange?.from) params.set('start_date', format(dateRange.from, 'yyyy-MM-dd'))
     if (mode === 'rent' && dateRange?.to) params.set('end_date', format(dateRange.to, 'yyyy-MM-dd'))
 
-    router.push(`/vehicles?${params.toString()}`)
+    window.location.href = `/vehicles?${params.toString()}`
   }
 
   return (
