@@ -103,14 +103,23 @@ export default function HostDashboardPage() {
   const [showTuroImport, setShowTuroImport] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
+  // Ensure component is mounted before router actions
   useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isMounted) return
+
     const fetchData = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
-        router.push('/sign-in?redirectTo=/host/dashboard')
+        // Use window.location for more reliable redirect before router is ready
+        window.location.href = '/sign-in?redirectTo=/host/dashboard'
         return
       }
       setUser(user)
@@ -178,7 +187,7 @@ export default function HostDashboardPage() {
     }
 
     fetchData()
-  }, [supabase, router])
+  }, [isMounted, supabase])
 
   // Real-time subscriptions for live updates
   useEffect(() => {
@@ -282,7 +291,8 @@ export default function HostDashboardPage() {
     { id: 'settings', label: 'Settings', icon: Settings },
   ]
 
-  if (loading) {
+  // Show loading state while mounting or fetching data
+  if (!isMounted || loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0a]">
         <div className="flex">
