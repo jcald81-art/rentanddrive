@@ -5,7 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { format, startOfMonth, addDays } from 'date-fns'
+import { startOfMonth, addDays } from 'date-fns'
+import { ClientDate, ClientDateRange } from '@/components/ui/client-date'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -302,7 +303,7 @@ export default function HostDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white flex">
+    <div className="min-h-screen bg-[#0a0a0a] text-white flex" suppressHydrationWarning>
       {/* MFA Prompt for Hosts */}
       <MFAHostPrompt />
 
@@ -532,9 +533,12 @@ export default function HostDashboardPage() {
                           <p className="text-sm text-white font-medium truncate">
                             {booking.profiles?.full_name || 'Guest'}
                           </p>
-                          <p className="text-xs text-white/50">
-                            {format(new Date(booking.start_date), 'MMM d')} - {format(new Date(booking.end_date), 'MMM d')}
-                          </p>
+                          <ClientDateRange 
+                            startDate={booking.start_date} 
+                            endDate={booking.end_date} 
+                            formatStr="MMM d"
+                            className="text-xs text-white/50"
+                          />
                         </div>
                         <Badge className={`${
                           booking.status === 'confirmed' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'
@@ -780,9 +784,12 @@ export default function HostDashboardPage() {
                           <p className="text-white font-medium">
                             {booking.vehicles?.year} {booking.vehicles?.make} {booking.vehicles?.model}
                           </p>
-                          <p className="text-sm text-white/50">
-                            {format(new Date(booking.start_date), 'MMM d, yyyy')} - {format(new Date(booking.end_date), 'MMM d, yyyy')}
-                          </p>
+                          <ClientDateRange 
+                            startDate={booking.start_date} 
+                            endDate={booking.end_date} 
+                            formatStr="MMM d, yyyy"
+                            className="text-sm text-white/50"
+                          />
                         </div>
                         <div className="text-right">
                           <p className="text-white/70">{booking.profiles?.full_name || 'Guest'}</p>
@@ -908,7 +915,7 @@ export default function HostDashboardPage() {
                       <div key={booking.id} className="flex items-center justify-between p-3 rounded-lg bg-white/5">
                         <div>
                           <p className="text-white">{booking.vehicles?.year} {booking.vehicles?.make} {booking.vehicles?.model}</p>
-                          <p className="text-sm text-white/50">{format(new Date(booking.end_date), 'MMM d, yyyy')}</p>
+                          <ClientDate date={booking.end_date} formatStr="MMM d, yyyy" className="text-sm text-white/50" />
                         </div>
                         <p className="text-emerald-400 font-semibold">+${booking.total_price}</p>
                       </div>

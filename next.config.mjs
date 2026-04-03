@@ -3,9 +3,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     remotePatterns: [
       {
@@ -26,6 +23,14 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: '/:path*',
+        headers: [
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+        ],
+      },
+      {
         source: '/images/:path*',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
@@ -42,6 +47,15 @@ const nextConfig = {
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
+      },
+    ]
+  },
+  async redirects() {
+    return [
+      {
+        source: '/hostslab/:path*',
+        destination: '/host/:path*',
+        permanent: true,
       },
     ]
   },
