@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { startOfMonth, addDays } from 'date-fns'
@@ -104,7 +103,6 @@ export default function HostDashboardPage() {
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
-  const router = useRouter()
   const supabase = createClient()
 
   // Ensure component is mounted before router actions
