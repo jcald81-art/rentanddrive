@@ -7,8 +7,9 @@ export async function GET(req: NextRequest) {
   const code = searchParams.get("code");
   const redirect = searchParams.get("redirect");
 
-  // Use custom domain for all redirects (not Supabase URL)
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.rentanddrive.net";
+  // Use the request origin to ensure correct redirect (handles preview vs production)
+  const origin = req.nextUrl.origin;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || origin;
 
   // Validate redirect — internal paths only, no open redirect
   let safeRedirect = "/dashboard";
