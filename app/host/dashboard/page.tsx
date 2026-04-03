@@ -563,55 +563,88 @@ export default function HostDashboardPage() {
               </div>
 
               {/* Fleet Preview */}
-              {vehicles.length > 0 && (
-                <Card className="bg-[#151820] border-white/10">
-                  <CardHeader className="flex flex-row items-center justify-between">
-                    <div>
-                      <CardTitle className="text-white">Your Fleet</CardTitle>
-                      <CardDescription className="text-white/50">Quick overview of your vehicles</CardDescription>
-                    </div>
+              <Card className="bg-[#151820] border-white/10">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle className="text-white">Your Fleet</CardTitle>
+                    <CardDescription className="text-white/50">
+                      {vehicles.length > 0 ? 'Quick overview of your vehicles' : 'Get started by adding your first vehicle'}
+                    </CardDescription>
+                  </div>
+                  {vehicles.length > 0 && (
                     <Button variant="ghost" onClick={() => setActiveSection('fleet')} className="text-[#e50914]">
                       View All <ChevronRight className="h-4 w-4 ml-1" />
                     </Button>
-                  </CardHeader>
-                  <CardContent>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  {vehicles.length > 0 && (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {vehicles.slice(0, 3).map(vehicle => {
                         const isActive = vehicle.status === 'active' || vehicle.listing_status === 'active'
                         return (
-                    <Link 
-                      key={vehicle.id} 
-                      href={`/host/vehicles/${vehicle.id}/settings`}
-                      className="flex items-center gap-4 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group"
-                    >
-                      <div className="w-16 h-12 rounded-lg bg-white/10 overflow-hidden flex-shrink-0 relative">
-                        <img
-                          src={vehicle.images?.[0] || '/images/vehicle-placeholder.jpg'}
-                          alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-                          className="w-full h-full object-cover"
-                        />
-                        {/* Live status indicator */}
-                        <div className={`absolute bottom-1 right-1 w-2 h-2 rounded-full ${isActive ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-white font-medium truncate group-hover:text-[#e50914] transition-colors">
-                          {vehicle.year} {vehicle.make} {vehicle.model}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <Badge className={`text-xs ${isActive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
-                            {isActive ? 'Live' : 'Paused'}
-                          </Badge>
-                          <span className="text-sm text-[#e50914] font-semibold">${vehicle.daily_rate}/day</span>
-                        </div>
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-white/30 group-hover:text-[#e50914] transition-colors" />
-                    </Link>
+                          <Link 
+                            key={vehicle.id} 
+                            href={`/host/vehicles/${vehicle.id}/settings`}
+                            className="flex items-center gap-4 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group"
+                          >
+                            <div className="w-16 h-12 rounded-lg bg-white/10 overflow-hidden flex-shrink-0 relative">
+                              <img
+                                src={vehicle.images?.[0] || '/images/vehicle-placeholder.jpg'}
+                                alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className={`absolute bottom-1 right-1 w-2 h-2 rounded-full ${isActive ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-white font-medium truncate group-hover:text-[#e50914] transition-colors">
+                                {vehicle.year} {vehicle.make} {vehicle.model}
+                              </p>
+                              <div className="flex items-center gap-2">
+                                <Badge className={`text-xs ${isActive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                                  {isActive ? 'Live' : 'Paused'}
+                                </Badge>
+                                <span className="text-sm text-[#e50914] font-semibold">${vehicle.daily_rate}/day</span>
+                              </div>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-white/30 group-hover:text-[#e50914] transition-colors" />
+                          </Link>
                         )
                       })}
                     </div>
-                  </CardContent>
-                </Card>
-              )}
+                  )}
+                  
+                  {/* Empty state */}
+                  {vehicles.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                      <div className="w-20 h-20 rounded-full bg-[#e50914]/20 flex items-center justify-center mb-4">
+                        <Car className="h-10 w-10 text-[#e50914]" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-white mb-2">No vehicles yet</h3>
+                      <p className="text-white/50 mb-6 max-w-md">
+                        List your first vehicle and start earning money with RAD Rent and Drive. 
+                        It only takes a few minutes to get started.
+                      </p>
+                      <div className="flex gap-3">
+                        <Link href="/host/vehicles/add/details">
+                          <Button className="bg-[#e50914] hover:bg-[#c00810] text-white">
+                            <Plus className="h-4 w-4 mr-2" />
+                            List Your Car
+                          </Button>
+                        </Link>
+                        <Button 
+                          variant="outline" 
+                          className="border-white/20 text-white hover:bg-white/10"
+                          onClick={() => setShowTuroImport(true)}
+                        >
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          Import from Turo
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
           )}
 

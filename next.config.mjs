@@ -4,6 +4,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  allowedDevOrigins: ['*.vusercontent.net', '*.vercel.app', 'localhost'],
   images: {
     remotePatterns: [
       {
