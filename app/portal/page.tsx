@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Logo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
@@ -9,13 +8,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Home, Car, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
+// Safe navigation helper - avoids router initialization issues
+const safeNavigate = (url: string) => {
+  if (typeof window !== 'undefined') {
+    window.location.href = url;
+  }
+};
+
 // This page acts as a smart router after login
 // It checks the user's role and redirects them to the appropriate portal
 // Users can also manually choose which portal to access
 
 export default function PortalPage() {
-  const router = useRouter()
   const [loading, setLoading] = useState(true)
+  const [isMounted, setIsMounted] = useState(false)
   const [user, setUser] = useState<{
     id: string
     email: string
@@ -24,13 +30,19 @@ export default function PortalPage() {
   } | null>(null)
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+    
     const checkUser = async () => {
       const supabase = createClient()
       
       const { data: { user: authUser } } = await supabase.auth.getUser()
       
       if (!authUser) {
-        router.push('/login')
+        safeNavigate('/login')
         return
       }
 
@@ -76,10 +88,10 @@ export default function PortalPage() {
       if (!hasVisitedPortal) {
         localStorage.setItem('portal_visited', 'true')
         if (role === 'host') {
-          router.push('/host/dashboard')
+          safeNavigate('/host/dashboard')
           return
         } else if (role === 'renter') {
-          router.push('/renter/suite')
+          safeNavigate('/renter/suite')
           return
         }
       }
@@ -88,7 +100,7 @@ export default function PortalPage() {
     }
 
     checkUser()
-  }, [router])
+  }, [isMounted])
 
   if (loading) {
     return (

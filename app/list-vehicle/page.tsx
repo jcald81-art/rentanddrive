@@ -9,8 +9,14 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Loader2, Car, ArrowLeft, Brain, Sparkles, Shield, CheckCircle2, AlertTriangle, Upload, FileText, Search, Info, Zap, Smartphone, QrCode } from 'lucide-react'
+
+// Safe navigation helper - avoids router initialization issues
+const safeNavigate = (url: string) => {
+  if (typeof window !== 'undefined') {
+    window.location.href = url;
+  }
+};
 import { QRCodeSVG } from 'qrcode.react'
 import { SafetyStandards } from '@/components/safety-standards'
 import { StripePayoutSetup } from '@/components/stripe-payout-setup'
@@ -75,7 +81,6 @@ export default function ListVehiclePage() {
   const [apiErrors, setApiErrors] = useState<string[]>([])
   const [debugMode, setDebugMode] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
-  const router = useRouter()
   
   // Track component mount state to prevent router actions before hydration
   useEffect(() => {
@@ -301,7 +306,7 @@ export default function ListVehiclePage() {
                 // Stripe setup complete - redirect to photos
                 localStorage.removeItem('rad_onboarding_vehicle_id')
                 localStorage.removeItem('rad_onboarding_step')
-                router.push(`/host/vehicles/${savedVehicleId}/photos?new=true`)
+                safeNavigate(`/host/vehicles/${savedVehicleId}/photos?new=true`)
               } else {
                 // Stripe not yet connected - stay on payouts step
                 setFlowStep('payouts')
@@ -719,7 +724,7 @@ export default function ListVehiclePage() {
       
       if (!user) {
         console.log('⚠️ [RADCC VEHICLE SUBMIT DEBUG] No user, redirecting to sign-in')
-        if (isMounted) router.push('/sign-in?redirect=/list-vehicle')
+        if (isMounted) safeNavigate('/sign-in?redirect=/list-vehicle')
         return
       }
 
@@ -855,7 +860,7 @@ export default function ListVehiclePage() {
       }
       if (err instanceof Error) {
         console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Error message:', err.message)
-        console.error('❌ [RADCC VEHICLE SUBMIT DEBUG] Error stack:', err.stack)
+        console.error('�� [RADCC VEHICLE SUBMIT DEBUG] Error stack:', err.stack)
       }
       // Check if it's a Supabase error object
       if (err && typeof err === 'object' && 'message' in err) {
@@ -991,7 +996,7 @@ export default function ListVehiclePage() {
             onComplete={() => {
               // Redirect to photo session
               if (vehicleId && isMounted) {
-                router.push(`/host/vehicles/${vehicleId}/photos?new=true`)
+                safeNavigate(`/host/vehicles/${vehicleId}/photos?new=true`)
               } else {
                 setFlowStep('complete')
               }
@@ -1008,11 +1013,11 @@ export default function ListVehiclePage() {
                   console.error('Failed to update vehicle status:', err)
                 }
                 if (isMounted) {
-                  router.push('/host/dashboard')
+                  safeNavigate('/host/dashboard')
                 }
               } else {
                 if (isMounted) {
-                  router.push('/host/dashboard')
+                  safeNavigate('/host/dashboard')
                 }
               }
             }}

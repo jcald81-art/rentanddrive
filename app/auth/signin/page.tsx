@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import Link from "next/link";
 
@@ -16,7 +16,6 @@ function createClient() {
 
 function SignInContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const supabase = createClient();
 
   const redirectTo = searchParams.get("redirect") ?? "/dashboard";
@@ -30,25 +29,39 @@ function SignInContent() {
   const [success, setSuccess] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Safe navigation helper
+  const safeNavigate = (url: string) => {
+    if (typeof window !== 'undefined') {
+      window.location.href = url;
+    }
+  };
+
+  useEffect(() => {
+    if (!isMounted) return;
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) {
-        router.replace(redirectTo);
+        safeNavigate(redirectTo);
       } else {
         setCheckingSession(false);
       }
     });
-  }, []);
+  }, [isMounted]);
 
   useEffect(() => {
+    if (!isMounted) return;
     const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
-        router.replace(redirectTo);
+        safeNavigate(redirectTo);
       }
     });
     return () => listener.subscription.unsubscribe();
-  }, [redirectTo]);
+  }, [isMounted, redirectTo]);
 
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
@@ -79,7 +92,7 @@ function SignInContent() {
       },
     });
     if (err) { setError(friendlyError(err.message)); setLoading(false); return; }
-    if (data.session) { router.replace(redirectTo); return; }
+    if (data.session) { safeNavigate(redirectTo); return; }
     setSuccess("Check your email to confirm your account, then return to complete your booking.");
     setLoading(false);
   }

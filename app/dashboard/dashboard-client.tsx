@@ -1,7 +1,6 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -15,18 +14,23 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { LogOut, Settings, User, HelpCircle } from 'lucide-react'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
+// Safe navigation helper
+const safeNavigate = (url: string) => {
+  if (typeof window !== 'undefined') {
+    window.location.href = url;
+  }
+};
+
 interface DashboardClientProps {
   user: SupabaseUser
 }
 
 export function DashboardClient({ user }: DashboardClientProps) {
-  const router = useRouter()
   const supabase = createClient()
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
-    router.push('/login')
-    router.refresh()
+    safeNavigate('/login')
   }
 
   const initials = user.user_metadata?.full_name
@@ -63,15 +67,15 @@ export function DashboardClient({ user }: DashboardClientProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push('/settings/profile')}>
+        <DropdownMenuItem onClick={() => safeNavigate('/settings/profile')}>
           <User className="mr-2 h-4 w-4" />
           Profile
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push('/settings')}>
+        <DropdownMenuItem onClick={() => safeNavigate('/settings')}>
           <Settings className="mr-2 h-4 w-4" />
           Settings
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push('/help')}>
+        <DropdownMenuItem onClick={() => safeNavigate('/help')}>
           <HelpCircle className="mr-2 h-4 w-4" />
           Help center
         </DropdownMenuItem>
