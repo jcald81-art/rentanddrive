@@ -1,9 +1,8 @@
 "use client"
 
-// HeroSearchBar - FIXED 2026-03-29 - hydration-safe date handling
+// HeroSearchBar - FIXED 2026-04-03 - removed useRouter to prevent initialization errors
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -13,7 +12,6 @@ import { MapPin, CalendarDays, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function HeroSearchBar() {
-  const router = useRouter()
   const [location, setLocation] = useState("Reno, NV")
   const [mounted, setMounted] = useState(false)
   const [startDate, setStartDate] = useState<Date | undefined>(undefined)
@@ -33,7 +31,7 @@ export function HeroSearchBar() {
     if (location) params.set("location", location)
     if (startDate) params.set("start_date", format(startDate, "yyyy-MM-dd"))
     if (endDate) params.set("end_date", format(endDate, "yyyy-MM-dd"))
-    router.push(`/vehicles?${params.toString()}`)
+    window.location.href = `/vehicles?${params.toString()}`
   }
 
   return (
@@ -124,30 +122,30 @@ export function HeroSearchBar() {
 
       {/* Quick filters */}
       <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-        <button 
-          onClick={() => router.push("/vehicles?category=suv&awd=true")}
+        <a 
+          href="/vehicles?category=suv&awd=true"
           className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white/80 transition-colors hover:bg-white/20 hover:text-white"
         >
           AWD for Tahoe
-        </button>
-        <button 
-          onClick={() => router.push("/vehicles?ski_rack=true")}
+        </a>
+        <a 
+          href="/vehicles?ski_rack=true"
           className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white/80 transition-colors hover:bg-white/20 hover:text-white"
         >
           Ski Rack
-        </button>
-        <button 
-          onClick={() => router.push("/vehicles?category=truck")}
+        </a>
+        <a 
+          href="/vehicles?category=truck"
           className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white/80 transition-colors hover:bg-white/20 hover:text-white"
         >
           Trucks
-        </button>
-        <button 
-          onClick={() => router.push("/vehicles?category=rv")}
+        </a>
+        <a 
+          href="/vehicles?category=rv"
           className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white/80 transition-colors hover:bg-white/20 hover:text-white"
         >
           RVs
-        </button>
+        </a>
       </div>
     </div>
   )
